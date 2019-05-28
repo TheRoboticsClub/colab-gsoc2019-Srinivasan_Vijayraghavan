@@ -110,9 +110,9 @@ __PyFloat__.prototype.__div__ = function (other) {
 }
 __PyFloat__.prototype.__mul__ = function (other) {
 	if ('__float__' in other) {
-		return (new __PyFloat__ (this.x * other.__float__()));
+		return (new __PyFloat__ (this.x * (other.__float__().x)));
 	}
-	throw Error (`TypeError: unsupported operand type(s) for /:.`)
+	throw Error (`TypeError: unsupported operand type(s) for *:.`)
 }
 __PyFloat__.prototype.__str__ = function () {
 	return (new __PyStr__ (this.x));
