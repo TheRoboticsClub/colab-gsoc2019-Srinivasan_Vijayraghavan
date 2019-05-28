@@ -222,7 +222,12 @@ function __add__ (a, b) {
 	}
 	throw Error (`TypeError: unsupported operand type(s) for +:`);
 }
-
+function __sub__ (a, b) {
+	if ('__sub__' in a) {
+		return a.__sub__ (b);
+	}
+	throw Error (`TypeError: unsupported operand type(s) for -:`);
+}
 function __mult__ (a, b) {
 	if ('__mul__' in a) {
 		return a.__mul__ (b);
