@@ -224,8 +224,8 @@ function __add__ (a, b) {
 }
 
 function __mult__ (a, b) {
-	if ('__mult__' in a) {
-		return a.__mult__ (b);
+	if ('__mul__' in a) {
+		return a.__mul__ (b);
 	}
 	throw Error (`TypeError: unsupported operand type(s) for *:`);
 }
