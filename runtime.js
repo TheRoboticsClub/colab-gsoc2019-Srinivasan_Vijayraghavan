@@ -54,6 +54,11 @@ __PyInt__.prototype.__mul__ = function (other) {
 	}
 	throw Error (`TypeError: unsupported operand type(s) for /:`)
 }
+__PyInt__.prototype.__iadd__ = function (other) {return this.__add__ (other);}
+__PyInt__.prototype.__isub__ = function (other) {return this.__sub__ (other);}
+__PyInt__.prototype.__idiv__ = function (other) {return this.__div__ (other);}
+__PyInt__.prototype.__imul__ = function (other) {return this.__mul__ (other);}
+
 __PyInt__.prototype.__le__ = function (other) {
 	try {
 		return this.x <= __float__ (other);
@@ -117,7 +122,10 @@ __PyFloat__.prototype.__mul__ = function (other) {
 __PyFloat__.prototype.__str__ = function () {
 	return (new __PyStr__ (this.x));
 }
-
+__PyFloat__.prototype.__iadd__ = function (other) {return this.__add__ (other);}
+__PyFloat__.prototype.__isub__ = function (other) {return this.__sub__ (other);}
+__PyFloat__.prototype.__idiv__ = function (other) {return this.__div__ (other);}
+__PyFloat__.prototype.__imul__ = function (other) {return this.__mul__ (other);}
 
 var __PyStr__ = function (x) {
 	this.x = String (x);
@@ -151,7 +159,8 @@ __PyStr__.prototype.__getitem__ = function (pos) {
 	var id = __index__ (pos);
 	// if (__ge__ ())
 }
-
+__PyInt__.prototype.__iadd__ = function (other) {return this.__add__ (other);}
+__PyInt__.prototype.__imul__ = function (other) {return this.__mul__ (other);}
 
 // bool
 var __PyBool__ = function (x) {
@@ -209,6 +218,11 @@ __PyBool__.prototype.__div__ = function (other) {
 	}
 	throw Error (`TypeError: unsupported operand type(s) for /:`);
 }
+__PyBool__.prototype.__iadd__ = function (other) {return this.__add__ (other);}
+__PyBool__.prototype.__isub__ = function (other) {return this.__sub__ (other);}
+__PyBool__.prototype.__idiv__ = function (other) {return this.__div__ (other);}
+__PyBool__.prototype.__imul__ = function (other) {return this.__mul__ (other);}
+
 __PyInt__.__name__ = new __PyStr__ ('int');
 __PyStr__.__name__ = new __PyStr__ ('str');
 __PyFloat__.__name__ = new __PyStr__ ('float');
