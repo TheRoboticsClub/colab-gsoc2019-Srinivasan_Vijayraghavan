@@ -4,4 +4,4 @@
 ~~~
 python3 main.py test.py
 ~~~
-This prints the translation of the code in test.py to the console.
+Generates the file \__gen\__.js along with the runtime.
