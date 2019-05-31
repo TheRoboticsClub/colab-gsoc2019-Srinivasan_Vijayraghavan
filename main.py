@@ -5,7 +5,7 @@ import io
 class Visitor (ast.NodeVisitor):
 	def __init__ (self, ostream):
 		self.ostream = ostream
-
+		self.aug = False
 	# Literals
 	def visit_Num (self, node):
 		if (isinstance (node.n, int)):
@@ -37,16 +37,16 @@ class Visitor (ast.NodeVisitor):
 		self.ostream.write (')')
 
 	def visit_Add (self, node):
-		self.ostream.write ('__add__')
+		self.ostream.write (f'__{"i" if self.aug else ""}add__')
 
 	def visit_Sub (self, node):
-		self.ostream.write ('__sub__')
+		self.ostream.write (f'__{"i" if self.aug else ""}sub__')
 
 	def visit_Mult (self, node):
-		self.ostream.write ('__mult__')
+		self.ostream.write (f'__{"i" if self.aug else ""}mult__')
 
 	def visit_Div (self, node):
-		self.ostream.write ('__div__')
+		self.ostream.write (f'__{"i" if self.aug else ""}div__')
 
 	def visit_Name (self, node):
 		id = node.id
@@ -55,6 +55,7 @@ class Visitor (ast.NodeVisitor):
 	def visit_Call (self, node):
 		func, args = node.func, node.args
 		self.visit (func)
+		self.ostream.write ('.__call__')
 		self.ostream.write (' (')
 		for arg in args:
 			self.visit (arg)
@@ -66,13 +67,34 @@ class Visitor (ast.NodeVisitor):
 			self.ostream.write ('var ')
 			self.visit (target)
 			self.ostream.write (' = ')
-			self.visit (value);
-			self.ostream.write ('\n')
-
+			self.visit (value)
+			self.write_endline ()
+	def visit_AugAssign (self, node):
+		target, op, value = node.target, node.op, node.value
+		self.visit (target)
+		self.ostream.write (' = ')
+		self.visit (value)
+		self.ostream.write ('.')
+		self.aug = True
+		self.visit (op)
+		self.aug = False
+		self.ostream.write (' (')
+		self.visit (value)
+		self.ostream.write (')')
+		self.write_endline()
+	def write_endline (self):
+		self.ostream.write (';\n')
 if __name__ == '__main__':
 	assert (len (sys.argv) == 2)
 	f = open (sys.argv[1], 'r')
 	pt = ast.parse (f.read ());
 	f = io.StringIO();
 	Visitor (f).visit (pt);
+
+	fp = open ('__gen__.js', 'w')
+	fr = open ('runtime.js', 'r')
+	fp.write (fr.read())
+	fp.write ('\n//Translated code below\n')
+	fp.write (f.getvalue())
+
 	print (f.getvalue ());
