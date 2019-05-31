@@ -21,6 +21,8 @@ class Visitor (ast.NodeVisitor):
 	def visit_NameConstant (self, node):
 		if (node.value == True or node.value == False):
 			self.ostream.write (f'{node.value}')
+		elif (node.value == None):
+			pass
 
 	# Exprs
 	def visit_BinOp (self, node):
@@ -45,6 +47,27 @@ class Visitor (ast.NodeVisitor):
 
 	def visit_Div (self, node):
 		self.ostream.write ('__div__')
+
+	def visit_Name (self, node):
+		id = node.id
+		self.ostream.write (id)
+
+	def visit_Call (self, node):
+		func, args = node.func, node.args
+		self.visit (func)
+		self.ostream.write (' (')
+		for arg in args:
+			self.visit (arg)
+		self.ostream.write (')')
+
+	def visit_Assign (self, node):
+		targets, value = node.targets, node.value
+		for target in targets:
+			self.ostream.write ('var ')
+			self.visit (target)
+			self.ostream.write (' = ')
+			self.visit (value);
+			self.ostream.write ('\n')
 
 if __name__ == '__main__':
 	assert (len (sys.argv) == 2)
