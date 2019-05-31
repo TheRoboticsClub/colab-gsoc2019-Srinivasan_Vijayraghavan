@@ -8,6 +8,8 @@ object.prototype.__ge__ = function (other) {}
 object.prototype.__gt__ = function (other) {}
 object.prototype.__add__ = function (other) {}
 object.prototype.__str__ = function (other) {}
+object.prototype.__getattribute__ = function (attr) {}
+object.prototype.__setattr__ = function (which, value) {}
 
 var __PyInt__ = function (x) {
 	object.call (this);
@@ -18,6 +20,7 @@ __PyInt__.__call__ = function (x) {return new __PyInt__ (x);}
 __PyInt__.__base__ = object;
 __PyInt__.__name__ = '__int__';
 __PyInt__.prototype.__int__ = function () {return this;}
+__PyInt__.prototype.__index__ = function () {return this;}
 __PyInt__.prototype.__float__ = function () {return (new __PyFloat__ (this.x));}
 __PyInt__.prototype.__bool__ = function () {this.x == 0 ? False : True;}
 __PyInt__.prototype.__add__ = function (other) {
@@ -61,14 +64,32 @@ __PyInt__.prototype.__imul__ = function (other) {return this.__mul__ (other);}
 
 __PyInt__.prototype.__le__ = function (other) {
 	try {
-		return this.x <= __float__ (other);
+		return (this.x <= (__float__ (other)).x) ? True : False;
+	} catch (e){
+		throw TypeError (`unsupported operand type(s) for '<='`);
+	}
+}
+__PyInt__.prototype.__lt__ = function (other) {
+	try {
+		return (this.x < (__float__ (other)).x) ? True : False;
 	} catch (e){
 		throw TypeError (`unsupported operand type(s) for '<'`);
 	}
 }
-__PyInt__.prototype.__lt__ = function (other) {}
-__PyInt__.prototype.__ge__ = function (other) {}
-__PyInt__.prototype.__gt__ = function (other) {}
+__PyInt__.prototype.__ge__ = function (other) {
+	try {
+		return (this.x >= __float__ (other).x) ? True : False;
+	} catch (e){
+		throw TypeError (`unsupported operand type(s) for '>='`);
+	}
+}
+__PyInt__.prototype.__gt__ = function (other) {
+	try {
+		return (this.x > __float__ (other).x) ? True : False;
+	} catch (e){
+		throw TypeError (`unsupported operand type(s) for '>'`);
+	}
+}
 __PyInt__.prototype.__leq__ = function (other) {
 	if (other instanceof __PyInt__ || other instanceof __PyFloat__) {
 		return (new __PyBool__ (this.x < other.x));
@@ -157,10 +178,13 @@ __PyStr__.prototype.__len__ = function () {
 __PyStr__.prototype.__eq__ = function (other) {return (this.x == other.x) ? True : False;}
 __PyStr__.prototype.__getitem__ = function (pos) {
 	var id = __index__ (pos);
-	// if (__ge__ ())
+	if (__ge__ (id, new __PyInt__ (0)) == True && __lt__ (id, this.__len__()) == True) {
+		return new __PyStr__ (this.x[id.x]);
+	}
+	throw Error (`Indexing Error`);
 }
-__PyInt__.prototype.__iadd__ = function (other) {return this.__add__ (other);}
-__PyInt__.prototype.__imul__ = function (other) {return this.__mul__ (other);}
+__PyStr__.prototype.__iadd__ = function (other) {return this.__add__ (other);}
+__PyStr__.prototype.__imul__ = function (other) {return this.__mul__ (other);}
 
 // bool
 var __PyBool__ = function (x) {
@@ -260,7 +284,14 @@ function __index__ (i) {
 	}
 	throw Error (`AttributeError: '${i.__name__}' object has no attribute '__index__'`)
 }
-
+function __float__ (i) {
+	if ('__float__' in i) {return i.__float__ ();}
+	throw Error (`AttributeError: '${i.__name__}' object has no attribute '__float__'`)
+}
+function __gt__ (a, b) {return a.__gt__ (b);}
+function __ge__ (a, b) {return a.__ge__ (b);}
+function __lt__ (a, b) {return a.__lt__ (b);}
+function __le__ (a, b) {return a.__le__ (b);}
 function print (x) {
 	console.log (x.__str__ ().toString ());
 }
@@ -311,3 +342,19 @@ var ArithmeticError = function (...args) {
 var ZeroDivisionError = function (...args) {
 	ArithmeticError.call (this);
 }
+
+var __PyFunction__ = function (f) {this.fvalue = f;}
+__PyFunction__.__call__ = function (f) {return new __PyFunction__ (f);}
+
+__PyFunction__.prototype.__name__ = new __PyStr__ ('function ${this.fvalue.name}');
+__PyFunction__.prototype.__call__ = function () {
+	if (arguments.length != this.fvalue.length) {
+		throw Error (`Arity Mismatch`);
+	}
+	return this.fvalue.apply (null, arguments);
+}
+
+// <built-in print>
+var print = new __PyFunction__ (function (x) {
+	console.log (x.__str__().toString ());
+});
