@@ -82,8 +82,24 @@ class Visitor (ast.NodeVisitor):
 		self.visit (value)
 		self.ostream.write (')')
 		self.write_endline()
+
+	def visit_BoolOp (self, node):
+		op, values = node.op, node.values
+		self.visit (op)
+		self.ostream.write ('(')
+		for value in values:
+			self.visit (value)
+			self.ostream.write (', ')
+		self.ostream.write (')')
+
+	def visit_And (self, _):
+		self.ostream.write ('__and__')
+
+	def visit_Or (self, _):
+		self.ostream.write ('__or__')
 	def write_endline (self):
 		self.ostream.write (';\n')
+
 if __name__ == '__main__':
 	assert (len (sys.argv) == 2)
 	f = open (sys.argv[1], 'r')

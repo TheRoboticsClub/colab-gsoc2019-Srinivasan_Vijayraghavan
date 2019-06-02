@@ -198,6 +198,7 @@ __PyBool__.prototype.__str__ = function () {
 __PyBool__.prototype.__int__ = function () {
 	return this.x ? (new __PyInt__ (1)) : (new __PyInt__ (0));
 }
+__PyBool__.prototype.__bool__ = function () {return this;}
 __PyBool__.prototype.__index__ = function () {return this.__int__();}
 __PyBool__.prototype.__float__ = function () {
 	return this.x ? (new __PyFloat__ (1)) : (new __PyFloat__ (0));
@@ -247,6 +248,18 @@ __PyBool__.prototype.__isub__ = function (other) {return this.__sub__ (other);}
 __PyBool__.prototype.__idiv__ = function (other) {return this.__div__ (other);}
 __PyBool__.prototype.__imul__ = function (other) {return this.__mul__ (other);}
 
+__PyBool__.prototype.__and__ = function (other) {
+	var other = other.__bool__ ()
+	if (this.x && other.x) {return True;}
+	return False;
+}
+__PyBool__.prototype.__or__ = function (other) {
+	var other = other.__bool__ ();
+	if (this.x || other.x) {return True;}
+	return False;
+}
+__PyBool__.prototype.valueOf = function () {return this.x;}
+
 __PyInt__.__name__ = new __PyStr__ ('int');
 __PyStr__.__name__ = new __PyStr__ ('str');
 __PyFloat__.__name__ = new __PyStr__ ('float');
@@ -292,6 +305,23 @@ function __gt__ (a, b) {return a.__gt__ (b);}
 function __ge__ (a, b) {return a.__ge__ (b);}
 function __lt__ (a, b) {return a.__lt__ (b);}
 function __le__ (a, b) {return a.__le__ (b);}
+
+function __and__ () {
+	for (let i = 0; i < arguments.length; i++) {
+		if (arguments[i].__bool__ () === False) {
+			return False;
+		}
+	}
+	return True;
+}
+function __or__ () {
+	for (let i = 0; i < arguments.length; i++) {
+		if (arguments[i].__bool__ () === True) {
+			return True;
+		}
+	}
+	return False;
+}
 function print (x) {
 	console.log (x.__str__ ().toString ());
 }
