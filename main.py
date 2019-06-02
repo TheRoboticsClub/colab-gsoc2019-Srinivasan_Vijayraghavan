@@ -24,6 +24,13 @@ class Visitor (ast.NodeVisitor):
 		elif (node.value == None):
 			pass
 
+	def visit_List (self, node):
+		elts, ctx = node.elts, node.ctx
+		self.ostream.write ('__PyList__.__call__ ([')
+		for elt in elts:
+			self.visit (elt)
+			self.ostream.write (', ')
+		self.ostream.write ('])')
 	# Exprs
 	def visit_BinOp (self, node):
 		left, op, right = node.left, node.op, node.right
@@ -60,15 +67,22 @@ class Visitor (ast.NodeVisitor):
 		for arg in args:
 			self.visit (arg)
 		self.ostream.write (')')
+		self.write_endline ()
 
 	def visit_Assign (self, node):
 		targets, value = node.targets, node.value
 		for target in targets:
-			self.ostream.write ('var ')
-			self.visit (target)
-			self.ostream.write (' = ')
-			self.visit (value)
+			if (not isinstance (target, ast.Subscript)):
+				self.ostream.write ('var ')
+				self.visit (target)
+				self.ostream.write (' = ')
+				self.visit (value)
+			else:
+				self.visit (target)
+				self.visit (value)
+				self.ostream.write (')')
 			self.write_endline ()
+
 	def visit_AugAssign (self, node):
 		target, op, value = node.target, node.op, node.value
 		self.visit (target)
@@ -97,6 +111,20 @@ class Visitor (ast.NodeVisitor):
 
 	def visit_Or (self, _):
 		self.ostream.write ('__or__')
+
+	def visit_Subscript (self, node):
+		value, slice, ctx = node.value, node.slice, node.ctx
+		if (isinstance (ctx, ast.Store)):
+			self.visit (value)
+			self.ostream.write ('.__setitem__ (')
+			self.visit (node.slice)
+			self.ostream.write (', ')
+		elif (isinstance (ctx, ast.Load)):
+			self.visit (value)
+			self.ostream.write ('.__getitem__ (')
+			self.visit (node.slice)
+			self.ostream.write (')')
+
 	def write_endline (self):
 		self.ostream.write (';\n')
 

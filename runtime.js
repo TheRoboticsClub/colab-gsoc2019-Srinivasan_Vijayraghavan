@@ -33,9 +33,9 @@ __PyInt__.prototype.__add__ = function (other) {
 }
 __PyInt__.prototype.__sub__ = function (other) {
 	if (other instanceof __PyInt__) {
-		return new __PyInt__ (this.x + other.x);
-	} else if (other instanceof float) {
-		return (new __PyFloat__ (this.x + other.x));
+		return new __PyInt__ (this.x - other.x);
+	} else if (other instanceof __PyFloat__) {
+		return (new __PyFloat__ (this.x - other.x));
 	}
 	throw Error (`TypeError: unsupported operand type(s) for -:`)
 }
@@ -322,6 +322,12 @@ function __or__ () {
 	}
 	return False;
 }
+function __getitem__ (l, i) {
+	return l.__getitem__ (i);
+}
+function __setitem__ (l, i, v) {
+	return l.__setitem__ (i, v);
+}
 function print (x) {
 	console.log (x.__str__ ().toString ());
 }
@@ -335,6 +341,7 @@ function len (x) {
 var __PyList__ = function (l) {
 	this.l = l;
 }
+__PyList__.__call__ = function (l) {return new __PyList__ (l);}
 __PyList__.prototype.__getitem__ = function (i) {
 	try {
 		var n = __index__ (i).x;
@@ -348,16 +355,25 @@ __PyList__.prototype.__getitem__ = function (i) {
 }
 __PyList__.prototype.__setitem__ = function (i, val) {
 	try {
-		var n = __index__ (i);
-		if (n >= 0 && n < this.l.length) {
-			this.l[n] = val;
-		}
+		var n = __index__ (i).x;
 	} catch (e) {
 		throw Error (`TypeError: List indices must be integers`);
 	}
-
+	if (n >= 0 && n < this.l.length) {
+		this.l[n] = val;
+	} else {
+		throw Error (`IndexError: list index out of range`);
+	}
 }
 __PyList__.prototype.__len__ = function () {return new __PyInt__ (this.l.length);}
+__PyList__.prototype.__str__ = function () {
+	var ret = '';
+	for (let i = 0; i < this.l.length; i++) {
+		ret += this.l[i].__str__ ().toString ();
+		ret += ', '
+	}
+	return (__PyStr__.__call__ (ret));
+}
 
 var BaseException = function (...args) {
 
