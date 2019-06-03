@@ -44,8 +44,7 @@ __PyInt__.prototype.__div__ = function (other) {
 		if (other.x == 0) {
 			throw Error ('ZeroDivisionError: float division by zero');
 		}
-		var ret = new __PyFloat__ (this.x / other.x);
-
+		return new __PyFloat__ (this.x / other.x);
 	}
 	throw Error (`TypeError: unsupported operand type(s) for /:`)
 }
@@ -55,7 +54,7 @@ __PyInt__.prototype.__mul__ = function (other) {
 	} else if (other instanceof __PyFloat__) {
 		return new __PyFloat__ (this.x * other.x);
 	}
-	throw Error (`TypeError: unsupported operand type(s) for /:`)
+	throw Error (`TypeError: unsupported operand type(s) for *:`)
 }
 __PyInt__.prototype.__iadd__ = function (other) {return this.__add__ (other);}
 __PyInt__.prototype.__isub__ = function (other) {return this.__sub__ (other);}
@@ -374,7 +373,11 @@ __PyList__.prototype.__str__ = function () {
 	}
 	return (__PyStr__.__call__ (ret));
 }
-
+__PyList__.prototype.__iadd__ = function (l) {
+	if (l instanceof __PyList__) {
+		this.l = this.l.concat (l.l);
+	}
+}
 var BaseException = function (...args) {
 
 }
