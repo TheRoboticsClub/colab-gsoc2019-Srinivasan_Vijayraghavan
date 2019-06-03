@@ -69,6 +69,19 @@ class Visitor (ast.NodeVisitor):
 		self.ostream.write (')')
 		self.write_endline ()
 
+	def visit_Compare (self, node):
+		left, ops, comparators = node.left, node.ops, node.comparators
+		self.ostream.write ('__and__ (')
+		self.ostream.write ('(')
+		for op in ops:
+			self.visit (op)
+			self.ostream.write ('(')
+			self.visit (left)
+			self.ostream.write (', ')
+			self.visit (comparators[0])
+			comparators = comparators[1:]
+			self.ostream.write ('), ')
+		self.ostream.write (')')
 	def visit_Assign (self, node):
 		targets, value = node.targets, node.value
 		for target in targets:
@@ -82,6 +95,9 @@ class Visitor (ast.NodeVisitor):
 				self.visit (value)
 				self.ostream.write (')')
 			self.write_endline ()
+
+	def visit_Eq (self, _):
+		self.ostream.write ('__eq__')
 
 	def visit_AugAssign (self, node):
 		target, op, value = node.target, node.op, node.value
@@ -125,6 +141,23 @@ class Visitor (ast.NodeVisitor):
 			self.visit (node.slice)
 			self.ostream.write (')')
 
+	# Control Flow
+
+	def visit_If (self, node):
+		test, body, orelse = node.test, node.body, node.orelse
+		self.ostream.write ('if ( (')
+		self.visit (test)
+		self.ostream.write (').__bool__ () === True) {\n')
+		for stmt in body:
+			self.visit (stmt)
+		self.ostream.write ('}\n')
+		for elseif in orelse[:-1]:
+			self.ostream.write ('else ')
+			self.visit (elseif)
+		if (len (orelse) > 0):
+			self.ostream.write ('else {\n')
+			self.visit (orelse[-1])
+			self.ostream.write ('}\n')
 	def write_endline (self):
 		self.ostream.write (';\n')
 
