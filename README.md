@@ -2,6 +2,6 @@
 
 ## Usage
 ~~~
-python3 main.py test.py
+python3 build_runtime.py # Generates the runtime file 'runtime.js'.
+python3 main.py test.py # Generates __gen__.js
 ~~~
-Generates the file \__gen\__.js along with the runtime.
