@@ -71,7 +71,6 @@ class Visitor (ast.NodeVisitor):
 
 	def visit_Compare (self, node):
 		left, ops, comparators = node.left, node.ops, node.comparators
-		self.ostream.write ('__and__ (')
 		self.ostream.write ('(')
 		for op in ops:
 			self.visit (op)
@@ -79,22 +78,27 @@ class Visitor (ast.NodeVisitor):
 			self.visit (left)
 			self.ostream.write (', ')
 			self.visit (comparators[0])
+			left = comparators[0]
 			comparators = comparators[1:]
-			self.ostream.write ('), ')
+			self.ostream.write (')')
 		self.ostream.write (')')
 	def visit_Assign (self, node):
 		targets, value = node.targets, node.value
 		for target in targets:
-			if (not isinstance (target, ast.Subscript)):
-				self.ostream.write ('var ')
-				self.visit (target)
-				self.ostream.write (' = ')
-				self.visit (value)
+			if (isinstance (target, ast.Tuple)):
+				for n, v in zip (target.elts, value.elts):
+					self.visit (ast.Assign (targets=[n], value = v))
 			else:
-				self.visit (target)
-				self.visit (value)
-				self.ostream.write (')')
-			self.write_endline ()
+				if (not isinstance (target, ast.Subscript)):
+					self.ostream.write ('var ')
+					self.visit (target)
+					self.ostream.write (' = ')
+					self.visit (value)
+				else:
+					self.visit (target)
+					self.visit (value)
+					self.ostream.write (')')
+				self.write_endline ()
 
 	def visit_Eq (self, _):
 		self.ostream.write ('__eq__')
@@ -103,7 +107,7 @@ class Visitor (ast.NodeVisitor):
 		target, op, value = node.target, node.op, node.value
 		self.visit (target)
 		self.ostream.write (' = ')
-		self.visit (value)
+		self.visit (target)
 		self.ostream.write ('.')
 		self.aug = True
 		self.visit (op)
@@ -169,7 +173,7 @@ if __name__ == '__main__':
 	Visitor (f).visit (pt);
 
 	fp = open ('__gen__.js', 'w')
-	fr = open ('runtime.js', 'r')
+	fr = open ('runtime/runtime.js', 'r')
 	fp.write (fr.read())
 	fp.write ('\n//Translated code below\n')
 	fp.write (f.getvalue())
