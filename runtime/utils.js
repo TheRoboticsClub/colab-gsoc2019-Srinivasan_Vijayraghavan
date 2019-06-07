@@ -37,6 +37,10 @@ function __ge__ (a, b) {return a.__ge__ (b);}
 function __lt__ (a, b) {return a.__lt__ (b);}
 function __le__ (a, b) {return a.__le__ (b);}
 function __eq__ (a, b) {return a.__eq__ (b);}
+function __neq__ (a, b) {return a.__eq__ (b) === True ? False : True;}
+function __is__ (a, b) {return a === b ? True : False;}
+function __isnot__ (a, b) {return a !== b ? True : False;}
+
 function __and__ () {
 	for (let i = 0; i < arguments.length; i++) {
 		if (arguments[i].__bool__ () === False) {
