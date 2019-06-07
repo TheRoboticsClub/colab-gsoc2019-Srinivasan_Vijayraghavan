@@ -100,11 +100,10 @@ class Visitor (ast.NodeVisitor):
 					self.ostream.write (')')
 				self.write_endline ()
 
-	def visit_Eq (self, _):
-		self.ostream.write ('__eq__')
 
 	def visit_AugAssign (self, node):
 		target, op, value = node.target, node.op, node.value
+		self.ostream.write ('var ')
 		self.visit (target)
 		self.ostream.write (' = ')
 		self.visit (target)
@@ -125,6 +124,23 @@ class Visitor (ast.NodeVisitor):
 			self.visit (value)
 			self.ostream.write (', ')
 		self.ostream.write (')')
+
+	def visit_Eq (self, _):
+		self.ostream.write ('__eq__')
+	def visit_NotEq (self, _):
+		self.ostream.write ('__neq__')
+	def visit_Lt (self, _):
+		self.ostream.write ('__lt__')
+	def visit_LtE (self, _):
+		self.ostream.write ('__le__')
+	def visit_Gt (self, _):
+		self.ostream.write ('__gt__')
+	def visit_GtE (self, _):
+		self.ostream.write ('__ge__')
+	def visit_Is (self, _):
+		self.ostream.write ('__is__')
+	def visit_IsNot (self, _):
+		self.ostream.write ('__isnot__')
 
 	def visit_And (self, _):
 		self.ostream.write ('__and__')
@@ -162,18 +178,45 @@ class Visitor (ast.NodeVisitor):
 			self.ostream.write ('else {\n')
 			self.visit (orelse[-1])
 			self.ostream.write ('}\n')
+
+	def visit_While (self, node):
+		test, body = node.test, node.body
+		self.ostream.write ('while ( (')
+		self.visit (test)
+		self.ostream.write (').__bool__ () === True) {')
+
+		for stmt in body:
+			self.visit (stmt)
+
+		self.ostream.write ('};\n')
+
 	def write_endline (self):
 		self.ostream.write (';\n')
 
 if __name__ == '__main__':
-	assert (len (sys.argv) == 2)
-	f = open (sys.argv[1], 'r')
+	if (len (sys.argv) != 3):
+		print ('''Usage:
+		python3 main.py <filename>
+		''')
+		exit ()
+	try:
+		f = open (sys.argv[1], 'r')
+	except Exception as e:
+		print (f'\'{sys.argv[1]}\': No such file')
+		exit ()
 	pt = ast.parse (f.read ());
 	f = io.StringIO();
 	Visitor (f).visit (pt);
 
 	fp = open ('__gen__.js', 'w')
-	fr = open ('runtime/runtime.js', 'r')
+	try:
+		fr = open ('runtime.js', 'r')
+	except Exception as e:
+		print ('''usage:
+		python3 build_runtime.py
+		python3 main.py <file>
+		''')
+		exit ()
 	fp.write (fr.read())
 	fp.write ('\n//Translated code below\n')
 	fp.write (f.getvalue())

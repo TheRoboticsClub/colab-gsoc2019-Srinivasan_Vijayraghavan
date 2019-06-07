@@ -69,14 +69,10 @@ __PyInt__.prototype.__ge__ = function (other) {
 }
 __PyInt__.prototype.__gt__ = function (other) {
 	try {
+		console.log ("In gt\n");
 		return (this.x > __float__ (other).x) ? True : False;
 	} catch (e){
 		throw TypeError (`unsupported operand type(s) for '>'`);
-	}
-}
-__PyInt__.prototype.__leq__ = function (other) {
-	if (other instanceof __PyInt__ || other instanceof __PyFloat__) {
-		return (new __PyBool__ (this.x < other.x));
 	}
 }
 __PyInt__.prototype.__eq__ = function (other) {
