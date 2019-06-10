@@ -1,45 +1,66 @@
-# Week-1
+#Week-3
 
 ## Status/Delivarables
-- [x] Expressions
-	- int, float, str
-	- Arithmetic operations on int, float, str
-- [x] Setting up the AST visitor framework.
-- [x] Writing basic tests.
+- [ ] for and while Statements
+- [ ] Function Declaration and calls
 
 ## Approach
-Since python3 and JavaScript are very different semantically and there exists no direct translation of primitives such as int, float, str (in python3), one approach is to write the primitive classes in JavaScript corresponding to the primitives of python3 (PyInt, PyFloat, PyStr).
+The examples of constructs that is planned to be supported is put in the examples directory ('functions.py', 'for_statement.py', 'while_statement.py').
 
-And these classes in JavaScript must have the methods bound to the primitive types in python3 (methods such as \__int__, \__bool__, etc.).
+- while Statements consist of a condition whose truth value needs to be tested on each iteration. While loops are similar in working in both JavaScript and in python3. The following is an example of translation of while loops.
+~~~
+a = 20
+while (a > 12):
+	a -= 1
+~~~
+The above python3 snippet is translated in JavaScript to the following.
+~~~
+var a = new __PyInt__ (20);
+while (__gt__ (a, new __PyInt__ (12)).__bool__ () === True) {
+	a = __sub__ (a, new __PyInt__ (1));
+}
+~~~
 
-Coming to operators (==, +, -, etc.), the way python3 implements it internally is to replace all operator calls by method calls of objects.
-For example,
-```
-a, b = 1, 5
-a == b # Makes a call to a.__eq__ (b)
-a += 1 # Makes a call to a.__iadd__ (1)
-```
-There are several such methods that need to be implemented for the various operators that python3 supports.
-(\__eq__
-, \__lt__
-, \__le__
-, \__gt__
-, \__ge__, \__X__ (X = add, mul, sub, div))
+- for statements iterate over a the elements of any sequence (such as list, str, tuple, dict). Any sequence that is to be iterated with a for statement is expected to have an associated iterator. For example, lists have list_iterator which is accessed by calling l.\_\_iter\_\_(), where l is a list.
+for...in statements in python3 are just syntactic sugar over the usual for statemnts in languages like C++ or Java.
+Translation of for...in statements in python3 will require to have method for sequences (list, etc.) which returns an iterator object.
 
-The classes set up here will be a part of the larger runtime which is will grow as the support for python3 grows.
-The actual translation will involve walking the AST and performing the required translation. In the case of arithmetic expressions, the translation will involve the following.
-- Literals (int, float, str) are translated to corresponding objects in js (PyInt, PyFloat, PyStr).
-- l op r is translated to l.\__op__ (r).
+~~~
+for x in [1, 2, 3]:
+	print (x)
+~~~
 
-These primitive classes must later be bootstrapped when classes are implemented in weeks 5&6.
+~~~
+for (let it = [1, 2, 3].__iter__(), x = it.next();
+	it.done() === False; x = it.next()) {
+
+	print.__call__ (x);
+}
+~~~
+
+- Functions are more or less equivalent in python3 and JavaScript. For implementation purpose, instead of directly translating a python3 function object to a JavaScript function object, it is instead translated to the primitive \_\_PyFunction\_\_ which will make it more general for implementation.
+
+Scoping rules however are different in python3 and JavaScript.
+~~~
+def func ():
+	pass
+
+func ()
+~~~
+
+~~~
+var func = new __PyFunction__ (function () {});
+
+func.__call__ ();
+~~~
 
 ---
 
 # Week-2
 
 ## Status/Delivarables
-- [ ] Variable Declaration
-- [ ] Conditional Statements
+- [x] Variable Declaration
+- [x] Conditional Statements
 
 ## Approach
 Handling variables is tricky. In python3, there's no declaration of variables. You have to assign it.
@@ -124,3 +145,42 @@ if ((X).__bool__() === True) {
 ~~~
 True and False are objects of type \__PyBool\__. There exists only one instance of each in the implementation (runtime).
 In the absence of the \__bool\__ method, the \__len\__ method needs to be invoked.
+
+---
+
+# Week-1
+
+## Status/Delivarables
+- [x] Expressions
+	- int, float, str
+	- Arithmetic operations on int, float, str
+- [x] Setting up the AST visitor framework.
+- [x] Writing basic tests.
+
+## Approach
+Since python3 and JavaScript are very different semantically and there exists no direct translation of primitives such as int, float, str (in python3), one approach is to write the primitive classes in JavaScript corresponding to the primitives of python3 (PyInt, PyFloat, PyStr).
+
+And these classes in JavaScript must have the methods bound to the primitive types in python3 (methods such as \__int__, \__bool__, etc.).
+
+Coming to operators (==, +, -, etc.), the way python3 implements it internally is to replace all operator calls by method calls of objects.
+For example,
+```
+a, b = 1, 5
+a == b # Makes a call to a.__eq__ (b)
+a += 1 # Makes a call to a.__iadd__ (1)
+```
+There are several such methods that need to be implemented for the various operators that python3 supports.
+(\__eq__
+, \__lt__
+, \__le__
+, \__gt__
+, \__ge__, \__X__ (X = add, mul, sub, div))
+
+The classes set up here will be a part of the larger runtime which is will grow as the support for python3 grows.
+The actual translation will involve walking the AST and performing the required translation. In the case of arithmetic expressions, the translation will involve the following.
+- Literals (int, float, str) are translated to corresponding objects in js (PyInt, PyFloat, PyStr).
+- l op r is translated to l.\__op__ (r).
+
+These primitive classes must later be bootstrapped when classes are implemented in weeks 5&6.
+
+---
