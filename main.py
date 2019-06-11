@@ -6,6 +6,7 @@ class Visitor (ast.NodeVisitor):
 	def __init__ (self, ostream):
 		self.ostream = ostream
 		self.aug = False
+		self.in_exp = False
 	# Literals
 	def visit_Num (self, node):
 		if (isinstance (node.n, int)):
@@ -32,6 +33,19 @@ class Visitor (ast.NodeVisitor):
 			self.ostream.write (', ')
 		self.ostream.write ('])')
 	# Exprs
+
+	def visit_UnaryOp (self, node):
+		op, operand = node.op, node.operand
+		self.visit (op)
+		self.ostream.write (' (')
+		self.visit (operand)
+		self.ostream.write (')')
+
+	def visit_UAdd (self, node):
+		self.ostream.write ('__uadd__')
+	def visit_USub (self, node):
+		self.ostream.write ('__usub__')
+
 	def visit_BinOp (self, node):
 		left, op, right = node.left, node.op, node.right
 		self.ostream.write ('(')
@@ -42,6 +56,7 @@ class Visitor (ast.NodeVisitor):
 		self.visit (right)
 		self.ostream.write (')')
 		self.ostream.write (')')
+
 
 	def visit_Add (self, node):
 		self.ostream.write (f'__{"i" if self.aug else ""}add__')
@@ -61,15 +76,19 @@ class Visitor (ast.NodeVisitor):
 
 	def visit_Call (self, node):
 		func, args = node.func, node.args
+		print (f'func.id = {func.id}')
 		self.visit (func)
 		self.ostream.write ('.__call__')
 		self.ostream.write (' (')
 		for arg in args:
 			self.visit (arg)
+			self.ostream.write (', ')
 		self.ostream.write (')')
-		self.write_endline ()
+		if (not self.in_exp):
+			self.write_endline ()
 
 	def visit_Compare (self, node):
+		self.in_exp = True;
 		left, ops, comparators = node.left, node.ops, node.comparators
 		self.ostream.write ('(')
 		for op in ops:
@@ -82,6 +101,8 @@ class Visitor (ast.NodeVisitor):
 			comparators = comparators[1:]
 			self.ostream.write (')')
 		self.ostream.write (')')
+		self.in_exp = False;
+
 	def visit_Assign (self, node):
 		targets, value = node.targets, node.value
 		for target in targets:
@@ -166,7 +187,11 @@ class Visitor (ast.NodeVisitor):
 	def visit_If (self, node):
 		test, body, orelse = node.test, node.body, node.orelse
 		self.ostream.write ('if ( (')
+
+		self.in_exp = True
 		self.visit (test)
+		self.in_exp = False
+
 		self.ostream.write (').__bool__ () === True) {\n')
 		for stmt in body:
 			self.visit (stmt)
@@ -182,7 +207,11 @@ class Visitor (ast.NodeVisitor):
 	def visit_While (self, node):
 		test, body = node.test, node.body
 		self.ostream.write ('while ( (')
+
+		self.in_exp = True
 		self.visit (test)
+		self.in_exp = False
+
 		self.ostream.write (').__bool__ () === True) {')
 
 		for stmt in body:
@@ -190,11 +219,29 @@ class Visitor (ast.NodeVisitor):
 
 		self.ostream.write ('};\n')
 
+	def visit_For (self, node):
+		target, iter, body = node.target, node.iter, node.body
+		if (not isinstance (target, ast.Name)):
+			exit ('Complex for loops are not supported')
+
+		self.ostream.write (f'for (let {target.id} of ')
+
+		self.in_exp = True
+		self.visit (iter)
+		self.in_exp = False
+
+		self.ostream.write ('.__iter__()) {\n')
+		# self.ostream.write ('{\n')
+		for stmt in body:
+			self.visit (stmt)
+
+		self.ostream.write ('}\n')
+
 	def write_endline (self):
 		self.ostream.write (';\n')
 
 if __name__ == '__main__':
-	if (len (sys.argv) != 3):
+	if (len (sys.argv) != 2):
 		print ('''Usage:
 		python3 main.py <filename>
 		''')
