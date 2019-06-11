@@ -1,3 +1,15 @@
+function __uadd__ (a) {
+	if ('__pos__' in a) {
+		return a.__pos__ ();
+	}
+	throw Error (`TypeError: bad operand type for unary +:`);
+}
+function __usub__ (a) {
+	if ('__neg__' in a) {
+		return a.__neg__ ();
+	}
+	throw Error (`TypeError: bad operand type for unary -:`);
+}
 function __add__ (a, b) {
 	if ('__add__' in a) {
 		return a.__add__ (b);

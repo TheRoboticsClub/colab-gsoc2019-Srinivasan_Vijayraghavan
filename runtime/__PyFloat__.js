@@ -8,6 +8,10 @@ __PyFloat__.prototype.__int__ = function () {
 __PyFloat__.prototype.__float__ = function () {
 	return this;
 };
+__PyFloat__.prototype.__pos__ = function () {return this;};
+__PyFloat__.prototype.__neg__ = function () {
+	return (new __PyFloat__ (-this.x));
+};
 __PyFloat__.prototype.__add__ = function (other) {
 	if ('__float__' in other) {
 		var other = other.__float__ ();

@@ -8,6 +8,10 @@ __PyInt__.prototype.__int__ = function () {return this;}
 __PyInt__.prototype.__index__ = function () {return this;}
 __PyInt__.prototype.__float__ = function () {return (new __PyFloat__ (this.x));}
 __PyInt__.prototype.__bool__ = function () {this.x == 0 ? False : True;}
+__PyInt__.prototype.__pos__ = function () {return this;};
+__PyInt__.prototype.__neg__ = function () {
+	return (new __PyInt__ (-this.x));
+};
 __PyInt__.prototype.__add__ = function (other) {
 	if (other instanceof __PyInt__) {
 		return new __PyInt__ (this.x + other.x);
