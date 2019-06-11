@@ -41,3 +41,8 @@ __PyList__.prototype.__iadd__ = function (l) {
 	}
 	return this;
 }
+__PyList__.prototype.__iter__ = function * () {
+	for (let x of this.l) {
+		yield x;
+	}
+}

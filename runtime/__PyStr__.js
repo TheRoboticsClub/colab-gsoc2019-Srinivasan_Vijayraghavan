@@ -35,3 +35,8 @@ __PyStr__.prototype.__getitem__ = function (pos) {
 }
 __PyStr__.prototype.__iadd__ = function (other) {return this.__add__ (other);}
 __PyStr__.prototype.__imul__ = function (other) {return this.__mul__ (other);}
+__PyStr__.prototype.__iter__ = function * () {
+	for (let x of this.x) {
+		yield (new __PyStr__ (x));
+	}
+}
