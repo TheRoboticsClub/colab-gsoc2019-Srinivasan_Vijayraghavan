@@ -80,9 +80,14 @@ class Visitor (ast.NodeVisitor):
 		self.visit (func)
 		self.ostream.write ('.__call__')
 		self.ostream.write (' (')
+
+		prev_in_exp = self.in_exp
+		self.in_exp = True
 		for arg in args:
 			self.visit (arg)
 			self.ostream.write (', ')
+		self.in_exp = prev_in_exp
+		
 		self.ostream.write (')')
 		if (not self.in_exp):
 			self.write_endline ()
