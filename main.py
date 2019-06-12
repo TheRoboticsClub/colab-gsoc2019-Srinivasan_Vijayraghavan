@@ -7,6 +7,7 @@ class Visitor (ast.NodeVisitor):
 		self.ostream = ostream
 		self.aug = False
 		self.in_exp = False
+		self.global_vars = []
 	# Literals
 	def visit_Num (self, node):
 		if (isinstance (node.n, int)):
@@ -23,7 +24,7 @@ class Visitor (ast.NodeVisitor):
 		if (node.value == True or node.value == False):
 			self.ostream.write (f'{node.value}')
 		elif (node.value == None):
-			pass
+			self.ostream.write ('None')
 
 	def visit_List (self, node):
 		elts, ctx = node.elts, node.ctx
@@ -72,11 +73,10 @@ class Visitor (ast.NodeVisitor):
 
 	def visit_Name (self, node):
 		id = node.id
-		self.ostream.write (id)
+		self.ostream.write (f'__loadvar__ ({id})')
 
 	def visit_Call (self, node):
 		func, args = node.func, node.args
-		print (f'func.id = {func.id}')
 		self.visit (func)
 		self.ostream.write ('.__call__')
 		self.ostream.write (' (')
@@ -87,7 +87,7 @@ class Visitor (ast.NodeVisitor):
 			self.visit (arg)
 			self.ostream.write (', ')
 		self.in_exp = prev_in_exp
-		
+
 		self.ostream.write (')')
 		if (not self.in_exp):
 			self.write_endline ()
@@ -116,12 +116,13 @@ class Visitor (ast.NodeVisitor):
 					self.visit (ast.Assign (targets=[n], value = v))
 			else:
 				if (not isinstance (target, ast.Subscript)):
-					self.ostream.write ('var ')
-					self.visit (target)
+					if (target.id not in self.global_vars):
+						self.ostream.write ('var ')
+					self.ostream.write (target.id)
 					self.ostream.write (' = ')
 					self.visit (value)
 				else:
-					self.visit (target)
+					self.ostream.write (target.id)
 					self.visit (value)
 					self.ostream.write (')')
 				self.write_endline ()
@@ -129,9 +130,8 @@ class Visitor (ast.NodeVisitor):
 
 	def visit_AugAssign (self, node):
 		target, op, value = node.target, node.op, node.value
-		self.ostream.write ('var ')
-		self.visit (target)
-		self.ostream.write (' = ')
+		self.ostream.write ('var')
+		self.ostream.write (f' {target.id}= ')
 		self.visit (target)
 		self.ostream.write ('.')
 		self.aug = True
@@ -241,6 +241,48 @@ class Visitor (ast.NodeVisitor):
 			self.visit (stmt)
 
 		self.ostream.write ('}\n')
+
+
+	# FunctionDef
+	def visit_FunctionDef (self, node):
+		name, args, body = node.name, node.args, node.body
+		self.ostream.write (f'var {name}')
+		self.ostream.write (' = new __PyFunction__ (function (')
+		self.visit (args)
+		self.ostream.write (') {\n')
+
+		prev = self.global_vars.copy()
+
+		for stmt in body:
+			self.visit (stmt)
+		self.ostream.write ('return None;\n')
+		self.ostream.write ('});\n')
+
+		self.global_vars = prev
+
+	def visit_arguments (self, node):
+		for arg in node.args:
+			self.visit (arg)
+			self.ostream.write (', ')
+	def visit_arg (self, node):
+		arg = node.arg
+		self.ostream.write (arg)
+
+	def visit_Global (self, node):
+		for name in node.names:
+			self.global_vars.append (name)
+
+	def visit_Return (self, node):
+		value = node.value
+		prev = self.in_exp
+		self.in_exp = True
+		self.ostream.write ('return ')
+		self.visit (value)
+		self.in_exp = prev
+		self.write_endline ()
+
+	def visit_Pass (self, node):
+		pass
 
 	def write_endline (self):
 		self.ostream.write (';\n')

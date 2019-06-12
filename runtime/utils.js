@@ -75,3 +75,10 @@ function __getitem__ (l, i) {
 function __setitem__ (l, i, v) {
 	return l.__setitem__ (i, v);
 }
+
+function __loadvar__ (v) {
+	if (v === undefined) {
+		throw Error (`variable undeclared`);
+	}
+	return v;
+}

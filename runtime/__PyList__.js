@@ -35,6 +35,12 @@ __PyList__.prototype.__str__ = function () {
 	ret += ']'
 	return (__PyStr__.__call__ (ret));
 }
+__PyList__.prototype.__add__ = function (other) {
+	if (other instanceof __PyList__) {
+		return new __PyList__ (this.l.concat (other.l));
+	}
+	throw Error (`TypeError: unsupported operand type(s) for +:.`)
+}
 __PyList__.prototype.__iadd__ = function (l) {
 	if (l instanceof __PyList__) {
 		this.l = this.l.concat (l.l);
