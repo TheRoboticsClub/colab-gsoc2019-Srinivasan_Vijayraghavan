@@ -1,83 +1,199 @@
-# Week-3
+# PyOnBrowser
 
-## Status/Delivarables
+| Contents                                         |
+| ------------------------------------------------ |
+| 1. [Introduction](#Introduction)                 |
+| 2. [People Involved](#People_Involved)           |
+| 3. [Development Status](#Development_Status)     |
+| 4. [Weekly Documentation](#Weekly_Documentation) |
+
+<a name = "Introduction"/>
+
+## Introduction
+WebSim is a web-based robot simulator. It is used as a tool for learning robot programming. WebSim is currently programmable through JavaScript. This project aims to support programming the simulator in python3 by building a transpiler that targets JavaScript.
+
+<a name = "People_Involved"/>
+
+## People Involved
+- Gorka Guarduiola (paurea [at] gmail [dot] com) [GSoC Mentor]
+- Luis Roberto Morales (lr [dot] morales [dot] iglesias [at] gmail [dot] com) [GSoC Mentor]
+- Srinivasan Vijayraghavan (srinivasan [dot] vijayraghavan [at] iiitb [dot] org) [GSoC Student]
+
+<a name = "Development_Status"/>
+
+## Development Status
+
+### Phase-1
+
+| S.No | Construct               | Status |
+| ---- | ----------------------- | ----- |
+|  1   | Arithmetic expressions  | Done |
+|  2   | Variable declarations   | Done |
+|  3   | Conditional Statements  | Done |
+|  4   | While and For loops     | Done |
+|  5   | Functions               | In Progress |
+
+
+<a name = "Weekly_Documentation"/>
+
+## Weekly Documentation
+
+### Week-3
+
+#### Status/Delivarables
 - [ ] for and while Statements
 - [ ] Function Declaration and calls
 
-## Approach
-The examples of constructs that is planned to be supported is put in the examples directory ('functions.py', 'for_statement.py', 'while_statement.py').
+#### Approach
+The examples of constructs that is planned to be supported is put in the examples directory (*functions.py*, *for_statement.py*, *while_statement.py*).
 
-- while Statements consist of a condition whose truth value needs to be tested on each iteration. While loops are similar in working in both JavaScript and in python3. The following is an example of translation of while loops.
-~~~
+- *while* statements consist of a condition whose truth value needs to be tested on each iteration. They are similar in working in both JavaScript and in python3. The following is an example of translation of while loops.
+~~~python
 a = 20
 while (a > 12):
 	a -= 1
 ~~~
 The above python3 snippet is translated in JavaScript to the following.
-~~~
+~~~javascript
 var a = new __PyInt__ (20);
 while (__gt__ (a, new __PyInt__ (12)).__bool__ () === True) {
 	a = __sub__ (a, new __PyInt__ (1));
 }
 ~~~
 
-- for statements iterate over a the elements of any sequence (such as list, str, tuple, dict). Any sequence that is to be iterated with a for statement is expected to have an associated iterator. For example, lists have list_iterator which is accessed by calling l.\_\_iter\_\_(), where l is a list.
+- *for* statements iterate over a the elements of any sequence (such as list, str, tuple, dict). Any sequence that is to be iterated with a for statement is expected to have an associated iterator. For example, lists have list_iterator which is accessed by calling l.\_\_iter\_\_(), where l is a list.
 for...in statements in python3 are just syntactic sugar over the usual for statemnts in languages like C++ or Java.
-Translation of for...in statements in python3 will require to have method for sequences (list, etc.) which returns an iterator object.
+Translation of for...in statements in python3 will require to have method for sequences (list, etc.) which returns a generator that can be iterated using the for...of block in javascript
 
-~~~
+~~~python
 for x in [1, 2, 3]:
 	print (x)
 ~~~
 
-~~~
-for (let it = [1, 2, 3].__iter__(), x = it.next();
-	it.done() === False; x = it.next()) {
-
+~~~javascript
+for (let x of [1, 2, 3].__iter__()) {
 	print.__call__ (x);
+}
+~~~
+, where the *\_\_iter\_\_* method returns a generator object.
+~~~javascript
+__PyList__.prototype.__iter__ = function * () {
+	for (let x of this.array) {
+		yield x;
+	}
 }
 ~~~
 
 - Functions are more or less equivalent in python3 and JavaScript. For implementation purpose, instead of directly translating a python3 function object to a JavaScript function object, it is instead translated to the primitive \_\_PyFunction\_\_ which will make it more general for implementation.
+In python3, if a function does not return anything explicitly, a *None* object is returned. In JavaScript, an *undefined* is returned. To deal with this, the statement *return None;* is added to every function at the end.
+For ex,
+~~~python
+def lt (x, y):
+	if (x < y):
+		return True
+~~~
+The above snippet is translated to
+~~~javascript
+var lt = new __PyFunction__ (function (x, y) {
+	if (__lt__ (x, y)) {
+		return True;
+	}
+	return None;
+});
+~~~
+, where None is a constant defined in the file *\_\_PyNone\_\_.js*.
 
 Scoping rules however are different in python3 and JavaScript.
-~~~
+~~~python
+a = 20
+# Example 1
 def func ():
-	pass
+	print (a)
 
-func ()
+func () # prints 20
+
+# Example 2
+def func ():
+	print (a)
+	a = 10
+
+func () # Throws an UnBoundLocalError since there's a local variable named 'a' in the local scope and it is being accessed before its declaration.
+
+# Example 3
+def func ():
+	global a # The global statement is used to refer to the variable in the global scope. Any change to it in the current scope results in a change even in its global scope.
+	print (a)
+	a = 50
+func () # prints 20
+print (a) # prints 50
 ~~~
 
-~~~
-var func = new __PyFunction__ (function () {});
+Translation to JavaScript is however not straightforward. JavaScript differentiates between declaration of a variable and assignement to a variables. The programmer makes it explicits in the code.
+python3 however relies on the scope (either function scope or normal scope) to find out it a new variable needs to be declared or assigned to an existing one.
+~~~javascript
+var a = 20;
 
-func.__call__ ();
+// Example 1
+function func () {
+	console.log (a);
+}
+func (); // prints 20
+
+// Example 2
+function func () {
+	console.log (a);
+	var a = 10;
+}
+func (); // prints 'undefined'
+
+// Example 3
+function func () {
+	console.log (a);
+	a = 50;
+}
+func (); // prints 20
+console.log (a); // prints 50.
 ~~~
 
+In the Example 1, the variable *a* is actually referring to the one in the global scope. This works the same in JavaScript, the equivalent code takes the value from the global scope.
+
+For Example 2, there's a variable declaration and NOT an assignement after the print statement. This is because *a* is not referring to the global *a*. In spite of the variable being declared after the print statement, the JavaScript engine does not throw an error because of variable hoisting (it does a few passes of the code before actually compiling and *hoists* the variable declarations). So, a reference error is not thrown, but it evaluates to *undefined*. Therefore, it behaves differently from what python3 does. Therefore, when an *undefined* is seen, an error needs to be thrown. One way of going about this would be to wrap all name accesses in a funciton *\_\_loadvar\_\_* which does the following.
+~~~javascript
+function __loadvar__ (x) {
+	if (x === undefined) {
+		throw Error (`Undeclared Variable`)
+	}
+	return x;
+}
+~~~
+This way, we can overcome JavaScript hoisting.
+
+
+In the third example, the programmer explicity declares that the variable *a* is from the global scope. Hence, when *a* is assigned a value, it means that it is an assignement in JavaScript and not a declaration. So, the *var* keyword is not used.
 ---
 
-# Week-2
+### Week-2
 
-## Status/Delivarables
+#### Status/Delivarables
 - [x] Variable Declaration
 - [x] Conditional Statements
 
-## Approach
+#### Approach
 Handling variables is tricky. In python3, there's no declaration of variables. You have to assign it.
 For ex,
-~~~
+~~~python
 a = 1
 ~~~
 In the current scope, a will point to an integer object in memory.
 In JavaScript, variables can be declared without assignment (not in the case of 'const').
-~~~
+~~~javascript
 var a = 12;
 let b = 12;
 const c = 12;
 ~~~
 Variables declared with const cannot be changed. Differences in var and let are related to their scope.
 let is block scoped, whereas var is function scoped.
-~~~
+~~~javascript
 > if (true) {
 ... var a = 12;
 ... let b = 12;
@@ -90,13 +206,13 @@ ReferenceError: b is not defined
 ~~~
 var seems to be more pythonish than let. However, in python 'for loops', the target variables are block scoped. In JavaScript loops, if the target variable of the loop is declared with var, it ceases to be block scoped.
 Therefore, for translation of cases where the varibles might be block scoped, for instance in 'for loops', 'let' is used.
-~~~
+~~~python
 for x in range (1, 10):
 	# x is block scoped.
 	pass
 ~~~
 In JavaScript,
-~~~
+~~~javascript
 for (let i = 0; i < 10; i++) {
 	// i is block scoped.
 }
@@ -108,14 +224,14 @@ console.log (i); // i is accessible here.
 
 Scoping rules are praticularly important in functions.
 During the execution of functions in python3, the variables are looked up locally and NOT globally. In order to reference a variable globally, we need to use the global keyword, else an exception is thrown.
-~~~
+~~~python
 a = 12
 def f ():
 	global a #In order to reference 'a' from the global scope.
 	a += 12
 ~~~
 In JS, variables are looked up globally if not found locally.
-~~~
+~~~javascript
 var a = 12;
 function f () {
 	a += 12; // Updates the 'a' in the global scope.
@@ -133,12 +249,12 @@ JavaScript is however, a bit more crude in the way it evaluates the truth value.
 The problem is that the same function is used for many tasks such as addition, multiplication, etc. Simply overriding that function will not do much.
 
 Therefore the approach that needs to be taken is to make custom primitive conversions of python3 objects to JavaScript with the methods \__bool\__() included. This way, when a condition X is needed to be checked,
-~~~
+~~~python
 if (X):
 	stmt
 ~~~
 gets converted to
-~~~
+~~~javascript
 if ((X).__bool__() === True) {
 	translate (stmt);
 }
@@ -148,23 +264,23 @@ In the absence of the \__bool\__ method, the \__len\__ method needs to be invoke
 
 ---
 
-# Week-1
+### Week-1
 
-## Status/Delivarables
+#### Status/Delivarables
 - [x] Expressions
 	- int, float, str
 	- Arithmetic operations on int, float, str
 - [x] Setting up the AST visitor framework.
 - [x] Writing basic tests.
 
-## Approach
+#### Approach
 Since python3 and JavaScript are very different semantically and there exists no direct translation of primitives such as int, float, str (in python3), one approach is to write the primitive classes in JavaScript corresponding to the primitives of python3 (PyInt, PyFloat, PyStr).
 
 And these classes in JavaScript must have the methods bound to the primitive types in python3 (methods such as \__int__, \__bool__, etc.).
 
 Coming to operators (==, +, -, etc.), the way python3 implements it internally is to replace all operator calls by method calls of objects.
 For example,
-```
+```python
 a, b = 1, 5
 a == b # Makes a call to a.__eq__ (b)
 a += 1 # Makes a call to a.__iadd__ (1)
