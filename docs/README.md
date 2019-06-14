@@ -157,6 +157,30 @@ console.log (a); // prints 50.
 
 In the Example 1, the variable *a* is actually referring to the one in the global scope. This works the same in JavaScript, the equivalent code takes the value from the global scope.
 
+Variable hoisting is a problem when translating from python3 to JavaScript. A simple example is the following
+~~~python3
+print (a)
+a = 12
+~~~
+Translating to JavaScript is not straightforward because the declarations are hoisted in JavaScript. The following is **NOT** the correct translation.
+~~~javascript
+console.log (a); // undefined
+var a = 12;
+~~~
+To solve this problem, one way is to look up the variables in a dictionary. The correct translation of the previous python3 snippet would be the following.
+~~~javascript
+var __scope__ = {};
+var __accesschecker__ = new Proxy ({}, {
+	get (target, key, recv) {
+		if (!(key in target)) {
+			throw NameError (`name ${key} is not defined`);
+		}
+		return target[key];
+	}
+__scope__.__proto__ = __accesschecker__;
+console.log (__scope__.a);
+__scope__.a = 12;
+~~~
 For Example 2, there's a variable declaration and NOT an assignement after the print statement. This is because *a* is not referring to the global *a*. In spite of the variable being declared after the print statement, the JavaScript engine does not throw an error because of variable hoisting (it does a few passes of the code before actually compiling and *hoists* the variable declarations). So, a reference error is not thrown, but it evaluates to *undefined*. Therefore, it behaves differently from what python3 does. Therefore, when an *undefined* is seen, an error needs to be thrown. One way of going about this would be to wrap all name accesses in a funciton *\_\_loadvar\_\_* which does the following.
 ~~~javascript
 function __loadvar__ (x) {
@@ -170,6 +194,7 @@ This way, we can overcome JavaScript hoisting.
 
 
 In the third example, the programmer explicity declares that the variable *a* is from the global scope. Hence, when *a* is assigned a value, it means that it is an assignement in JavaScript and not a declaration. So, the *var* keyword is not used.
+
 ---
 
 ### Week-2
