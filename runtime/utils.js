@@ -38,11 +38,11 @@ function __index__ (i) {
 	if ('__index__' in i) {
 		return i.__index__ ();
 	}
-	throw Error (`AttributeError: '${i.__name__}' object has no attribute '__index__'`)
+	throw Error (`AttributeError: '${i.__class__.__name__}' object has no attribute '__index__'`)
 }
 function __float__ (i) {
 	if ('__float__' in i) {return i.__float__ ();}
-	throw Error (`AttributeError: '${i.__name__}' object has no attribute '__float__'`)
+	throw Error (`AttributeError: '${i.__class__.__name__}' object has no attribute '__float__'`)
 }
 function __gt__ (a, b) {return a.__gt__ (b);}
 function __ge__ (a, b) {return a.__ge__ (b);}
@@ -74,11 +74,4 @@ function __getitem__ (l, i) {
 }
 function __setitem__ (l, i, v) {
 	return l.__setitem__ (i, v);
-}
-
-function __loadvar__ (v) {
-	if (v === undefined) {
-		throw Error (`variable undeclared`);
-	}
-	return v;
 }

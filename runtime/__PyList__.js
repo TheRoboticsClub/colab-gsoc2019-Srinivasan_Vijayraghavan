@@ -1,6 +1,9 @@
 var __PyList__ = function (l) {
 	this.l = l;
+	this.__class__ = __PyList__;
 }
+__PyList__.__name__ = new __PyStr__ ('list');
+__PyList__.__str__ = function () {return (new __PyStr__ (`<class 'list'>`));}
 __PyList__.__call__ = function (l) {return new __PyList__ (l);}
 __PyList__.prototype.__getitem__ = function (i) {
 	try {
@@ -8,6 +11,7 @@ __PyList__.prototype.__getitem__ = function (i) {
 	} catch (e) {
 		throw Error (`TypeError: List indices must be integers`);
 	}
+	if (n < 0) {n += this.l.length;}
 	if (n >= 0 && n < this.l.length) {
 		return this.l[n];
 	}
@@ -19,6 +23,7 @@ __PyList__.prototype.__setitem__ = function (i, val) {
 	} catch (e) {
 		throw Error (`TypeError: List indices must be integers`);
 	}
+	if (n < 0) {n += this.l.length;}
 	if (n >= 0 && n < this.l.length) {
 		this.l[n] = val;
 	} else {

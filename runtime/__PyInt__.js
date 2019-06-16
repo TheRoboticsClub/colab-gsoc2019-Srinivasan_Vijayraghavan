@@ -4,6 +4,7 @@ var __PyInt__ = function (x) {
 }
 __PyInt__.__call__ = function (x) {return new __PyInt__ (x);}
 __PyInt__.__name__ = new __PyStr__ ('int');
+__PyInt__.__str__ = function () {return (new __PyStr__ (`<class 'int'>`));}
 __PyInt__.prototype.__int__ = function () {return this;}
 __PyInt__.prototype.__index__ = function () {return this;}
 __PyInt__.prototype.__float__ = function () {return (new __PyFloat__ (this.x));}
@@ -87,3 +88,5 @@ __PyInt__.prototype.__eq__ = function (other) {
 __PyInt__.prototype.__str__ = function () {
 	return (new __PyStr__ (this.x));
 }
+
+let __zero__ = new __PyInt__ (0);

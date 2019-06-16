@@ -3,6 +3,7 @@ var __PyStr__ = function (x) {
 }
 __PyStr__.__name__ = new __PyStr__ ('str');
 __PyStr__.__call__ = function (x) {return new __PyStr__ (x);}
+__PyStr__.__str__ = function () {return (new __PyStr__ (`<class 'str'>`));}
 __PyStr__.prototype.__str__ = function () {return this;}
 __PyStr__.prototype.toString = function () {return this.x;}
 __PyStr__.prototype.__add__ = function (other) {

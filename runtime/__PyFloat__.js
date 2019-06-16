@@ -2,6 +2,7 @@ var __PyFloat__ = function (x) {
 	this.x = parseFloat (x);
 }
 __PyFloat__.__call__ = function (x) {return new __PyFloat__ (x);}
+__PyFloat__.__str__ = function () {return (new __PyStr__ (`<class 'float'>`));}
 __PyFloat__.prototype.__int__ = function () {
 	return (new __PyInt__ (this.x));
 };

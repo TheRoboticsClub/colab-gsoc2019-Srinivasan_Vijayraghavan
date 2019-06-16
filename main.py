@@ -32,14 +32,15 @@ class Visitor (ast.NodeVisitor):
 		self.global_vars = []
 		self.scope = '__scope__'
 		self.indent_level = 0;
-		self.ostream.write ('''let __scope__ = new Proxy ({print : print}, {
+		self.ostream.write ('''let __global__ = new Proxy ({print : print, type : type}, {
 	get (target, key, recv) {
 		if (! (key in target)) {
-			throw Error (`NameError: name ${key} is not defined`);
+			throw Error (`NameError: name '${key}' is not defined`);
 		}
 		return target[key];
 	}
 });
+let __scope__ = __global__;
 ''')
 	# Literals
 	def visit_Num (self, node):
@@ -54,10 +55,7 @@ class Visitor (ast.NodeVisitor):
 		self.ostream.write (f'(new __PyStr__ (\'{node.s}\'))')
 
 	def visit_NameConstant (self, node):
-		if (node.value == True or node.value == False):
-			self.ostream.write (f'{node.value}')
-		elif (node.value == None):
-			self.ostream.write ('None')
+		self.ostream.write (f'{node.value}')
 
 	def visit_List (self, node):
 		elts, ctx = node.elts, node.ctx
@@ -66,8 +64,16 @@ class Visitor (ast.NodeVisitor):
 			self.visit (elt)
 			self.ostream.write (', ')
 		self.ostream.write ('])')
-	# Exprs
 
+	def visit_Tuple (self, node):
+		elts, ctx = node.elts, node.ctx
+		self.ostream.write ('new __PyTuple__ ([')
+		for elt in elts:
+			self.visit (elt)
+			self.ostream.write (', ')
+		self.ostream.write ('])')
+
+	# Exprs
 	def visit_UnaryOp (self, node):
 		op, operand = node.op, node.operand
 		self.visit (op)
@@ -110,6 +116,9 @@ class Visitor (ast.NodeVisitor):
 
 	def visit_Call (self, node):
 		func, args = node.func, node.args
+		if (not self.in_exp):
+			self.write ("")
+
 		self.visit (func)
 		self.ostream.write ('.__call__')
 		self.ostream.write (' (')
@@ -222,7 +231,7 @@ class Visitor (ast.NodeVisitor):
 
 	def visit_If (self, node):
 		test, body, orelse = node.test, node.body, node.orelse
-		self.ostream.write ('if ( (')
+		self.write ('if ( (')
 
 		self.in_exp = True
 		self.visit (test)
@@ -232,26 +241,26 @@ class Visitor (ast.NodeVisitor):
 
 		self.indent_level += 1
 		for stmt in body:
-			self.write_indent ()
 			self.visit (stmt)
 		self.indent_level -= 1
-		self.ostream.write ('}\n')
+		self.write ('}\n')
+
 		for elseif in orelse[:-1]:
-			self.ostream.write ('else ')
+			self.write ('else {\n')
 			self.indent_level += 1
 			self.visit (elseif)
 			self.indent_level -= 1
 
 		if (len (orelse) > 0):
-			self.ostream.write ('else {\n')
+			self.write ('else {\n')
 			self.indent_level += 1
 			self.visit (orelse[-1])
 			self.indent_level -= 1
-			self.ostream.write ('}\n')
+			self.write ('}\n')
 
 	def visit_While (self, node):
 		test, body = node.test, node.body
-		self.ostream.write ('while ( (')
+		self.write ('while ( (')
 
 		self.in_exp = True
 		self.visit (test)
@@ -261,18 +270,17 @@ class Visitor (ast.NodeVisitor):
 
 		self.indent_level += 1
 		for stmt in body:
-			self.write_indent ()
 			self.visit (stmt)
 		self.indent_level -= 1
 
-		self.ostream.write ('}\n')
+		self.write ('}\n')
 
 	def visit_For (self, node):
 		target, iter, body = node.target, node.iter, node.body
 		if (not isinstance (target, ast.Name)):
 			exit ('Complex for loops are not supported')
 
-		self.ostream.write ('for (')
+		self.write ('for (')
 		self.visit (target)
 		self.ostream.write (' of ')
 		self.in_exp = True
@@ -283,16 +291,15 @@ class Visitor (ast.NodeVisitor):
 
 		self.indent_level += 1
 		for stmt in body:
-			self.write_indent ()
 			self.visit (stmt)
 		self.indent_level -= 1
 
-		self.ostream.write ('}\n')
+		self.write ('}\n')
 
 	# FunctionDef
 	def visit_FunctionDef (self, node):
 		name, args, body = node.name, node.args, node.body
-		self.ostream.write (f'{self.scope}.{name}')
+		self.write (f'{self.scope}.{name}')
 		self.ostream.write (' = new __PyFunction__ (function (')
 		self.visit (args)
 
@@ -300,12 +307,12 @@ class Visitor (ast.NodeVisitor):
 		self.ostream.write (') {\n')
 
 		global_vars, local_vars = FuncVisitor (node).get_gl_vars ()
-		self.ostream.write ('let __globalvars__ = {')
+		self.write ('let __globalvars__ = {')
 		for lv in global_vars:
 			self.ostream.write (f"'{lv}' : true, ")
 		self.ostream.write ('};\n')
 
-		self.ostream.write ('let __localvars__ = {')
+		self.write ('let __localvars__ = {')
 		for lv in local_vars:
 			self.ostream.write (f"'{lv}' : true, ")
 		self.ostream.write ('};\n')
@@ -316,7 +323,7 @@ class Visitor (ast.NodeVisitor):
 				if (key in target) {
 					return target[key];
 				}
-				throw Error (`UnboundLocalError: name ${key} referenced before assginment`);
+				throw Error (`UnboundLocalError: name '${key}' referenced before assginment`);
 			} else if (! (key in target)) {
 				return target['__parscope__'][key];
 			}
@@ -324,7 +331,7 @@ class Visitor (ast.NodeVisitor):
 		},
 		set (target, key, value, recv) {
 			if (key in __globalvars__) {
-				target['__parscope__'][key] = value;
+				__global__[key] = value;
 			} else {
 				target[key] = value;
 			}
@@ -335,6 +342,7 @@ class Visitor (ast.NodeVisitor):
 
 		current_scope = self.scope
 		self.scope += '_'
+		self.write_args (args)
 		for stmt in body:
 			self.visit (stmt)
 		self.scope = current_scope
@@ -359,7 +367,7 @@ class Visitor (ast.NodeVisitor):
 		value = node.value
 		prev = self.in_exp
 		self.in_exp = True
-		self.ostream.write ('return ')
+		self.write ('return ')
 		self.visit (value)
 		self.in_exp = prev
 		self.write_endline ()
@@ -374,6 +382,10 @@ class Visitor (ast.NodeVisitor):
 	def write_indent (self):
 		for i in range (0, self.indent_level):
 			self.ostream.write ('\t')
+	def write_args (self, node):
+		for arg in node.args:
+			self.write (f'{self.scope}.{arg.arg} = {arg.arg}')
+			self.write_endline ()
 	def write_endline (self):
 		self.ostream.write (';\n')
 
