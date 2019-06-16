@@ -31,18 +31,25 @@ WebSim is a web-based robot simulator. It is used as a tool for learning robot p
 |  2   | Variable declarations   | Done |
 |  3   | Conditional Statements  | Done |
 |  4   | While and For loops     | Done |
-|  5   | Functions               | In Progress |
+|  5   | Functions               | Done |
+|  6   | Test Suite              | In Progress |
 
 
 <a name = "Weekly_Documentation"/>
 
 ## Weekly Documentation
 
+### Week-4
+
+#### Status/Deliverables
+- [ ] Test Suite for work done in weeks 1-3.
+	- Update the implementation if necessary.
+
 ### Week-3
 
-#### Status/Delivarables
-- [ ] for and while Statements
-- [ ] Function Declaration and calls
+#### Status/Deliverables
+- [x] for and while Statements
+- [x] Function Declaration and calls
 
 #### Approach
 The examples of constructs that is planned to be supported is put in the examples directory (*functions.py*, *for_statement.py*, *while_statement.py*).
