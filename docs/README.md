@@ -157,6 +157,7 @@ console.log (a); // prints 50.
 
 In the Example 1, the variable *a* is actually referring to the one in the global scope. This works the same in JavaScript, the equivalent code takes the value from the global scope.
 
+For Example 2, there's a variable declaration and NOT an assignement after the print statement. This is because *a* is not referring to the global *a*. In spite of the variable being declared after the print statement, the JavaScript engine does not throw an error because of variable hoisting (it does a few passes of the code before actually compiling and *hoists* the variable declarations).
 Variable hoisting is a problem when translating from python3 to JavaScript. A simple example is the following
 ~~~python3
 print (a)
@@ -169,28 +170,67 @@ var a = 12;
 ~~~
 To solve this problem, one way is to look up the variables in a dictionary. The correct translation of the previous python3 snippet would be the following.
 ~~~javascript
-var __scope__ = {};
-var __accesschecker__ = new Proxy ({}, {
+var __scope__ = new Proxy ({print : print}, {
 	get (target, key, recv) {
 		if (!(key in target)) {
 			throw NameError (`name ${key} is not defined`);
 		}
 		return target[key];
 	}
-__scope__.__proto__ = __accesschecker__;
-console.log (__scope__.a);
-__scope__.a = 12;
+__scope__.print.__call__ (__scope__.a);
+__scope__.a = new __PyInt__ (12);
 ~~~
-For Example 2, there's a variable declaration and NOT an assignement after the print statement. This is because *a* is not referring to the global *a*. In spite of the variable being declared after the print statement, the JavaScript engine does not throw an error because of variable hoisting (it does a few passes of the code before actually compiling and *hoists* the variable declarations). So, a reference error is not thrown, but it evaluates to *undefined*. Therefore, it behaves differently from what python3 does. Therefore, when an *undefined* is seen, an error needs to be thrown. One way of going about this would be to wrap all name accesses in a funciton *\_\_loadvar\_\_* which does the following.
+Inside functions, the variables must be mapped to their intended references. For example,
+~~~python
+a = 20
+b = 20
+def f ():
+	global a
+	a += 12 // refers to the global a.
+	b = 10 //  local variable b
+~~~
+To figure out the intended reference, we need to maintain an environmenet (mapping) for every scope. Also, the knowledge of the local variables and the global variables in the function comes handy.
 ~~~javascript
-function __loadvar__ (x) {
-	if (x === undefined) {
-		throw Error (`Undeclared Variable`)
+let __scope__ = new Proxy ({}, {
+	get (target, key, recv) {
+		if (! (key in target)) {
+			throw Error (`NameError: name ${key} is not defined`);
+		}
+		return target[key];
 	}
-	return x;
+});
+__scope__.a = 20;
+__scope__.b = 20;
+
+function f () {
+	let __globalvars__ = {'a' : true};
+	let __localvars__  = {'b' : true};
+	let __scope___ = new Proxy ({__parscope__ : __scope__}, {
+		get (target, key, recv) {
+			if (key in __localvars__) {
+				if (key in target) {
+					return target[key];
+				}
+				throw Error (`UnboundLocalError: name ${key} referenced before assginment`);
+			} else if (! (key in target)) {
+				return target['__parscope__'][key];
+			}
+			return target[key];
+		},
+		set (target, key, value, recv) {
+			if (key in __globalvars__) {
+				target['__parscope__'][key] = value;
+			} else {
+				target[key] = value;
+			}
+		}});
+	__scope___.a = __scope___.a.__iadd__ (new __PyInt__ (12));
+	__scope___.b = new __PyInt__ (20);
+	console.log (__scope___.b);
 }
 ~~~
-This way, we can overcome JavaScript hoisting.
+
+
 
 
 In the third example, the programmer explicity declares that the variable *a* is from the global scope. Hence, when *a* is assigned a value, it means that it is an assignement in JavaScript and not a declaration. So, the *var* keyword is not used.
