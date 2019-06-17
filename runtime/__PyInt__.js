@@ -2,7 +2,23 @@ var __PyInt__ = function (x) {
 	this.x = parseInt (x);
 	this.__class__ = __PyInt__;
 }
-__PyInt__.__call__ = function (x) {return new __PyInt__ (x);}
+__PyInt__.__call__ = function (x) {
+	if (x instanceof __PyInt__) {
+		return x;
+	} else if (x instanceof __PyStr__) {
+		let n = Number (x.x);
+		if (isNaN (n)) {
+			throw Error (`ValueError: invalid literal for int(): '${x.x}'`);
+		}
+		return (new __PyInt__ (n));
+	} else {
+		try {
+			return __int__ (x);
+		} catch (e) {
+			throw Error (`TypeError: int() argument must be a string, a bytes-like object or a number, not '${x.__class__.__name__.toString ()}'`);
+		}
+	}
+}
 __PyInt__.__name__ = new __PyStr__ ('int');
 __PyInt__.__str__ = function () {return (new __PyStr__ (`<class 'int'>`));}
 __PyInt__.prototype.__int__ = function () {return this;}

@@ -1,8 +1,15 @@
 var __PyStr__ = function (x) {
 	this.x = String (x);
+	this.__class__ = __PyStr__;
 }
 __PyStr__.__name__ = new __PyStr__ ('str');
-__PyStr__.__call__ = function (x) {return new __PyStr__ (x);}
+__PyStr__.__call__ = function (x) {
+	if (x instanceof __PyStr__) {
+		return x;
+	} else {
+		return x.__str__ ();
+	}
+}
 __PyStr__.__str__ = function () {return (new __PyStr__ (`<class 'str'>`));}
 __PyStr__.prototype.__str__ = function () {return this;}
 __PyStr__.prototype.toString = function () {return this.x;}

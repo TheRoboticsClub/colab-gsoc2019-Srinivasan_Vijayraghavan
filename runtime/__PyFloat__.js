@@ -1,7 +1,25 @@
 var __PyFloat__ = function (x) {
 	this.x = parseFloat (x);
+	this.__class__ = __PyFloat__;
 }
-__PyFloat__.__call__ = function (x) {return new __PyFloat__ (x);}
+__PyFloat__.__name__ = new __PyStr__ ('float');
+__PyFloat__.__call__ = function (x) {
+	if (x instanceof __PyFloat__) {
+		return x;
+	} else if (x instanceof __PyStr__) {
+		let n = Number (x);
+		if (isNaN (n)) {
+			throw Error (`ValueError: invalid literal for float(): '${x.x}'`);
+		}
+		return (new __PyFloat__ (n));
+	} else {
+		try {
+			return __float__ (x);
+		} catch (e) {
+			throw Error (`TypeError: float() argument must be a string, a bytes-like object or a number, not '${x.__class__.__name__.toString ()}'`);
+		}
+	}
+}
 __PyFloat__.__str__ = function () {return (new __PyStr__ (`<class 'float'>`));}
 __PyFloat__.prototype.__int__ = function () {
 	return (new __PyInt__ (this.x));

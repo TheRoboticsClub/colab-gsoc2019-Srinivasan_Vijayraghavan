@@ -2,6 +2,7 @@ var __PyBool__ = function (x) {
 	this.__class__ = __PyBool__;
 	this.x = Boolean (x);
 }
+__PyBool__.__name__ = new __PyStr__ ('bool');
 __PyBool__.__str__ = function () {return (new __PyStr__ (`<class 'bool'>`));}
 __PyBool__.prototype.__str__ = function () {
 	return (new __PyStr__ (this.x ? "True" : "False"));
