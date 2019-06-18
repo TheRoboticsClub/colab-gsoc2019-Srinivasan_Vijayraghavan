@@ -14,7 +14,7 @@ __PyRange__.__call__ = function () {
 		else if (x instanceof __PyInt__) {
 			return new __PyRange__ (0, x.x);
 		}
-		throw Error (`TypeError: '${x.__class__.__name__.toString ()}' object cannot be interpreted as an integer`);
+		throw new __PyTypeError__ (`'${x.__class__.__name__.toString ()}' object cannot be interpreted as an integer`);
 	}
 	else if (arguments.length == 2) {
 		let x = arguments[0], y = arguments[1];

@@ -38,20 +38,62 @@ __PyList__.prototype.__str__ = function () {
 		ret += ', '
 	}
 	ret += ']'
-	return (__PyStr__.__call__ (ret));
+	return (new __PyStr__ (ret));
 }
 __PyList__.prototype.__add__ = function (other) {
 	if (other instanceof __PyList__) {
 		return new __PyList__ (this.l.concat (other.l));
 	}
-	throw Error (`TypeError: unsupported operand type(s) for +:.`)
+	return __PyNotImplemented__;
 }
+__PyList__.prototype.__mul__ = function (other) {
+	if (other instanceof __PyInt__) {
+		let ret = [];
+		for (let x = 0; x < other.x; x++) {
+			ret = ret.concat (this.l);
+		}
+		return new __PyList__ (ret);
+	} else if (other instanceof __PyBool__) {
+		if (other === True) {
+			return (new __PyList__ (this.l));
+		} else {
+			return (new __PyList__ ([]));
+		}
+	}
+	throw new __PyTypeError__ (
+		new __PyStr__ (
+			`cant't muliply list by non-int of type '${other.__class__.__name__.toString ()}'`
+		)
+	);
+}
+
 __PyList__.prototype.__iadd__ = function (l) {
 	if (l instanceof __PyList__) {
 		this.l = this.l.concat (l.l);
+		return this;
 	}
-	return this;
+	return __PyNotImplemented__;
 }
+__PyList__.prototype.__imul__ = function (other) {
+	if (other instanceof __PyInt__) {
+		for (let x = 1; x < other.x; x++) {
+			this.l = this.l.concat (this.l);
+		}
+		return this;
+	} else if (other instanceof __PyBool__) {
+		if (other === False) {this.l = [];}
+		return this;
+	}
+	throw new __PyTypeError__ (
+		new __PyStr__ (
+			`cant't muliply list by non-int of type '${other.__class__.__name__.toString ()}'`
+		)
+	);
+}
+
+__PyList__.prototype.__radd__ = __PyList__.prototype.__add__;
+__PyList__.prototype.__rmul__ = __PyList__.prototype.__mul__;
+
 __PyList__.prototype.__iter__ = function * () {
 	for (let x of this.l) {
 		yield x;

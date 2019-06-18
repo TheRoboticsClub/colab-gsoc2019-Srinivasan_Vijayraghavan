@@ -32,18 +32,18 @@ __PyInt__.prototype.__neg__ = function () {
 __PyInt__.prototype.__add__ = function (other) {
 	if (other instanceof __PyInt__) {
 		return new __PyInt__ (this.x + other.x);
-	} else if (other instanceof __PyFloat__) {
-		return (new __PyFloat__ (this.x + other.x));
+	} else if (other instanceof __PyBool__) {
+		return (new __PyInt__ (this.x + ((other === True) ? 1 : 0)));
 	}
-	throw Error (`TypeError: unsupported operand type(s) for +:.`)
+	return __PyNotImplemented__;
 }
 __PyInt__.prototype.__sub__ = function (other) {
 	if (other instanceof __PyInt__) {
 		return new __PyInt__ (this.x - other.x);
-	} else if (other instanceof __PyFloat__) {
-		return (new __PyFloat__ (this.x - other.x));
+	} else if (other instanceof __PyBool__) {
+		return (new __PyInt__ (this.x - ((other === True) ? 1 : 0)));
 	}
-	throw Error (`TypeError: unsupported operand type(s) for -:`)
+	return __PyNotImplemented__;
 }
 __PyInt__.prototype.__div__ = function (other) {
 	if (other instanceof __PyInt__ || other instanceof __PyFloat__) {
@@ -52,15 +52,15 @@ __PyInt__.prototype.__div__ = function (other) {
 		}
 		return new __PyFloat__ (this.x / other.x);
 	}
-	throw Error (`TypeError: unsupported operand type(s) for /:`)
+	return __PyNotImplemented__;
 }
 __PyInt__.prototype.__mul__ = function (other) {
 	if (other instanceof __PyInt__ ) {
 		return new __PyInt__ (this.x * other.x);
-	} else if (other instanceof __PyFloat__) {
-		return new __PyFloat__ (this.x * other.x);
+	} else if (other instanceof __PyBool__) {
+		return (new __PyInt__ (this.x * ((other === True) ? 1 : 0)));
 	}
-	throw Error (`TypeError: unsupported operand type(s) for *:`)
+	return __PyNotImplemented__;
 }
 __PyInt__.prototype.__iadd__ = function (other) {return this.__add__ (other);}
 __PyInt__.prototype.__isub__ = function (other) {return this.__sub__ (other);}
@@ -68,41 +68,45 @@ __PyInt__.prototype.__idiv__ = function (other) {return this.__div__ (other);}
 __PyInt__.prototype.__imul__ = function (other) {return this.__mul__ (other);}
 
 __PyInt__.prototype.__le__ = function (other) {
-	try {
-		return (this.x <= (__float__ (other)).x) ? True : False;
-	} catch (e){
-		throw TypeError (`unsupported operand type(s) for '<='`);
+	if (other instanceof __PyInt__) {
+		return ((this.x <= other.x) ? True : False);
+	} else if (other instanceof __PyBool__) {
+		return ((this.x <= (other === True ? 1 : 0)) ? True : False);
 	}
+	return __PyNotImplemented__;
 }
 __PyInt__.prototype.__lt__ = function (other) {
-	try {
-		return (this.x < (__float__ (other)).x) ? True : False;
-	} catch (e){
-		throw TypeError (`unsupported operand type(s) for '<'`);
+	if (other instanceof __PyInt__) {
+		return ((this.x < other.x) ? True : False);
+	} else if (other instanceof __PyBool__) {
+		return ((this.x < (other === True ? 1 : 0)) ? True : False);
 	}
+	return __PyNotImplemented__;
 }
 __PyInt__.prototype.__ge__ = function (other) {
-	try {
-		return (this.x >= __float__ (other).x) ? True : False;
-	} catch (e){
-		throw TypeError (`unsupported operand type(s) for '>='`);
+	if (other instanceof __PyInt__) {
+		return ((this.x >= other.x) ? True : False);
+	} else if (other instanceof __PyBool__) {
+		return ((this.x >= (other === True ? 1 : 0)) ? True : False);
 	}
+	return __PyNotImplemented__;
 }
 __PyInt__.prototype.__gt__ = function (other) {
-	try {
-		console.log ("In gt\n");
-		return (this.x > __float__ (other).x) ? True : False;
-	} catch (e){
-		throw TypeError (`unsupported operand type(s) for '>'`);
+	if (other instanceof __PyInt__) {
+		return ((this.x > other.x) ? True : False);
+	} else if (other instanceof __PyBool__) {
+		return ((this.x > (other === True ? 1 : 0)) ? True : False);
 	}
+	return __PyNotImplemented__;
 }
 __PyInt__.prototype.__eq__ = function (other) {
-	if (other instanceof __PyInt__ || other instanceof __PyFloat__) {
-		return (this.x == other.x) ? True : False;
+	if (other instanceof __PyInt__) {
+		return ((this.x == other.x) ? True : False);
+	} else if (other instanceof __PyBool__) {
+		return ((this.x == (other === True ? 1 : 0)) ? True : False);
 	}
+	return __PyNotImplemented__;
 }
-__PyInt__.prototype.__str__ = function () {
-	return (new __PyStr__ (this.x));
-}
+__PyInt__.prototype.__str__ = function () {return (new __PyStr__ (this.x));}
 
 let __zero__ = new __PyInt__ (0);

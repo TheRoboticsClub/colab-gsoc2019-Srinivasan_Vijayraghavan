@@ -1,9 +1,14 @@
-var __PyFunction__ = function (f) {
+var __PyFunction__ = function (name, f) {
 	this.fvalue = f;
-	this.__name__ = new __PyStr__ (`function ${this.fvalue.name}`);
+	this.__name__ = name;
+	this.__class__ = __PyFunction__;
 }
-__PyFunction__.__call__ = function (f) {return new __PyFunction__ (f);}
+__PyFunction__.__call__ = function (name, f) {return new __PyFunction__ (f);}
+__PyFunction__.__str__ = function () {return (new __PyStr__ (`<class 'function'>`));}
 
+__PyFunction__.prototype.__str__ = function () {
+	return this.__name__;
+};
 __PyFunction__.prototype.__call__ = function () {
 	if (arguments.length != this.fvalue.length) {
 		throw Error (`Arity Mismatch`);

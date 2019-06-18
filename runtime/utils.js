@@ -12,33 +12,78 @@ function __usub__ (a) {
 }
 function __add__ (a, b) {
 	if ('__add__' in a) {
-		return a.__add__ (b);
+		let ret = a.__add__ (b);
+		if (ret === __PyNotImplemented__) {
+			if ('__radd__' in b) {
+				let ret = b.__radd__ (a);
+				if (ret !== __PyNotImplemented__) {
+					return ret;
+				}
+			}
+		} else {
+			return ret;
+		}
 	}
-	throw Error (`TypeError: unsupported operand type(s) for +:`);
+	throw __unsupportedbinaryop__ ('+', a, b);
 }
 function __sub__ (a, b) {
 	if ('__sub__' in a) {
-		return a.__sub__ (b);
+		let ret =  a.__sub__ (b);
+		if (ret === __PyNotImplemented__) {
+			if ('__rsub__' in b) {
+				let ret = b.__rsub__ (a);
+				if (ret !== __PyNotImplemented__) {
+					return ret;
+				}
+			}
+		} else {
+			return ret;
+		}
 	}
-	throw Error (`TypeError: unsupported operand type(s) for -:`);
+	throw __unsupportedbinaryop__ ('-', a, b);
 }
-function __mult__ (a, b) {
+function __mul__ (a, b) {
 	if ('__mul__' in a) {
-		return a.__mul__ (b);
+		let ret =  a.__mul__ (b);
+		if (ret === __PyNotImplemented__) {
+			if ('__rmul__' in b) {
+				let ret = b.__rmul__ (a);
+				if (ret !== __PyNotImplemented__) {
+					return ret;
+				}
+			}
+		} else {
+			return ret;
+		}
 	}
-	throw Error (`TypeError: unsupported operand type(s) for *:`);
+	throw __unsupportedbinaryop__ ('*', a, b);
 }
 function __div__ (a, b) {
 	if ('__div__' in a) {
-		return a.__div__ (b);
+		let ret =  a.__div__ (b);
+		if (ret === __PyNotImplemented__) {
+			if ('__rdiv__' in b) {
+				let ret = b.__rdiv__ (a);
+				if (ret !== __PyNotImplemented__) {
+					return ret;
+				}
+			}
+		} else {
+			return ret;
+		}
 	}
-	throw Error (`TypeError: unsupported operand type(s) for /:`);
+	throw __unsupportedbinaryop__ ('/', a, b);
 }
+
 function __index__ (i) {
 	if ('__index__' in i) {
 		return i.__index__ ();
 	}
 	throw Error (`AttributeError: '${i.__class__.__name__}' object has no attribute '__index__'`)
+}
+function __int__ (i) {
+	if ('__int__' in i) {return i.__int__ ();}
+	throw Error (`AttributeError: '${i.__class__.__name__}' object has no attribute '__float__'`)
 }
 function __float__ (i) {
 	if ('__float__' in i) {return i.__float__ ();}
@@ -74,4 +119,16 @@ function __getitem__ (l, i) {
 }
 function __setitem__ (l, i, v) {
 	return l.__setitem__ (i, v);
+}
+function __call__ (f) {
+    if ('__call__' in f) {
+        let func = f;
+        for (var x = 0, n = arguments.length-1; x < n; x++) {
+            arguments[x] = arguments[x+1];
+        };
+        arguments.length -= 1;
+    	delete arguments[x];
+        return func.__call__.apply (func, arguments);
+    }
+    throw Error (`TypeError: '${f.__class__.__name__.toString ()}' object is not callable`)
 }

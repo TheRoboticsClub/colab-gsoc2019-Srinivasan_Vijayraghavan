@@ -16,19 +16,20 @@ __PyStr__.prototype.toString = function () {return this.x;}
 __PyStr__.prototype.__add__ = function (other) {
 	if (other instanceof __PyStr__) {
 		return (new __PyStr__ (this.x.concat (other.x)));
-	} else {
-		try {
-			other.__radd__ (this);
-		} catch (e) {
-			print (e);
-		}
 	}
+	throw (new __PyTypeError__ (`must be str, not {other.__class__.__name__.toString ()}`));
 }
 __PyStr__.prototype.__mul__ = function (other) {
 	if (other instanceof __PyInt__) {
 		return (new __PyStr__ (this.x.repeat (other.x)));
+	} else if (other instanceof __PyBool__) {
+		if (other === False) {
+			return (new __PyStr__ (''))
+		} else {
+			return (new __PyStr__ (this.x));
+		}
 	}
-	throw Error (`TypeError: can't multiply sequence by non-int`);
+	throw (new __PyTypeError__ (`can't multiply sequence by non-int of type {other.__class__.__name__.toString ()}`));
 }
 __PyStr__.prototype.__len__ = function () {
 	return (new __PyInt__ (this.x.length));

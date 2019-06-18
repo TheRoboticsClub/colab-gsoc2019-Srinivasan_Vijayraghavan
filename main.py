@@ -32,10 +32,11 @@ class Visitor (ast.NodeVisitor):
 		self.global_vars = []
 		self.scope = '__scope__'
 		self.indent_level = 0;
-		self.ostream.write ('''let __global__ = new Proxy ({print : print, type : type}, {
+		self.ostream.write ('''let __global__ = new Proxy (
+		{int : __PyInt__, float : __PyFloat__, str : '__PyStr__', print : print, type : type, range : __PyRange__}, {
 	get (target, key, recv) {
 		if (! (key in target)) {
-			throw Error (`NameError: name '${key}' is not defined`);
+			throw new __PyNameError__ (`name '${key}' is not defined`);
 		}
 		return target[key];
 	}
@@ -105,7 +106,7 @@ let __scope__ = __global__;
 		self.ostream.write (f'__{"i" if self.aug else ""}sub__')
 
 	def visit_Mult (self, node):
-		self.ostream.write (f'__{"i" if self.aug else ""}mult__')
+		self.ostream.write (f'__{"i" if self.aug else ""}mul__')
 
 	def visit_Div (self, node):
 		self.ostream.write (f'__{"i" if self.aug else ""}div__')
@@ -120,8 +121,8 @@ let __scope__ = __global__;
 			self.write ("")
 
 		self.visit (func)
-		self.ostream.write ('.__call__')
-		self.ostream.write (' (')
+		self.ostream.write ('.__call__ (')
+		# self.ostream.write (', ');
 
 		prev_in_exp = self.in_exp
 		self.in_exp = True
@@ -300,7 +301,7 @@ let __scope__ = __global__;
 	def visit_FunctionDef (self, node):
 		name, args, body = node.name, node.args, node.body
 		self.write (f'{self.scope}.{name}')
-		self.ostream.write (' = new __PyFunction__ (function (')
+		self.ostream.write (f' = new __PyFunction__ (new __PyStr__ (\'{name}\'), function (')
 		self.visit (args)
 
 		# self.scope += ''
@@ -323,7 +324,7 @@ let __scope__ = __global__;
 				if (key in target) {
 					return target[key];
 				}
-				throw Error (`UnboundLocalError: name '${key}' referenced before assginment`);
+				throw new __PyUnboundLocalError__ (`name '${key}' referenced before assginment`);
 			} else if (! (key in target)) {
 				return target['__parscope__'][key];
 			}
@@ -414,7 +415,7 @@ if __name__ == '__main__':
 		''')
 		exit ()
 	fp.write (fr.read())
-	fp.write ('\n//Translated code below\n')
+	fp.write ('\n//Translated code below\ntry {')
 	fp.write (f.getvalue())
-
+	fp.write ('} catch (e) {\nif (e instanceof Error) {\nconsole.log (e);\n} else {\nprint.__call__ (e);\n}}')
 	print (f.getvalue ());

@@ -20,40 +20,32 @@ __PyBool__.prototype.__add__ = function (other) {
 		return __add__ (this.__int__ (), other.__int__());
 	} else if (other instanceof __PyInt__) {
 		return __add__ (this.__int__(), other);
-	} else if (other instanceof __PyFloat__) {
-		return __add__ (this.__float__ (), other);
 	}
-	throw Error (`TypeError: unsupported operand type(s) for +:`);
+	return __PyNotImplemented__;
 }
 __PyBool__.prototype.__sub__ = function (other) {
 	if (other instanceof __PyBool__) {
 		return __sub__ (this.__int__ (), other.__int__());
 	} else if (other instanceof __PyInt__) {
 		return __sub__ (this.__int__(), other);
-	} else if (other instanceof __PyFloat__) {
-		return __sub__ (this.__float__ (), other);
 	}
-	throw Error (`TypeError: unsupported operand type(s) for -:`);
+	return __PyNotImplemented__;
 }
 __PyBool__.prototype.__mul__ = function (other) {
 	if (other instanceof __PyBool__) {
 		return __mul__ (this.__int__ (), other.__int__());
 	} else if (other instanceof __PyInt__) {
 		return __mul__ (this.__int__(), other);
-	} else if (other instanceof __PyFloat__) {
-		return __mul__ (this.__float__ (), other);
 	}
-	throw Error (`TypeError: unsupported operand type(s) for *:`);
+	return __PyNotImplemented__;
 }
 __PyBool__.prototype.__div__ = function (other) {
 	if (other instanceof __PyBool__) {
 		return __div__ (this.__int__ (), other.__int__());
 	} else if (other instanceof __PyInt__) {
 		return __div__ (this.__int__(), other);
-	} else if (other instanceof __PyFloat__) {
-		return __div__ (this.__float__ (), other);
 	}
-	throw Error (`TypeError: unsupported operand type(s) for /:`);
+	return __PyNotImplemented__;
 }
 __PyBool__.prototype.__iadd__ = function (other) {return this.__add__ (other);}
 __PyBool__.prototype.__isub__ = function (other) {return this.__sub__ (other);}
