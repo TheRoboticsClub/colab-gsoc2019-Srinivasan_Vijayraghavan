@@ -13,13 +13,13 @@ __PyTuple__.prototype.__getitem__ = function (i) {
 	try {
 		var id = __index__ (i);
 	} catch (e) {
-		throw new TypeError (`tuple indices must be integers, not ${i.__class__.__name__.toString ()}`);
+		throw new TypeError (`tuple indices must be integers, not ${i.__class__.__name__}`);
 	}
-	if (__lt__ (id, __zero__) === True) {
+	if (__lt__ (id, __zero__) === __PyTrue__) {
 		id = id.__add__ (this.__len__ ());
 	}
-	if (__ge__ (id, this.__len__ ()) === True ||
-		__lt__ (id, __zero__) === True) {
+	if (__ge__ (id, this.__len__ ()) === __PyTrue__ ||
+		__lt__ (id, __zero__) === __PyTrue__) {
 		throw new IndexError (`tuple index out of range`);
 	}
 	return this.t[id.x];

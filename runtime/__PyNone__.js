@@ -1,6 +1,7 @@
 var __PyNoneType__ = function () {
 	this.__class__ = __PyNoneType__;
 }
+__PyNoneType__.__name__ = new __PyStr__ ('NoneType');
 __PyNoneType__.prototype.__str__ = function () {
 	return (new __PyStr__ ('None'))
 }
@@ -8,8 +9,8 @@ __PyNoneType__.prototype.__bool__ = function () {
 	return False;
 }
 __PyNoneType__.prototype.__eq__ = function (other) {
-	if (other === None) {return True;}
-	return False;
+	if (other === None) {return __PyTrue__;}
+	return __PyFalse__;
 }
 __PyNoneType__.prototype.__ne__ = function (other) {
 	return __eq__ (False, this.__eq__ (other));

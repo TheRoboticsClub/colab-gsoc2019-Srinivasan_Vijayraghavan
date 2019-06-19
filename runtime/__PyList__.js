@@ -9,7 +9,7 @@ __PyList__.prototype.__getitem__ = function (i) {
 	try {
 		var n = __index__ (i).x;
 	} catch (e) {
-		throw new TypeError (`list indices must be integers, not ${i.__class__.__name__.toString ()}`);
+		throw new TypeError (`list indices must be integers, not ${i.__class__.__name__}`);
 	}
 	if (n < 0) {n += this.l.length;}
 	if (n >= 0 && n < this.l.length) {
@@ -21,7 +21,7 @@ __PyList__.prototype.__setitem__ = function (i, val) {
 	try {
 		var n = __index__ (i).x;
 	} catch (e) {
-		throw new TypeError (`list indices must be integers, not ${i.__class__.__name__.toString ()}`);
+		throw new TypeError (`list indices must be integers, not ${i.__class__.__name__}`);
 	}
 	if (n < 0) {n += this.l.length;}
 	if (n >= 0 && n < this.l.length) {
@@ -54,14 +54,14 @@ __PyList__.prototype.__mul__ = function (other) {
 		}
 		return new __PyList__ (ret);
 	} else if (other instanceof __PyBool__) {
-		if (other === True) {
+		if (other === __PyTrue__) {
 			return (new __PyList__ (this.l));
 		} else {
 			return (new __PyList__ ([]));
 		}
 	}
 	throw new __PyTypeError__ (
-		`cant't muliply list by non-int of type '${other.__class__.__name__.toString ()}'`
+		`cant't muliply list by non-int of type '${other.__class__.__name__}'`
 	);
 }
 
@@ -70,7 +70,7 @@ __PyList__.prototype.__iadd__ = function (l) {
 		this.l = this.l.concat (l.l);
 		return this;
 	}
-	throw new __PyTypeError__ (`'${l.__class__.__name__.toString ()}' object is not iterable`);
+	throw new __PyTypeError__ (`'${l.__class__.__name__}' object is not iterable`);
 }
 __PyList__.prototype.__imul__ = function (other) {
 	if (other instanceof __PyInt__) {
@@ -79,11 +79,11 @@ __PyList__.prototype.__imul__ = function (other) {
 		}
 		return this;
 	} else if (other instanceof __PyBool__) {
-		if (other === False) {this.l = [];}
+		if (other === __PyFalse__) {this.l = [];}
 		return this;
 	}
 	throw new __PyTypeError__ (
-		`cant't muliply list by non-int of type '${other.__class__.__name__.toString ()}'`
+		`cant't muliply list by non-int of type '${other.__class__.__name__}'`
 	);
 }
 

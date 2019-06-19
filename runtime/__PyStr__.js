@@ -17,31 +17,31 @@ __PyStr__.prototype.__add__ = function (other) {
 	if (other instanceof __PyStr__) {
 		return (new __PyStr__ (this.x.concat (other.x)));
 	}
-	throw (new __PyTypeError__ (`must be str, not ${other.__class__.__name__.toString ()}`));
+	throw (new __PyTypeError__ (`must be str, not ${other.__class__.__name__}`));
 }
 __PyStr__.prototype.__mul__ = function (other) {
 	if (other instanceof __PyInt__) {
 		return (new __PyStr__ (this.x.repeat (other.x)));
 	} else if (other instanceof __PyBool__) {
-		if (other === False) {
+		if (other === __PyFalse__) {
 			return (new __PyStr__ (''))
 		} else {
 			return (new __PyStr__ (this.x));
 		}
 	}
-	throw (new __PyTypeError__ (`can't multiply sequence by non-int of type ${other.__class__.__name__.toString ()}`));
+	throw (new __PyTypeError__ (`can't multiply sequence by non-int of type ${other.__class__.__name__}`));
 }
 __PyStr__.prototype.__len__ = function () {
 	return (new __PyInt__ (this.x.length));
 }
-__PyStr__.prototype.__eq__ = function (other) {return (this.x == other.x) ? True : False;}
+__PyStr__.prototype.__eq__ = function (other) {return (this.x == other.x) ? __PyTrue__ : __PyFalse__;}
 __PyStr__.prototype.__getitem__ = function (pos) {
 	try {
 		var id = __index__ (pos);
 	} catch (e) {
-		throw new TypeError (`string indices must be integers, not ${i.__class__.__name__.toString ()}`);
+		throw new TypeError (`string indices must be integers, not ${i.__class__.__name__}`);
 	}
-	if (__ge__ (id, new __PyInt__ (0)) == True && __lt__ (id, this.__len__()) == True) {
+	if (__ge__ (id, new __PyInt__ (0)) == __PyTrue__ && __lt__ (id, this.__len__()) == __PyTrue__) {
 		return new __PyStr__ (this.x[id.x]);
 	}
 	throw new IndexError (`string index out of range`);

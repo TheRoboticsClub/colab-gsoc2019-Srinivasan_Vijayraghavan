@@ -14,24 +14,24 @@ __PyRange__.__call__ = function () {
 		else if (x instanceof __PyInt__) {
 			return new __PyRange__ (0, x.x);
 		}
-		throw new __PyTypeError__ (`'${x.__class__.__name__.toString ()}' object cannot be interpreted as an integer`);
+		throw new __PyTypeError__ (`'${x.__class__.__name__}' object cannot be interpreted as an integer`);
 	}
 	else if (arguments.length == 2) {
 		let x = arguments[0], y = arguments[1];
 		if (!(x instanceof __PyInt__)) {
-			throw Error (`TypeError: '${x.__class__.__name__.toString ()}' object cannot be interpreted as an integer`);
+			throw Error (`TypeError: '${x.__class__.__name__}' object cannot be interpreted as an integer`);
 		} else if (! (y instanceof __PyInt__)) {
-			throw Error (`TypeError: '${y.__class__.__name__.toString ()}' object cannot be interpreted as an integer`);
+			throw Error (`TypeError: '${y.__class__.__name__}' object cannot be interpreted as an integer`);
 		}
 		return (new __PyRange__ (x.x, y.x));
 	} else if (arguments.length == 3) {
 		let x = arguments[0], y = arguments[1], z = arguments[2];
 		if (!(x instanceof __PyInt__)) {
-			throw Error (`TypeError: '${x.__class__.__name__.toString ()}' object cannot be interpreted as an integer`);
+			throw Error (`TypeError: '${x.__class__.__name__}' object cannot be interpreted as an integer`);
 		} else if (! (y instanceof __PyInt__)) {
-			throw Error (`TypeError: '${y.__class__.__name__.toString ()}' object cannot be interpreted as an integer`);
+			throw Error (`TypeError: '${y.__class__.__name__}' object cannot be interpreted as an integer`);
 		} else if (! (z instanceof __PyInt__)) {
-			throw Error (`TypeError: '${z.__class__.__name__.toString ()}' object cannot be interpreted as an integer`);
+			throw Error (`TypeError: '${z.__class__.__name__}' object cannot be interpreted as an integer`);
 		}
 		return (new __PyRange__ (x.x, y.x, z.x));
 	}
@@ -42,7 +42,7 @@ __PyRange__.prototype.__iter__ = function * () {
 		yield (new __PyInt__ (x));
 	}
 }
-__PyRange__.prototype.__bool__  = function () {return True;}
+__PyRange__.prototype.__bool__  = function () {return __PyTrue__;}
 __PyRange__.prototype.__str__ = function () {
 	var s = `range(${this.start}, ${this.stop}, ${this.step})`;
 	return (new __PyStr__ (s));

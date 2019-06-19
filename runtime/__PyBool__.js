@@ -7,9 +7,9 @@ __PyBool__.__call__ = function (x) {
 		return x.__bool__ ();
 	} else if ('__len__' in x) {
 		let len = x.__len__ ();
-		return (len.x == 0 ? False : True);
+		return (len.x == 0 ? __PyFalse__ : __PyTrue__);
 	}
-	return False;
+	return __PyFalse__;
 }
 __PyBool__.__name__ = new __PyStr__ ('bool');
 __PyBool__.__str__ = function () {return (new __PyStr__ (`<class 'bool'>`));}
@@ -59,15 +59,15 @@ __PyBool__.prototype.__div__ = function (other) {
 
 __PyBool__.prototype.__and__ = function (other) {
 	var other = other.__bool__ ()
-	if (this.x && other.x) {return True;}
-	return False;
+	if (this.x && other.x) {return __PyTrue__;}
+	return __PyFalse__;
 }
 __PyBool__.prototype.__or__ = function (other) {
 	var other = other.__bool__ ();
-	if (this.x || other.x) {return True;}
-	return False;
+	if (this.x || other.x) {return __PyTrue__;}
+	return __PyFalse__;
 }
 
 
-const True = new __PyBool__ (true);
-const False = new __PyBool__ (false);
+const __PyTrue__ = new __PyBool__ (true);
+const __PyFalse__ = new __PyBool__ (false);

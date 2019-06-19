@@ -117,25 +117,25 @@ function __ge__ (a, b) {return a.__ge__ (b);}
 function __lt__ (a, b) {return a.__lt__ (b);}
 function __le__ (a, b) {return a.__le__ (b);}
 function __eq__ (a, b) {return a.__eq__ (b);}
-function __neq__ (a, b) {return a.__eq__ (b) === True ? False : True;}
-function __is__ (a, b) {return a === b ? True : False;}
-function __isnot__ (a, b) {return a !== b ? True : False;}
+function __neq__ (a, b) {return a.__eq__ (b) === __PyTrue__ ? __PyFalse__ : __PyTrue__;}
+function __is__ (a, b) {return a === b ? __PyTrue__ : __PyFalse__;}
+function __isnot__ (a, b) {return a !== b ? __PyTrue__ : __PyFalse__;}
 
 function __and__ () {
 	for (let i = 0; i < arguments.length; i++) {
-		if (arguments[i].__bool__ () === False) {
-			return False;
+		if (arguments[i].__bool__ () === __PyFalse__) {
+			return __PyFalse__;
 		}
 	}
-	return True;
+	return __PyTrue__;
 }
 function __or__ () {
 	for (let i = 0; i < arguments.length; i++) {
-		if (arguments[i].__bool__ () === True) {
-			return True;
+		if (arguments[i].__bool__ () === __PyTrue__) {
+			return __PyTrue__;
 		}
 	}
-	return False;
+	return __PyFalse__;
 }
 function __getitem__ (l, i) {
 	return l.__getitem__ (i);
@@ -153,5 +153,5 @@ function __call__ (f) {
     	delete arguments[x];
         return func.__call__.apply (func, arguments);
     }
-    throw Error (`TypeError: '${f.__class__.__name__.toString ()}' object is not callable`)
+    throw Error (`TypeError: '${f.__class__.__name__}' object is not callable`)
 }

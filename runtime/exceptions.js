@@ -9,7 +9,7 @@ __PyTypeError__.prototype.__str__ = function () {return this.msg;}
 
 function __unsupportedbinaryop__ (op, a, b) {
 	return (new __PyTypeError__ (
-		`unsupported operand type(s) for ${op}: '${a.__class__.__name__.toString ()}' and '${b.__class__.__name__.toString ()}'`
+		`unsupported operand type(s) for ${op}: '${a.__class__.__name__}' and '${b.__class__.__name__}'`
 	));
 }
 
