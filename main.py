@@ -1,6 +1,8 @@
 import ast
 import sys
 import io
+import os
+import argparse
 
 class FuncVisitor (ast.NodeVisitor):
 	def __init__ (self, node):
@@ -33,7 +35,7 @@ class Visitor (ast.NodeVisitor):
 		self.scope = '__scope__'
 		self.indent_level = 0;
 		self.ostream.write ('''let __global__ = new Proxy (
-		{int : __PyInt__, float : __PyFloat__, str : '__PyStr__', print : print, type : type, range : __PyRange__}, {
+		{int : __PyInt__, float : __PyFloat__, bool : __PyBool__, str : __PyStr__, print : print, type : type, range : __PyRange__}, {
 	get (target, key, recv) {
 		if (! (key in target)) {
 			throw new __PyNameError__ (`name '${key}' is not defined`);
@@ -78,16 +80,20 @@ let __scope__ = __global__;
 	def visit_UnaryOp (self, node):
 		op, operand = node.op, node.operand
 		self.visit (op)
+		prev = self.in_exp
+		self.in_exp = True
 		self.ostream.write (' (')
 		self.visit (operand)
 		self.ostream.write (')')
-
+		self.in_exp = prev
 	def visit_UAdd (self, node):
 		self.ostream.write ('__uadd__')
 	def visit_USub (self, node):
 		self.ostream.write ('__usub__')
 
 	def visit_BinOp (self, node):
+		prev = self.in_exp
+		self.in_exp = True
 		left, op, right = node.left, node.op, node.right
 		self.ostream.write ('(')
 		self.visit (op)
@@ -97,7 +103,7 @@ let __scope__ = __global__;
 		self.visit (right)
 		self.ostream.write (')')
 		self.ostream.write (')')
-
+		self.in_exp = prev
 
 	def visit_Add (self, node):
 		self.ostream.write (f'__{"i" if self.aug else ""}add__')
@@ -173,12 +179,13 @@ let __scope__ = __global__;
 		target, op, value = node.target, node.op, node.value
 		self.visit (target)
 		self.ostream.write (' = ')
-		self.visit (target)
-		self.ostream.write ('.')
+		prev = self.aug
 		self.aug = True
 		self.visit (op)
-		self.aug = False
+		self.aug = prev
 		self.ostream.write (' (')
+		self.visit (target)
+		self.ostream.write (', ')
 		self.visit (value)
 		self.ostream.write (')')
 		self.write_endline()
@@ -347,7 +354,7 @@ let __scope__ = __global__;
 		for stmt in body:
 			self.visit (stmt)
 		self.scope = current_scope
-		self.ostream.write ('return None;\n')
+		self.ostream.write ('return __PyNone__;\n')
 		self.ostream.write ('});\n')
 
 		self.global_vars = prev
@@ -391,13 +398,12 @@ let __scope__ = __global__;
 		self.ostream.write (';\n')
 
 if __name__ == '__main__':
-	if (len (sys.argv) != 2):
-		print ('''Usage:
-		python3 main.py <filename>
-		''')
-		exit ()
+	parser = argparse.ArgumentParser ()
+	parser.add_argument ('inputfile', help = 'name of the input python file')
+	parser.add_argument ('outfile', help = 'name of the output js file')
+	args = parser.parse_args ()
 	try:
-		f = open (sys.argv[1], 'r')
+		f = open (args.inputfile, 'r')
 	except Exception as e:
 		print (f'\'{sys.argv[1]}\': No such file')
 		exit ()
@@ -405,15 +411,13 @@ if __name__ == '__main__':
 	f = io.StringIO();
 	Visitor (f).visit (pt);
 
-	fp = open ('__gen__.js', 'w')
+	fp = open (args.outfile, 'w')
 	try:
 		fr = open ('runtime.js', 'r')
 	except Exception as e:
-		print ('''usage:
-		python3 build_runtime.py
-		python3 main.py <file>
-		''')
-		exit ()
+		os.system ('python3 build_runtime.py')
+		fr = open ('runtime.js', 'r')
+
 	fp.write (fr.read())
 	fp.write ('\n//Translated code below\ntry {')
 	fp.write (f.getvalue())

@@ -1,7 +1,7 @@
 // <builtin print>
 var print = new __PyFunction__ (new __PyStr__ ('print'), function (x) {
 	console.log (x.__str__().toString ());
-	return None;
+	return __PyNone__;
 });
 
 var range = new __PyFunction__ (new __PyStr__ ('range'), function (start, end, step) {

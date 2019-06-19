@@ -74,7 +74,30 @@ function __div__ (a, b) {
 	}
 	throw __unsupportedbinaryop__ ('/', a, b);
 }
-
+function __iadd__ (a, b) {
+	if ('__iadd__' in a) {
+		return a.__iadd__ (b);
+	}
+	return __add__ (a, b);
+}
+function __imul__ (a, b) {
+	if ('__imul__' in a) {
+		return a.__imul__ (b);
+	}
+	return __mul__ (a, b);
+}
+function __isub__ (a, b) {
+	if ('__isub__' in a) {
+		return a.__isub__ (b);
+	}
+	return __sub__ (a, b);
+}
+function __idiv__ (a, b) {
+	if ('__idiv__' in a) {
+		return a.__idiv__ (b);
+	}
+	return __div__ (a, b);
+}
 function __index__ (i) {
 	if ('__index__' in i) {
 		return i.__index__ ();

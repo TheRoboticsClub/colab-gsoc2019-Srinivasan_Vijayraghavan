@@ -8,14 +8,14 @@ __PyInt__.__call__ = function (x) {
 	} else if (x instanceof __PyStr__) {
 		let n = Number (x.x);
 		if (isNaN (n)) {
-			throw Error (`ValueError: invalid literal for int(): '${x.x}'`);
+			throw new __PyValueError__ (`invalid literal for int(): '${x.x}'`);
 		}
 		return (new __PyInt__ (n));
 	} else {
 		try {
 			return __int__ (x);
 		} catch (e) {
-			throw Error (`TypeError: int() argument must be a string, a bytes-like object or a number, not '${x.__class__.__name__.toString ()}'`);
+			throw new __PyTypeError__ (`int() argument must be a string, a bytes-like object or a number, not '${x.__class__.__name__.toString ()}'`);
 		}
 	}
 }
@@ -62,10 +62,6 @@ __PyInt__.prototype.__mul__ = function (other) {
 	}
 	return __PyNotImplemented__;
 }
-__PyInt__.prototype.__iadd__ = function (other) {return this.__add__ (other);}
-__PyInt__.prototype.__isub__ = function (other) {return this.__sub__ (other);}
-__PyInt__.prototype.__idiv__ = function (other) {return this.__div__ (other);}
-__PyInt__.prototype.__imul__ = function (other) {return this.__mul__ (other);}
 
 __PyInt__.prototype.__le__ = function (other) {
 	if (other instanceof __PyInt__) {

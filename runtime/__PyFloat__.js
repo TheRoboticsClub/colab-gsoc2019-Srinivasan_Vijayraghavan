@@ -8,16 +8,16 @@ __PyFloat__.__call__ = function (x) {
 	if (x instanceof __PyFloat__) {
 		return x;
 	} else if (x instanceof __PyStr__) {
-		let n = Number (x);
+		let n = Number (x.x);
 		if (isNaN (n)) {
-			throw Error (`ValueError: invalid literal for float(): '${x.x}'`);
+			throw new __PyValueError__ (`could not convert string to float: '${x.x}'`);
 		}
 		return (new __PyFloat__ (n));
 	} else {
 		try {
 			return __float__ (x);
 		} catch (e) {
-			throw Error (`TypeError: float() argument must be a string, a bytes-like object or a number, not '${x.__class__.__name__.toString ()}'`);
+			throw new __PyTypeError__ (`float() argument must be a string, a bytes-like object or a number, not '${x.__class__.__name__.toString ()}'`);
 		}
 	}
 }
@@ -74,11 +74,6 @@ __PyFloat__.prototype.__radd__ = __PyFloat__.prototype.__add__;
 __PyFloat__.prototype.__rsub__ = __PyFloat__.prototype.__sub__;
 __PyFloat__.prototype.__rmul__ = __PyFloat__.prototype.__mul__;
 __PyFloat__.prototype.__rdiv__ = __PyFloat__.prototype.__div__;
-
-__PyFloat__.prototype.__iadd__ = function (other) {return this.__add__ (other);}
-__PyFloat__.prototype.__isub__ = function (other) {return this.__sub__ (other);}
-__PyFloat__.prototype.__idiv__ = function (other) {return this.__div__ (other);}
-__PyFloat__.prototype.__imul__ = function (other) {return this.__mul__ (other);}
 
 __PyFloat__.prototype.__le__ = function (other) {
 	if (other instanceof __PyFloat__

@@ -13,14 +13,14 @@ __PyTuple__.prototype.__getitem__ = function (i) {
 	try {
 		var id = __index__ (i);
 	} catch (e) {
-		throw Error (`TypeError: tuple indices must be integers or slices`);
+		throw new TypeError (`tuple indices must be integers, not ${i.__class__.__name__.toString ()}`);
 	}
 	if (__lt__ (id, __zero__) === True) {
-		id = id.__iadd__ (this.__len__ ());
+		id = id.__add__ (this.__len__ ());
 	}
 	if (__ge__ (id, this.__len__ ()) === True ||
 		__lt__ (id, __zero__) === True) {
-		throw Error (`IndexError: tuple index out of range`);
+		throw new IndexError (`tuple index out of range`);
 	}
 	return this.t[id.x];
 }
@@ -28,13 +28,7 @@ __PyTuple__.prototype.__add__ = function (other) {
 	if (other instanceof __PyTuple__) {
 		return (new __PyTuple__ (this.t.concat (other.t)));
 	}
-	throw (`TypeError: can only concatenate tuple (not "${other.__class__.__name__}") to tuple`)
-}
-__PyTuple__.prototype.__iadd__ = function (other) {
-	if (other instanceof __PyTuple__) {
-		return this.__add__ (other);
-	}
-	throw (`TypeError: can only concatenate tuple (not "${other.__class__.__name__}") to tuple`)
+	throw new __PyTypeError__ (`can only concatenate tuple (not "${other.__class__.__name__}") to tuple`)
 }
 __PyTuple__.prototype.__str__ = function () {
 	let ret = '('

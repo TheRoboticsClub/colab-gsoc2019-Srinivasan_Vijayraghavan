@@ -2,6 +2,15 @@ var __PyBool__ = function (x) {
 	this.__class__ = __PyBool__;
 	this.x = Boolean (x);
 }
+__PyBool__.__call__ = function (x) {
+	if ('__bool__' in x) {
+		return x.__bool__ ();
+	} else if ('__len__' in x) {
+		let len = x.__len__ ();
+		return (len.x == 0 ? False : True);
+	}
+	return False;
+}
 __PyBool__.__name__ = new __PyStr__ ('bool');
 __PyBool__.__str__ = function () {return (new __PyStr__ (`<class 'bool'>`));}
 __PyBool__.prototype.__str__ = function () {
@@ -47,10 +56,6 @@ __PyBool__.prototype.__div__ = function (other) {
 	}
 	return __PyNotImplemented__;
 }
-__PyBool__.prototype.__iadd__ = function (other) {return this.__add__ (other);}
-__PyBool__.prototype.__isub__ = function (other) {return this.__sub__ (other);}
-__PyBool__.prototype.__idiv__ = function (other) {return this.__div__ (other);}
-__PyBool__.prototype.__imul__ = function (other) {return this.__mul__ (other);}
 
 __PyBool__.prototype.__and__ = function (other) {
 	var other = other.__bool__ ()

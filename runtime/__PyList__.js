@@ -9,25 +9,25 @@ __PyList__.prototype.__getitem__ = function (i) {
 	try {
 		var n = __index__ (i).x;
 	} catch (e) {
-		throw Error (`TypeError: List indices must be integers`);
+		throw new TypeError (`list indices must be integers, not ${i.__class__.__name__.toString ()}`);
 	}
 	if (n < 0) {n += this.l.length;}
 	if (n >= 0 && n < this.l.length) {
 		return this.l[n];
 	}
-	throw Error (`IndexError: list index out of range`);
+	throw new IndexError (`list index out of range`);
 }
 __PyList__.prototype.__setitem__ = function (i, val) {
 	try {
 		var n = __index__ (i).x;
 	} catch (e) {
-		throw Error (`TypeError: List indices must be integers`);
+		throw new TypeError (`list indices must be integers, not ${i.__class__.__name__.toString ()}`);
 	}
 	if (n < 0) {n += this.l.length;}
 	if (n >= 0 && n < this.l.length) {
 		this.l[n] = val;
 	} else {
-		throw Error (`IndexError: list index out of range`);
+		throw new IndexError (`list index out of range`);
 	}
 }
 __PyList__.prototype.__len__ = function () {return new __PyInt__ (this.l.length);}
@@ -61,9 +61,7 @@ __PyList__.prototype.__mul__ = function (other) {
 		}
 	}
 	throw new __PyTypeError__ (
-		new __PyStr__ (
-			`cant't muliply list by non-int of type '${other.__class__.__name__.toString ()}'`
-		)
+		`cant't muliply list by non-int of type '${other.__class__.__name__.toString ()}'`
 	);
 }
 
@@ -72,7 +70,7 @@ __PyList__.prototype.__iadd__ = function (l) {
 		this.l = this.l.concat (l.l);
 		return this;
 	}
-	return __PyNotImplemented__;
+	throw new __PyTypeError__ (`'${l.__class__.__name__.toString ()}' object is not iterable`);
 }
 __PyList__.prototype.__imul__ = function (other) {
 	if (other instanceof __PyInt__) {
@@ -85,9 +83,7 @@ __PyList__.prototype.__imul__ = function (other) {
 		return this;
 	}
 	throw new __PyTypeError__ (
-		new __PyStr__ (
-			`cant't muliply list by non-int of type '${other.__class__.__name__.toString ()}'`
-		)
+		`cant't muliply list by non-int of type '${other.__class__.__name__.toString ()}'`
 	);
 }
 

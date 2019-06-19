@@ -27,9 +27,31 @@ __PyNameError__.prototype.__str__ = function () {return this.msg;}
 
 var __PyUnboundLocalError__ = function (msg) {
 	this.__class__ = __PyUnboundLocalError__;
-	this.msg = (new __PyStr__ (`NameError: ${msg}`));
+	this.msg = (new __PyStr__ (`UnboundLocalError: ${msg}`));
 }
 __PyUnboundLocalError__.__str__ = function () {return (new __PyStr__ (`<class 'UnboundLocalError'>`));}
-__PyUnboundLocalError__.__name__ = new __PyStr__ ('TypeError');
+__PyUnboundLocalError__.__name__ = new __PyStr__ ('UnboundLocalError');
 __PyUnboundLocalError__.__call__ = function (msg) {return new __PyUnboundLocalError__ (msg);}
 __PyUnboundLocalError__.prototype.__str__ = function () {return this.msg;}
+
+
+
+var __PyIndexError__ = function (msg) {
+	this.__class__ = __PyIndexError__;
+	this.msg = (new __PyStr__ (`IndexError: ${msg}`));
+}
+__PyIndexError__.__str__ = function () {return (new __PyStr__ (`<class 'IndexError'>`));}
+__PyIndexError__.__name__ = new __PyStr__ ('IndexError');
+__PyIndexError__.__call__ = function (msg) {return new __PyIndexError__ (msg);}
+__PyIndexError__.prototype.__str__ = function () {return this.msg;}
+
+
+
+var __PyValueError__ = function (msg) {
+	this.__class__ = __PyValueError__;
+	this.msg = (new __PyStr__ (`ValueError: ${msg}`));
+}
+__PyValueError__.__str__ = function () {return (new __PyStr__ (`<class 'ValueError'>`));}
+__PyValueError__.__name__ = new __PyStr__ ('ValueError');
+__PyValueError__.__call__ = function (msg) {return new __PyValueError__ (msg);}
+__PyValueError__.prototype.__str__ = function () {return this.msg;}
