@@ -6,11 +6,10 @@ __PyList__.__name__ = new __PyStr__ ('list');
 __PyList__.__str__ = function () {return (new __PyStr__ (`<class 'list'>`));}
 __PyList__.__call__ = function (l) {return new __PyList__ (l);}
 __PyList__.prototype.__getitem__ = function (i) {
-	try {
-		var n = __index__ (i).x;
-	} catch (e) {
+	if (!(i instanceof __PyInt__)) {
 		throw new TypeError (`list indices must be integers, not ${i.__class__.__name__}`);
 	}
+	var n = i.x;
 	if (n < 0) {n += this.l.length;}
 	if (n >= 0 && n < this.l.length) {
 		return this.l[n];
@@ -18,11 +17,10 @@ __PyList__.prototype.__getitem__ = function (i) {
 	throw new IndexError (`list index out of range`);
 }
 __PyList__.prototype.__setitem__ = function (i, val) {
-	try {
-		var n = __index__ (i).x;
-	} catch (e) {
+	if (!(i instanceof __PyInt__)) {
 		throw new TypeError (`list indices must be integers, not ${i.__class__.__name__}`);
 	}
+	var n = i.x;
 	if (n < 0) {n += this.l.length;}
 	if (n >= 0 && n < this.l.length) {
 		this.l[n] = val;
@@ -54,12 +52,6 @@ __PyList__.prototype.__mul__ = function (other) {
 			ret = ret.concat (this.l);
 		}
 		return new __PyList__ (ret);
-	} else if (other instanceof __PyBool__) {
-		if (other === __PyTrue__) {
-			return (new __PyList__ (this.l));
-		} else {
-			return (new __PyList__ ([]));
-		}
 	}
 	throw new __PyTypeError__ (
 		`cant't muliply list by non-int of type '${other.__class__.__name__}'`
@@ -78,9 +70,6 @@ __PyList__.prototype.__imul__ = function (other) {
 		for (let x = 1; x < other.x; x++) {
 			this.l = this.l.concat (this.l);
 		}
-		return this;
-	} else if (other instanceof __PyBool__) {
-		if (other === __PyFalse__) {this.l = [];}
 		return this;
 	}
 	throw new __PyTypeError__ (
