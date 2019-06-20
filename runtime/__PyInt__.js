@@ -26,22 +26,27 @@ __PyInt__.prototype.__index__ = function () {return this;}
 __PyInt__.prototype.__float__ = function () {return (new __PyFloat__ (this.x));}
 __PyInt__.prototype.__bool__ = function () {this.x == 0 ? __PyFalse__ : __PyTrue__;}
 __PyInt__.prototype.__pos__ = function () {return this;};
-__PyInt__.prototype.__neg__ = function () {
-	return (new __PyInt__ (-this.x));
-};
+__PyInt__.prototype.__neg__ = function () {return (new __PyInt__ (-this.x));};
+
+__PyInt__.prototype.__mod__ = function (other) {
+	if (other instanceof __PyInt__) {
+		let ret = this.x % other.x;
+		if (isNaN (ret)) {
+			throw new __PyZeroDivisionError__ (`integer division or modulo by zero`)
+		}
+		return new __PyInt__ (ret);
+	}
+	return __PyNotImplemented__;
+}
 __PyInt__.prototype.__add__ = function (other) {
 	if (other instanceof __PyInt__) {
 		return new __PyInt__ (this.x + other.x);
-	} else if (other instanceof __PyBool__) {
-		return (new __PyInt__ (this.x + ((other === __PyTrue__) ? 1 : 0)));
 	}
 	return __PyNotImplemented__;
 }
 __PyInt__.prototype.__sub__ = function (other) {
 	if (other instanceof __PyInt__) {
 		return new __PyInt__ (this.x - other.x);
-	} else if (other instanceof __PyBool__) {
-		return (new __PyInt__ (this.x - ((other === __PyTrue__) ? 1 : 0)));
 	}
 	return __PyNotImplemented__;
 }
@@ -57,8 +62,6 @@ __PyInt__.prototype.__div__ = function (other) {
 __PyInt__.prototype.__mul__ = function (other) {
 	if (other instanceof __PyInt__ ) {
 		return new __PyInt__ (this.x * other.x);
-	} else if (other instanceof __PyBool__) {
-		return (new __PyInt__ (this.x * ((other === __PyTrue__) ? 1 : 0)));
 	}
 	return __PyNotImplemented__;
 }
@@ -66,43 +69,34 @@ __PyInt__.prototype.__mul__ = function (other) {
 __PyInt__.prototype.__le__ = function (other) {
 	if (other instanceof __PyInt__) {
 		return ((this.x <= other.x) ? __PyTrue__ : __PyFalse__);
-	} else if (other instanceof __PyBool__) {
-		return ((this.x <= (other === __PyTrue__ ? 1 : 0)) ? __PyTrue__ : __PyFalse__);
 	}
 	return __PyNotImplemented__;
 }
 __PyInt__.prototype.__lt__ = function (other) {
 	if (other instanceof __PyInt__) {
 		return ((this.x < other.x) ? __PyTrue__ : __PyFalse__);
-	} else if (other instanceof __PyBool__) {
-		return ((this.x < (other === __PyTrue__ ? 1 : 0)) ? __PyTrue__ : __PyFalse__);
 	}
 	return __PyNotImplemented__;
 }
 __PyInt__.prototype.__ge__ = function (other) {
 	if (other instanceof __PyInt__) {
 		return ((this.x >= other.x) ? __PyTrue__ : __PyFalse__);
-	} else if (other instanceof __PyBool__) {
-		return ((this.x >= (other === __PyTrue__ ? 1 : 0)) ? __PyTrue__ : __PyFalse__);
 	}
 	return __PyNotImplemented__;
 }
 __PyInt__.prototype.__gt__ = function (other) {
 	if (other instanceof __PyInt__) {
 		return ((this.x > other.x) ? __PyTrue__ : __PyFalse__);
-	} else if (other instanceof __PyBool__) {
-		return ((this.x > (other === __PyTrue__ ? 1 : 0)) ? __PyTrue__ : __PyFalse__);
 	}
 	return __PyNotImplemented__;
 }
 __PyInt__.prototype.__eq__ = function (other) {
 	if (other instanceof __PyInt__) {
 		return ((this.x == other.x) ? __PyTrue__ : __PyFalse__);
-	} else if (other instanceof __PyBool__) {
-		return ((this.x == (other === __PyTrue__ ? 1 : 0)) ? __PyTrue__ : __PyFalse__);
 	}
 	return __PyNotImplemented__;
 }
 __PyInt__.prototype.__str__ = function () {return (new __PyStr__ (this.x));}
 
 let __zero__ = new __PyInt__ (0);
+let __one__ = new __PyInt__ (1);

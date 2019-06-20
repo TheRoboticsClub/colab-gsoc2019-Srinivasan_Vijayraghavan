@@ -33,10 +33,11 @@ __PyList__.prototype.__setitem__ = function (i, val) {
 __PyList__.prototype.__len__ = function () {return new __PyInt__ (this.l.length);}
 __PyList__.prototype.__str__ = function () {
 	var ret = '[';
-	for (let i = 0; i < this.l.length; i++) {
+	for (let i = 0; i < this.l.length - 1; i++) {
 		ret += this.l[i].__str__ ().toString ();
 		ret += ', '
 	}
+	ret += this.l[this.l.length - 1].__str__ ().toString ();
 	ret += ']'
 	return (new __PyStr__ (ret));
 }

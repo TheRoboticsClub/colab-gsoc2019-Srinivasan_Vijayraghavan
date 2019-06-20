@@ -12,6 +12,12 @@ var type = new __PyFunction__ (new __PyStr__ ('type'), function (x) {
 	return (x.__class__);
 });
 
+var len = new __PyFunction__ (new __PyStr__ ('len'), function (x) {
+	if ('__len__' in x) {
+		return x.__len__ ();
+	}
+	throw new __PyTypeError__ (`TypeError: object of type '${x.__class__.__name__}' has no len()`)
+});
 var __PyNotImplementedType__ = function () {
 	this.__class__ = __PyNotImplementedType__;
 	this.__name__ = new __PyStr__ ('NotImplemented');

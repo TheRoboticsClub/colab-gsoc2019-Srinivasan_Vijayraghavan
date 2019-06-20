@@ -1,7 +1,9 @@
 var __PyBool__ = function (x) {
+	__PyInt__.call (this, x);
 	this.__class__ = __PyBool__;
-	this.x = Boolean (x);
 }
+__PyBool__.prototype = Object.create (__PyInt__.prototype);
+
 __PyBool__.__call__ = function (x) {
 	if ('__bool__' in x) {
 		return x.__bool__ ();
@@ -21,53 +23,17 @@ __PyBool__.prototype.__int__ = function () {
 }
 __PyBool__.prototype.__bool__ = function () {return this;}
 __PyBool__.prototype.__index__ = function () {return this.__int__();}
-__PyBool__.prototype.__float__ = function () {
-	return this.x ? (new __PyFloat__ (1)) : (new __PyFloat__ (0));
-}
-__PyBool__.prototype.__add__ = function (other) {
-	if (other instanceof __PyBool__) {
-		return __add__ (this.__int__ (), other.__int__());
-	} else if (other instanceof __PyInt__) {
-		return __add__ (this.__int__(), other);
-	}
-	return __PyNotImplemented__;
-}
-__PyBool__.prototype.__sub__ = function (other) {
-	if (other instanceof __PyBool__) {
-		return __sub__ (this.__int__ (), other.__int__());
-	} else if (other instanceof __PyInt__) {
-		return __sub__ (this.__int__(), other);
-	}
-	return __PyNotImplemented__;
-}
-__PyBool__.prototype.__mul__ = function (other) {
-	if (other instanceof __PyBool__) {
-		return __mul__ (this.__int__ (), other.__int__());
-	} else if (other instanceof __PyInt__) {
-		return __mul__ (this.__int__(), other);
-	}
-	return __PyNotImplemented__;
-}
-__PyBool__.prototype.__div__ = function (other) {
-	if (other instanceof __PyBool__) {
-		return __div__ (this.__int__ (), other.__int__());
-	} else if (other instanceof __PyInt__) {
-		return __div__ (this.__int__(), other);
-	}
-	return __PyNotImplemented__;
-}
 
 __PyBool__.prototype.__and__ = function (other) {
 	var other = other.__bool__ ()
-	if (this.x && other.x) {return __PyTrue__;}
-	return __PyFalse__;
+	return __getbool__ (this.x && other.x);
 }
 __PyBool__.prototype.__or__ = function (other) {
 	var other = other.__bool__ ();
-	if (this.x || other.x) {return __PyTrue__;}
-	return __PyFalse__;
+	return __getbool__ (this.x || other.x);
 }
 
+function __getbool__ (x) {return (x == true) ? __PyTrue__ : __PyFalse__;}
 
-const __PyTrue__ = new __PyBool__ (true);
-const __PyFalse__ = new __PyBool__ (false);
+const __PyTrue__ = new __PyBool__ (1);
+const __PyFalse__ = new __PyBool__ (0);
