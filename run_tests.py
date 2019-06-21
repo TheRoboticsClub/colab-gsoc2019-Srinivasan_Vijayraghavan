@@ -65,6 +65,12 @@ class ExprTest (unittest.TestCase):
 						expected += str (x+y) + '\n'
 		self.assertEqual (output, expected)
 
+	def test_scope (self):
+		output = self.get_transpiler_output ('tests/test_scope.py')
+		expected = '''UnboundLocalError: name 'x' referenced before assginment
+'''
+		self.assertEqual (output, expected)
+
 if __name__ == '__main__':
 	try:
 		runtime_txt = open ('runtime.js', 'r').read ()
