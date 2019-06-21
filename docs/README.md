@@ -45,6 +45,13 @@ WebSim is a web-based robot simulator. It is used as a tool for learning robot p
 - [ ] Test Suite for work done in weeks 1-3.
 	- Update the implementation if necessary.
 
+This week involved mostly adding minor improvements (more exceptions, bug fixes) and adding a test suite.
+The main difficulty was tracing the cause of the bug once it had been found. This was mainly because the transpiler produces unreadable code. One way to get around this would be to add line numbers in the generated file corresponding to the original python file. This would boost productivity by getting the exact line which has been translated.
+
+I had updated the test suite from Week-1. In Week-1, I was testing for the generated program with the correct program. This however is a very primitive way of testing and it soon broke when the variable declaration strategy changed in Week-3 (i.e, using scopes).
+After a discussion with my mentors, they had suggested me to use behaviour-based tests which is more robust.
+Each test case is passed into the transpiler and the generated JS code is run to get the output which is then matched with the correct output (i.e, matching the python3 spec).
+
 ### Week-3
 
 #### Status/Deliverables
