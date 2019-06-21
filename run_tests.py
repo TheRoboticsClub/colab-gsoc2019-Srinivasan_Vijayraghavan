@@ -1,0 +1,61 @@
+import unittest
+import io, os
+import ast
+from main import Visitor
+from test.support import run_unittest, check_syntax_error, check_warnings
+
+
+runtime_txt = file_stream = None
+
+class ExprTest (unittest.TestCase):
+
+	def get_stream (self, exp):
+		f = io.StringIO();
+		pt = ast.parse (exp)
+		Visitor (f).visit (pt)
+		return f
+
+	def get_transpiler_output (self, filename):
+		os.system (f'python3 main.py {filename} __transpiled__.js')
+		os.system ('js __transpiled__.js > __transpiled__.txt')
+		output_stream = open ('__transpiled__.txt', 'r')
+		output = output_stream.read ()
+		output_stream.close ()
+		return output
+
+	def test_expr (self):
+		output = self.get_transpiler_output ('tests/test_expr.py')
+		expected = '''126.2
+'''
+		self.assertEqual (output, expected)
+
+	def test_conditional (self):
+		output = self.get_transpiler_output ('tests/test_conditional.py')
+		expected = '''a = 1, b = 2, c = 3
+'''
+		self.assertEqual (output, expected)
+
+	def test_global (self):
+		output = self.get_transpiler_output ('tests/test_global.py')
+		expected = '''22
+[1, 2, 3, 6]
+'''
+		self.assertEqual (output, expected)
+
+	def test_list (self):
+		output = self.get_transpiler_output ('tests/test_list.py')
+		expected = '''[1, 2, 3]
+[1, 2, 3, 4]
+4
+'''
+		self.assertEqual (output, expected)
+
+	def test_assignment (self):
+		output = self.get_transpiler_output ('tests/test_assignment.py')
+		expected = 'UnboundLocalError: name \'x\' referenced before assginment\n'
+		self.assertEqual (output, expected)
+
+if __name__ == '__main__':
+	runtime_txt = open ('runtime.js', 'r').read ()
+	file_stream = open ('__test__.txt', 'w')
+	unittest.main ()
