@@ -55,7 +55,22 @@ class ExprTest (unittest.TestCase):
 		expected = 'UnboundLocalError: name \'x\' referenced before assginment\n'
 		self.assertEqual (output, expected)
 
+	def test_for (self):
+		output = self.get_transpiler_output ('tests/test_for.py')
+		expected = ''
+		for x in range (10):
+			for y in range (10):
+				for z in range (-5, 5):
+					if (z > 0 and (x + y) % z == 0):
+						expected += str (x+y) + '\n'
+		self.assertEqual (output, expected)
+
 if __name__ == '__main__':
-	runtime_txt = open ('runtime.js', 'r').read ()
+	try:
+		runtime_txt = open ('runtime.js', 'r').read ()
+	except:
+		os.system ('python3 build_runtime.py')
+		runtime_txt = open ('runtime.js', 'r').read ()
+
 	file_stream = open ('__test__.txt', 'w')
 	unittest.main ()

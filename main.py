@@ -203,7 +203,7 @@ let __scope__ = __global__;
 				self.ostream.write (' || ')
 
 		self.ostream.write ('(')
-		self.visit (value)
+		self.visit (values[-1])
 		self.ostream.write (').__bool__ () === __PyTrue__')
 
 		self.ostream.write (')')
