@@ -68,31 +68,31 @@ __PyInt__.prototype.__mul__ = function (other) {
 
 __PyInt__.prototype.__le__ = function (other) {
 	if (other instanceof __PyInt__) {
-		return ((this.x <= other.x) ? __PyTrue__ : __PyFalse__);
+		return __getbool__ (this.x <= other.x);
 	}
 	return __PyNotImplemented__;
 }
 __PyInt__.prototype.__lt__ = function (other) {
 	if (other instanceof __PyInt__) {
-		return ((this.x < other.x) ? __PyTrue__ : __PyFalse__);
+		return __getbool__ (this.x < other.x)
 	}
 	return __PyNotImplemented__;
 }
 __PyInt__.prototype.__ge__ = function (other) {
 	if (other instanceof __PyInt__) {
-		return ((this.x >= other.x) ? __PyTrue__ : __PyFalse__);
+		return __getbool__ (this.x >= other.x)
 	}
 	return __PyNotImplemented__;
 }
 __PyInt__.prototype.__gt__ = function (other) {
 	if (other instanceof __PyInt__) {
-		return ((this.x > other.x) ? __PyTrue__ : __PyFalse__);
+		return __getbool__ (this.x > other.x)
 	}
 	return __PyNotImplemented__;
 }
 __PyInt__.prototype.__eq__ = function (other) {
 	if (other instanceof __PyInt__) {
-		return ((this.x == other.x) ? __PyTrue__ : __PyFalse__);
+		return __getbool__ (this.x == other.x);
 	}
 	return __PyNotImplemented__;
 }

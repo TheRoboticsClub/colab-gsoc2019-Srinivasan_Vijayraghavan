@@ -55,3 +55,14 @@ __PyValueError__.__str__ = function () {return (new __PyStr__ (`<class 'ValueErr
 __PyValueError__.__name__ = new __PyStr__ ('ValueError');
 __PyValueError__.__call__ = function (msg) {return new __PyValueError__ (msg);}
 __PyValueError__.prototype.__str__ = function () {return this.msg;}
+
+
+
+var __PyZeroDivisionError__ = function (msg) {
+	this.__class__ = __PyZeroDivisionError__;
+	this.msg = (new __PyStr__ (`ZeroDivisionError: ${msg}`));
+}
+__PyZeroDivisionError__.__str__ = function () {return (new __PyStr__ (`<class 'ZeroDivisionError'>`));}
+__PyZeroDivisionError__.__name__ = new __PyStr__ ('ZeroDivisionError');
+__PyZeroDivisionError__.__call__ = function (msg) {return new __PyZeroDivisionError__ (msg);}
+__PyZeroDivisionError__.prototype.__str__ = function () {return this.msg;}

@@ -112,17 +112,23 @@ function __float__ (i) {
 	if ('__float__' in i) {return i.__float__ ();}
 	throw Error (`AttributeError: '${i.__class__.__name__}' object has no attribute '__float__'`)
 }
+function __mod__ (a, b) {
+	if ('__mod__' in a) {
+		return a.__mod__ (b);
+	}
+}
 function __gt__ (a, b) {return a.__gt__ (b);}
 function __ge__ (a, b) {return a.__ge__ (b);}
 function __lt__ (a, b) {return a.__lt__ (b);}
 function __le__ (a, b) {return a.__le__ (b);}
 function __eq__ (a, b) {return a.__eq__ (b);}
 function __neq__ (a, b) {return a.__eq__ (b) === __PyTrue__ ? __PyFalse__ : __PyTrue__;}
-function __is__ (a, b) {return a === b ? __PyTrue__ : __PyFalse__;}
-function __isnot__ (a, b) {return a !== b ? __PyTrue__ : __PyFalse__;}
+function __is__ (a, b) {return __getbool__ (a === b);}
+function __isnot__ (a, b) {return __getbool__ (a !== b);}
 
 function __and__ () {
 	for (let i = 0; i < arguments.length; i++) {
+		print.__call__ (arguments[i]);
 		if (arguments[i].__bool__ () === __PyFalse__) {
 			return __PyFalse__;
 		}

@@ -35,7 +35,7 @@ class Visitor (ast.NodeVisitor):
 		self.scope = '__scope__'
 		self.indent_level = 0;
 		self.ostream.write ('''let __global__ = new Proxy (
-		{int : __PyInt__, float : __PyFloat__, bool : __PyBool__, str : __PyStr__, print : print, type : type, range : __PyRange__}, {
+		{int : __PyInt__, float : __PyFloat__, bool : __PyBool__, str : __PyStr__, len : len, print : print, type : type, range : __PyRange__}, {
 	get (target, key, recv) {
 		if (! (key in target)) {
 			throw new __PyNameError__ (`name '${key}' is not defined`);
@@ -58,7 +58,7 @@ let __scope__ = __global__;
 		self.ostream.write (f'(new __PyStr__ (\'{node.s}\'))')
 
 	def visit_NameConstant (self, node):
-		self.ostream.write (f'{node.value}')
+		self.ostream.write (f'__Py{node.value}__')
 
 	def visit_List (self, node):
 		elts, ctx = node.elts, node.ctx
@@ -192,11 +192,20 @@ let __scope__ = __global__;
 
 	def visit_BoolOp (self, node):
 		op, values = node.op, node.values
-		self.visit (op)
-		self.ostream.write ('(')
-		for value in values:
+		self.ostream.write ('__getbool__ (')
+		for value in values[:-1]:
+			self.ostream.write ('(')
 			self.visit (value)
-			self.ostream.write (', ')
+			self.ostream.write (').__bool__ () === __PyTrue__')
+			if (isinstance (op, ast.And)):
+				self.ostream.write (' && ')
+			elif (isinstance (op, ast.Or)):
+				self.ostream.write (' || ')
+
+		self.ostream.write ('(')
+		self.visit (value)
+		self.ostream.write (').__bool__ () === __PyTrue__')
+
 		self.ostream.write (')')
 
 	def visit_Eq (self, _):
@@ -215,7 +224,8 @@ let __scope__ = __global__;
 		self.ostream.write ('__is__')
 	def visit_IsNot (self, _):
 		self.ostream.write ('__isnot__')
-
+	def visit_Mod (self, _):
+		self.ostream.write ('__mod__')
 	def visit_And (self, _):
 		self.ostream.write ('__and__')
 
@@ -245,7 +255,7 @@ let __scope__ = __global__;
 		self.visit (test)
 		self.in_exp = False
 
-		self.ostream.write (').__bool__ () === True) {\n')
+		self.ostream.write (').__bool__ () === __PyTrue__) {\n')
 
 		self.indent_level += 1
 		for stmt in body:
@@ -274,7 +284,7 @@ let __scope__ = __global__;
 		self.visit (test)
 		self.in_exp = False
 
-		self.ostream.write (').__bool__ () === True) {')
+		self.ostream.write (').__bool__ () === __PyTrue__) {')
 
 		self.indent_level += 1
 		for stmt in body:
@@ -303,7 +313,12 @@ let __scope__ = __global__;
 		self.indent_level -= 1
 
 		self.write ('}\n')
-
+	def visit_Break (self, node):
+		self.write ('break')
+		self.write_endline ()
+	def visit_Continue (self, node):
+		self.write ('continue')
+		self.write_endline ()
 	# FunctionDef
 	def visit_FunctionDef (self, node):
 		name, args, body = node.name, node.args, node.body
@@ -422,4 +437,4 @@ if __name__ == '__main__':
 	fp.write ('\n//Translated code below\ntry {')
 	fp.write (f.getvalue())
 	fp.write ('} catch (e) {\nif (e instanceof Error) {\nconsole.log (e);\n} else {\nprint.__call__ (e);\n}}')
-	print (f.getvalue ());
+	# print (f.getvalue ());
