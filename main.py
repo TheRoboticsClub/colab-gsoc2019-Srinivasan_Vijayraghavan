@@ -235,13 +235,15 @@ let __scope__ = __global__;
 	def visit_Subscript (self, node):
 		value, slice, ctx = node.value, node.slice, node.ctx
 		if (isinstance (ctx, ast.Store)):
+			self.ostream.write ('__setitem__ (')
 			self.visit (value)
-			self.ostream.write ('.__setitem__ (')
+			self.ostream.write (', ')
 			self.visit (node.slice)
 			self.ostream.write (', ')
 		elif (isinstance (ctx, ast.Load)):
+			self.ostream.write ('__getitem__ (')
 			self.visit (value)
-			self.ostream.write ('.__getitem__ (')
+			self.ostream.write (', ')
 			self.visit (node.slice)
 			self.ostream.write (')')
 
@@ -300,12 +302,13 @@ let __scope__ = __global__;
 
 		self.write ('for (')
 		self.visit (target)
-		self.ostream.write (' of ')
+		self.ostream.write (' of __iter__ (')
+		prev = self.in_exp
 		self.in_exp = True
 		self.visit (iter)
-		self.in_exp = False
+		self.in_exp = prev
 
-		self.ostream.write ('.__iter__()) {\n')
+		self.ostream.write (')) {\n')
 
 		self.indent_level += 1
 		for stmt in body:
@@ -415,7 +418,7 @@ let __scope__ = __global__;
 if __name__ == '__main__':
 	parser = argparse.ArgumentParser ()
 	parser.add_argument ('inputfile', help = 'name of the input python file')
-	parser.add_argument ('outfile', help = 'name of the output js file')
+	parser.add_argument ('--outfile', help = 'name of the output js file', default = '__gen__.js')
 	args = parser.parse_args ()
 	try:
 		f = open (args.inputfile, 'r')

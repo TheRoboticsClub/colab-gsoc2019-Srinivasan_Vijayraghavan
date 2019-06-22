@@ -2,13 +2,13 @@ function __uadd__ (a) {
 	if ('__pos__' in a) {
 		return a.__pos__ ();
 	}
-	throw Error (`TypeError: bad operand type for unary +:`);
+	throw new __PyTypeError__ (`bad operand type for unary +: '${a.__class__.__name__}'`);
 }
 function __usub__ (a) {
 	if ('__neg__' in a) {
 		return a.__neg__ ();
 	}
-	throw Error (`TypeError: bad operand type for unary -:`);
+	throw new __PyTypeError__ (`bad operand type for unary -: '${a.__class__.__name__}'`);
 }
 function __add__ (a, b) {
 	if ('__add__' in a) {
@@ -126,28 +126,17 @@ function __neq__ (a, b) {return a.__eq__ (b) === __PyTrue__ ? __PyFalse__ : __Py
 function __is__ (a, b) {return __getbool__ (a === b);}
 function __isnot__ (a, b) {return __getbool__ (a !== b);}
 
-function __and__ () {
-	for (let i = 0; i < arguments.length; i++) {
-		print.__call__ (arguments[i]);
-		if (arguments[i].__bool__ () === __PyFalse__) {
-			return __PyFalse__;
-		}
-	}
-	return __PyTrue__;
-}
-function __or__ () {
-	for (let i = 0; i < arguments.length; i++) {
-		if (arguments[i].__bool__ () === __PyTrue__) {
-			return __PyTrue__;
-		}
-	}
-	return __PyFalse__;
-}
 function __getitem__ (l, i) {
-	return l.__getitem__ (i);
+	if ('__getitem__' in l) {
+		return l.__getitem__ (i);
+	}
+	throw new __PyTypeError__ (`'${l.__class__.__name__}' object is not subscriptable`)
 }
 function __setitem__ (l, i, v) {
-	return l.__setitem__ (i, v);
+	if ('__setitem__' in l) {
+		return l.__setitem__ (i, v);
+	}
+	throw new __PyTypeError__ (`'${l.__class__.__name__}' object does not support item assignment`)
 }
 function __call__ (f) {
     if ('__call__' in f) {
@@ -159,5 +148,11 @@ function __call__ (f) {
     	delete arguments[x];
         return func.__call__.apply (func, arguments);
     }
-    throw Error (`TypeError: '${f.__class__.__name__}' object is not callable`)
+    throw new __PyTypeError__ (`'${f.__class__.__name__}' object is not callable`)
+}
+function __iter__ (o) {
+	if ('__iter__' in o) {
+		return o.__iter__ ();
+	}
+	throw new __PyTypeError__ (`'${o.__class__.__name__}' object is not iterable`);
 }

@@ -39,3 +39,8 @@ __PyTuple__.prototype.__str__ = function () {
 
 	return (new __PyStr__ (ret));
 }
+__PyTuple__.prototype.__iter__ = function * () {
+	for (let x of this.t) {
+		yield x;
+	}
+}
