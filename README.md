@@ -3,7 +3,11 @@
 ## Usage
 ~~~bash
 python3 main.py <inputfile> <outputfile>
+js <outfile>
 ~~~
+### Compatible versions
+- python3 : 3.6.7
+- node    : 8.10.0
 
 ## Example
 ### Hello World
