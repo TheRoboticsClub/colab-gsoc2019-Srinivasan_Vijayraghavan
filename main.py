@@ -170,8 +170,39 @@ let __scope__ = __global__;
 		targets, value = node.targets, node.value
 		for target in targets:
 			if (isinstance (target, ast.Tuple)):
-				for n, v in zip (target.elts, value.elts):
-					self.visit (ast.Assign (targets=[n], value = v))
+				prev_in_exp = self.in_exp
+				self.in_exp = True
+				self.write ('{\n')
+				self.indent_level += 1
+
+				self.write ('let vars = [')
+				for var in target.elts:
+					self.ostream.write (f'\'{var.id}\', ')
+				self.write ('];')
+
+				self.write ('let pos = 0;\n')
+				self.write ('for (let x of __iter__ (')
+				self.visit (value)
+				self.ostream.write (')) {\n')
+				self.indent_level += 1
+				self.write ('if (pos >= vars.length) {\n')
+				self.indent_level += 1
+				self.write ('throw new __PyValueError__ (`too many values to unpack (expected ${vars.length})`)\n')
+				self.indent_level -= 1
+				self.write ('}\n')
+				self.write (f'{self.scope}[vars[pos]] = x;\n')
+				self.write ('pos++;')
+				self.write ('}')
+				self.indent_level -= 1
+				self.write ('if (pos != vars.length) {\n')
+				self.indent_level += 1
+				self.write ('throw new __PyValueError__ (`not enough values to unpack`)\n')
+				self.indent_level -= 1
+				self.write ('}\n')
+
+				self.indent_level -= 1
+				self.write ('}')
+				self.in_exp = prev_in_exp
 			else:
 				if (not isinstance (target, ast.Subscript)):
 					self.visit (target)

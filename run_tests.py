@@ -52,7 +52,12 @@ class ExprTest (unittest.TestCase):
 
 	def test_assignment (self):
 		output = self.get_transpiler_output ('tests/test_assignment.py')
-		expected = 'asdf\nasdf\n'
+		expected = '''asdf
+asdf
+1
+2
+ValueError: not enough values to unpack
+'''
 		self.assertEqual (output, expected)
 
 	def test_for (self):
