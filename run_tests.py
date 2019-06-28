@@ -16,8 +16,8 @@ class ExprTest (unittest.TestCase):
 		return f
 
 	def get_transpiler_output (self, filename):
-		os.system (f'python3 main.py {filename} __transpiled__.js')
-		os.system ('js __transpiled__.js > __transpiled__.txt')
+		os.system (f'python3 main.py {filename}')
+		os.system ('js __gen__.js > __transpiled__.txt')
 		output_stream = open ('__transpiled__.txt', 'r')
 		output = output_stream.read ()
 		output_stream.close ()
@@ -52,7 +52,7 @@ class ExprTest (unittest.TestCase):
 
 	def test_assignment (self):
 		output = self.get_transpiler_output ('tests/test_assignment.py')
-		expected = 'UnboundLocalError: name \'x\' referenced before assginment\n'
+		expected = 'asdf\nasdf\n'
 		self.assertEqual (output, expected)
 
 	def test_for (self):

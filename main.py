@@ -8,11 +8,14 @@ class FuncVisitor (ast.NodeVisitor):
 	def __init__ (self, node):
 		self.local_vars = []
 		self.global_vars = []
+		self.posargs, self.defaults = [], []
 		self.visit (node)
 	def get_local_vars (self):
 		return self.local_vars
 	def get_gl_vars (self):
 		return (self.global_vars, self.local_vars)
+	def get_pd_args (self):
+		return (self.posargs, self.local_vars)
 	def visit_Assign (self, node):
 		targets = node.targets
 		for target in targets:
@@ -22,7 +25,13 @@ class FuncVisitor (ast.NodeVisitor):
 	def visit_Global (self, node):
 		for name in node.names:
 			self.global_vars.append (name)
+	def visit_arguments (self, node):
+		args, defaults = node.args, node.defaults
+		self.posargs = (arg.arg for arg in args)
+		self.defaults = defaults.copy ()
+
 	def visit_FunctionDef (self, node):
+		self.visit (node.args)
 		for stmt in node.body:
 			self.visit (stmt)
 
@@ -325,14 +334,20 @@ let __scope__ = __global__;
 	# FunctionDef
 	def visit_FunctionDef (self, node):
 		name, args, body = node.name, node.args, node.body
+
+		visitor = FuncVisitor (node)
+		global_vars, local_vars = visitor.get_gl_vars ()
 		self.write (f'{self.scope}.{name}')
-		self.ostream.write (f' = new __PyFunction__ (new __PyStr__ (\'{name}\'), function (')
+		self.ostream.write (f' = new __PyFunction__ (\'{name}\',')
+		self.visit_params (args)
+		self.ostream.write (' , function (')
 		self.visit (args)
 
 		# self.scope += ''
 		self.ostream.write (') {\n')
 
-		global_vars, local_vars = FuncVisitor (node).get_gl_vars ()
+
+		self.indent_level += 1
 		self.write ('let __globalvars__ = {')
 		for lv in global_vars:
 			self.ostream.write (f"'{lv}' : true, ")
@@ -376,11 +391,42 @@ let __scope__ = __global__;
 		self.ostream.write ('});\n')
 
 		self.global_vars = prev
+		self.indent_level -= 1
 
-	def visit_arguments (self, node):
-		for arg in node.args:
+	def visit_params (self, node):
+		args, defaults = node.args, node.defaults
+		prev = self.in_exp
+		self.in_exp = True
+		self.ostream.write ('[')
+		for arg in args:
+			self.ostream.write ('\'')
 			self.visit (arg)
+			self.ostream.write ('\'')
 			self.ostream.write (', ')
+		self.ostream.write ('], ')
+
+		self.ostream.write ('[')
+		for defarg in defaults:
+			self.visit (defarg)
+			self.ostream.write (', ')
+		self.ostream.write (']')
+		self.in_exp = prev
+	def visit_arguments (self, node):
+		args, defaults = node.args, node.defaults
+		v = []
+		if (len (args) > len (defaults)):
+			for arg in args[0: (len(args) - len (defaults))]:
+				v.append ((arg, ))
+		for i in zip (args[(len(args) - len (defaults)) : ], defaults):
+			v.append (i)
+
+		for e in v:
+			self.visit (e[0])
+			if (len (e) != 1):
+				self.ostream.write (' = ')
+				self.visit (e[1])
+			self.ostream.write (', ')
+
 	def visit_arg (self, node):
 		arg = node.arg
 		self.ostream.write (arg)

@@ -1,5 +1,6 @@
-def f ():
-	print (x)
-	x = 12
+# multiple assginment
+a = b = 'asdf'
+print (a) # asdf
+print (b) # asdf
 
-f ()
+a, b = (1, 2)
