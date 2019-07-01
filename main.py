@@ -302,6 +302,25 @@ let __scope__ = __global__;
 			self.visit (node.slice)
 			self.ostream.write (')')
 
+	def visit_Slice (self, node):
+		prev_in_exp = self.in_exp
+		self.in_exp = True
+
+		lower, upper, step = node.lower, node.upper, node.step
+
+		self.ostream.write (f'__PySlice__.__call__ (')
+		if (lower is None): self.ostream.write ('__PyNone__')
+		else: self.visit (lower)
+		self.ostream.write (', ')
+		if (upper is None): self.ostream.write ('__PyNone__')
+		else: self.visit (upper)
+		self.ostream.write (', ')
+		if (step is None): self.ostream.write ('__PyNone__')
+		else: self.visit (step)
+		self.ostream.write (')')
+
+		self.in_exp = prev_in_exp
+
 	# Control Flow
 
 	def visit_If (self, node):

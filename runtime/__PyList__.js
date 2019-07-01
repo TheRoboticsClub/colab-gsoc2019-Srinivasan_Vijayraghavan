@@ -6,8 +6,16 @@ __PyList__.__name__ = new __PyStr__ ('list');
 __PyList__.__str__ = function () {return (new __PyStr__ (`<class 'list'>`));}
 __PyList__.__call__ = function (l) {return new __PyList__ (l);}
 __PyList__.prototype.__getitem__ = function (i) {
-	if (!(i instanceof __PyInt__)) {
-		throw new TypeError (`list indices must be integers, not ${i.__class__.__name__}`);
+	if (!((i instanceof __PyInt__) || (i instanceof __PySlice__))) {
+		throw new TypeError (`list indices must be integers or slices, not ${i.__class__.__name__}`);
+	}
+	if (i instanceof __PySlice__) {
+		let m = Math.min (i.upper, this.l.length);
+		let ret = [];
+		for (let id = i.lower; id < m; id+=i.step) {
+			ret.push (this.l[id]);
+		}
+		return (new __PyList__ (ret));
 	}
 	var n = i.x;
 	if (n < 0) {n += this.l.length;}
