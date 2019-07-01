@@ -140,13 +140,9 @@ function __setitem__ (l, i, v) {
 }
 function __call__ (f) {
     if ('__call__' in f) {
-        let func = f;
-        for (var x = 0, n = arguments.length-1; x < n; x++) {
-            arguments[x] = arguments[x+1];
-        };
-        arguments.length -= 1;
-    	delete arguments[x];
-        return func.__call__.apply (func, arguments);
+		let ret = f.__call__;
+		ret.bind (f);
+		return f.__call__.bind (f);
     }
     throw new __PyTypeError__ (`'${f.__class__.__name__}' object is not callable`)
 }

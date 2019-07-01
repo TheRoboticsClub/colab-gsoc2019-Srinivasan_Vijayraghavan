@@ -43,7 +43,8 @@ class Visitor (ast.NodeVisitor):
 		self.global_vars = []
 		self.scope = '__scope__'
 		self.indent_level = 0;
-		self.ostream.write ('''let __global__ = new Proxy (
+		self.exp = 0
+		self.write ('''let __global__ = new Proxy (
 		{int : __PyInt__, float : __PyFloat__, bool : __PyBool__, str : __PyStr__, len : len, print : print, type : type, range : __PyRange__}, {
 	get (target, key, recv) {
 		if (! (key in target)) {
@@ -70,14 +71,23 @@ let __scope__ = __global__;
 		self.ostream.write (f'__Py{node.value}__')
 
 	def visit_List (self, node):
+		# To indicate that an expression in expected inside the parameters of pylist,
+		# in_exp is set to True. It is later reseted to it's original value.
+		prev = self.in_exp
+		self.in_exp = True
+
 		elts, ctx = node.elts, node.ctx
 		self.ostream.write ('new __PyList__ ([')
 		for elt in elts:
 			self.visit (elt)
 			self.ostream.write (', ')
 		self.ostream.write ('])')
+		self.in_exp = False
 
 	def visit_Tuple (self, node):
+		prev = self.in_exp
+		self.in_exp = True
+
 		elts, ctx = node.elts, node.ctx
 		self.ostream.write ('new __PyTuple__ ([')
 		for elt in elts:
@@ -85,16 +95,19 @@ let __scope__ = __global__;
 			self.ostream.write (', ')
 		self.ostream.write ('])')
 
+		self.in_exp = prev
+
 	# Exprs
 	def visit_UnaryOp (self, node):
-		op, operand = node.op, node.operand
-		self.visit (op)
 		prev = self.in_exp
 		self.in_exp = True
+		op, operand = node.op, node.operand
+		self.visit (op)
 		self.ostream.write (' (')
 		self.visit (operand)
 		self.ostream.write (')')
 		self.in_exp = prev
+
 	def visit_UAdd (self, node):
 		self.ostream.write ('__uadd__')
 	def visit_USub (self, node):
@@ -135,8 +148,10 @@ let __scope__ = __global__;
 		if (not self.in_exp):
 			self.write ("")
 
+		self.ostream.write ('__call__(')
 		self.visit (func)
-		self.ostream.write ('.__call__ (')
+		self.ostream.write (')')
+		self.ostream.write ('(')
 		# self.ostream.write (', ');
 
 		prev_in_exp = self.in_exp
@@ -328,12 +343,13 @@ let __scope__ = __global__;
 
 		self.ostream.write (').__bool__ () === __PyTrue__) {')
 
-		self.indent_level += 1
+		self.indent ()
 		for stmt in body:
 			self.visit (stmt)
-		self.indent_level -= 1
+		self.unindent ()
 
 		self.write ('}\n')
+
 
 	def visit_For (self, node):
 		target, iter, body = node.target, node.iter, node.body
@@ -356,6 +372,12 @@ let __scope__ = __global__;
 		self.indent_level -= 1
 
 		self.write ('}\n')
+
+	def indent (self): self.indent_level += 1
+	def unindent (self):
+		self.indent_level -= 1
+		if (self.indent_level < 0): raise Exception ('unindent () called unnecessarily')
+
 	def visit_Break (self, node):
 		self.write ('break')
 		self.write_endline ()
@@ -442,6 +464,7 @@ let __scope__ = __global__;
 			self.ostream.write (', ')
 		self.ostream.write (']')
 		self.in_exp = prev
+
 	def visit_arguments (self, node):
 		args, defaults = node.args, node.defaults
 		v = []
@@ -475,8 +498,7 @@ let __scope__ = __global__;
 		self.in_exp = prev
 		self.write_endline ()
 
-	def visit_Pass (self, node):
-		pass
+	def visit_Pass (self, node): pass
 
 	# utility functions
 	def write (self, stmt):
@@ -491,6 +513,9 @@ let __scope__ = __global__;
 			self.write_endline ()
 	def write_endline (self):
 		self.ostream.write (';\n')
+	def write_statement (self, statement):
+		self.write_indent ()
+		self.ostream.write (statement + '\n')
 
 if __name__ == '__main__':
 	parser = argparse.ArgumentParser ()
