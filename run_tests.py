@@ -47,6 +47,8 @@ class ExprTest (unittest.TestCase):
 		expected = '''[1, 2, 3]
 [1, 2, 3, 4]
 4
+[2, 3]
+[1, 2, 3, 4]
 '''
 		self.assertEqual (output, expected)
 
