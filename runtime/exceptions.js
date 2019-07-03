@@ -66,3 +66,13 @@ __PyZeroDivisionError__.__str__ = function () {return (new __PyStr__ (`<class 'Z
 __PyZeroDivisionError__.__name__ = new __PyStr__ ('ZeroDivisionError');
 __PyZeroDivisionError__.__call__ = function (msg) {return new __PyZeroDivisionError__ (msg);}
 __PyZeroDivisionError__.prototype.__str__ = function () {return this.msg;}
+
+
+var __PyAttributeError__ = function (msg) {
+	this.__class__ = __PyAttributeError__;
+	this.msg = (new __PyStr__ (`AttributeError: ${msg}`));
+}
+__PyAttributeError__.__str__ = function () {return (new __PyStr__ (`<class 'AttributeError'>`));}
+__PyAttributeError__.__name__ = new __PyStr__ ('AttributeError');
+__PyAttributeError__.__call__ = function (msg) {return new __PyAttributeError__ (msg);}
+__PyAttributeError__.prototype.__str__ = function () {return this.msg;}

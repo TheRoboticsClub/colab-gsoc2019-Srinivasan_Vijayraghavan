@@ -36,25 +36,16 @@ class FuncVisitor (ast.NodeVisitor):
 			self.visit (stmt)
 
 class Visitor (ast.NodeVisitor):
-	def __init__ (self, ostream):
+	def __init__ (self, ostream, scope = '__scope__', init = ''):
 		self.ostream = ostream
 		self.aug = False
 		self.in_exp = False
 		self.global_vars = []
-		self.scope = '__scope__'
+		self.scope = scope
 		self.indent_level = 0;
 		self.exp = 0
-		self.write ('''let __global__ = new Proxy (
-		{int : __PyInt__, float : __PyFloat__, bool : __PyBool__, str : __PyStr__, len : len, print : print, type : type, range : __PyRange__}, {
-	get (target, key, recv) {
-		if (! (key in target)) {
-			throw new __PyNameError__ (`name '${key}' is not defined`);
-		}
-		return target[key];
-	}
-});
-let __scope__ = __global__;
-''')
+		self.write (init)
+
 	# Literals
 	def visit_Num (self, node):
 		if (isinstance (node.n, int)):
@@ -126,6 +117,14 @@ let __scope__ = __global__;
 		self.ostream.write (')')
 		self.ostream.write (')')
 		self.in_exp = prev
+
+	def visit_Attribute (self, node):
+		value, attr, ctx = node.value, node.attr, node.ctx
+		self.visit (value)
+		if (isinstance (ctx, ast.Store)):
+			self.ostream.write (f'''.__setattr__ ('{attr}' ''')
+		else:
+			self.ostream.write (f'''.__getattr__ ('{attr}')''')
 
 	def visit_Add (self, node):
 		self.ostream.write (f'__{"i" if self.aug else ""}add__')
@@ -219,14 +218,14 @@ let __scope__ = __global__;
 				self.write ('}')
 				self.in_exp = prev_in_exp
 			else:
-				if (not isinstance (target, ast.Subscript)):
-					self.visit (target)
-					self.ostream.write (' = ')
-					self.visit (value)
-				else:
+				if (isinstance (target, ast.Subscript) or isinstance (target, ast.Attribute)):
 					self.visit (target)
 					self.visit (value)
 					self.ostream.write (')')
+				else:
+					self.visit (target)
+					self.ostream.write (' = ')
+					self.visit (value)
 				self.write_endline ()
 
 
@@ -519,6 +518,26 @@ let __scope__ = __global__;
 
 	def visit_Pass (self, node): pass
 
+	# imports
+	def visit_Import (self, node):
+		names = node.names
+
+		for alias in names:
+			name, asname = alias.name, alias.asname
+			if (asname != None) : name = asname
+			file = open (f'{name}.py')
+			self.write (f'var copy = Object.assign (\{\}, {self.scope});\n')
+			self.write (f'{self.scope}.{name} = new __PyModule__ (\'{name}\');\n')
+			self.write (f'{self.scope} = ')
+			pt = ast.parse (file.read ())
+
+			Visitor (self.ostream, scope = f'{self.scope}').visit (pt)
+
+
+
+	def visit_alias (self, node):
+		pass
+
 	# utility functions
 	def write (self, stmt):
 		self.write_indent()
@@ -548,7 +567,18 @@ if __name__ == '__main__':
 		exit ()
 	pt = ast.parse (f.read ());
 	f = io.StringIO();
-	Visitor (f).visit (pt);
+	init = '''let __global__ = new Proxy (
+	{int : __PyInt__, float : __PyFloat__, bool : __PyBool__, str : __PyStr__, len : len, print : print, type : type, range : __PyRange__}, {
+get (target, key, recv) {
+	if (! (key in target)) {
+		throw new __PyNameError__ (`name '${key}' is not defined`);
+	}
+	return target[key];
+}
+});
+let __scope__ = __global__;
+'''
+	Visitor (f, init = init).visit (pt);
 
 	fp = open (args.outfile, 'w')
 	try:
