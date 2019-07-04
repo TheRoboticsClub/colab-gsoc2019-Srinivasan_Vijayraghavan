@@ -39,10 +39,26 @@ WebSim is a web-based robot simulator. It is used as a tool for learning robot p
 
 ## Weekly Documentation
 
+### Week-6
+#### Status/Deliverables
+- [ ] Import Statements
+
+Handling import statements in python3 is similar to what we have in JS. However, since this code will be run on a browser, module imports are not handled well. Therefore, imports must be implemented from scratch.
+When a module is imported such as,
+~~~python
+import HALbrowser
+~~~
+all the definitions inside the module will be put inside the HALbrowser namespace.
+The HALbrowser namespace itself is a variable in the current file where the import statement is called. This is a variable of type 'module'.
+
+Some limitations of this approach is that if the file is large, compilation process will take some time. The ability to do it dynamically is not possible unless the integrated editor provided in the browser supports handling multiple files. Fortunately for us, the interface with the robot is small enough and can be parsed quickly.
+
+Now, coming to the interface with WebSim2D, the user of the program will need to import a shim library (such as the one provided in HALbrowser/HALbrowser.py). Shim functions can be identified with the decorator \_\_shim\_\_. When such a function is encountered, it's definition is replaced with equivalent javascript definition (interfacing the simulator).
+
 ### Week-4
 
 #### Status/Deliverables
-- [ ] Test Suite for work done in weeks 1-3.
+- [x] Test Suite for work done in weeks 1-3.
 	- Update the implementation if necessary.
 
 This week involved mostly adding minor improvements (more exceptions, bug fixes) and adding a test suite.
