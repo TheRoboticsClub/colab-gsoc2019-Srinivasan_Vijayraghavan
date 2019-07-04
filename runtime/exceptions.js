@@ -76,3 +76,14 @@ __PyAttributeError__.__str__ = function () {return (new __PyStr__ (`<class 'Attr
 __PyAttributeError__.__name__ = new __PyStr__ ('AttributeError');
 __PyAttributeError__.__call__ = function (msg) {return new __PyAttributeError__ (msg);}
 __PyAttributeError__.prototype.__str__ = function () {return this.msg;}
+
+
+
+var __PyModuleNotFoundError__ = function (msg) {
+	this.__class__ = __PyModuleNotFoundError__;
+	this.msg = (new __PyStr__ (`ModuleNotFoundError: ${msg}`));
+}
+__PyModuleNotFoundError__.__str__ = function () {return (new __PyStr__ (`<class 'ModuleNotFoundError'>`));}
+__PyModuleNotFoundError__.__name__ = new __PyStr__ ('ModuleNotFoundError');
+__PyModuleNotFoundError__.__call__ = function (msg) {return new __PyModuleNotFoundError__ (msg);}
+__PyModuleNotFoundError__.prototype.__str__ = function () {return this.msg;}

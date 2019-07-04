@@ -122,7 +122,7 @@ class Visitor (ast.NodeVisitor):
 		value, attr, ctx = node.value, node.attr, node.ctx
 		self.visit (value)
 		if (isinstance (ctx, ast.Store)):
-			self.ostream.write (f'''.__setattr__ ('{attr}' ''')
+			self.ostream.write (f'''.__setattr__ ('{attr}',  ''')
 		else:
 			self.ostream.write (f'''.__getattr__ ('{attr}')''')
 
@@ -525,14 +525,15 @@ class Visitor (ast.NodeVisitor):
 		for alias in names:
 			name, asname = alias.name, alias.asname
 			if (asname != None) : name = asname
-			file = open (f'{name}.py')
-			self.write (f'var copy = Object.assign (\{\}, {self.scope});\n')
-			self.write (f'{self.scope}.{name} = new __PyModule__ (\'{name}\');\n')
-			self.write (f'{self.scope} = ')
-			pt = ast.parse (file.read ())
+			try:
+				file = open (f'{name}.py')
+				self.write (f'let {self.scope}{name} = Object.assign (' + '{}' + ', __global__);' + '\n')
+				self.write (f'{self.scope}.{name} = new __PyModule__ (\'{name}\', {self.scope}{name});\n')
+				# self.write (f'{self.scope} = ')
+				pt = ast.parse (file.read ())
 
-			Visitor (self.ostream, scope = f'{self.scope}').visit (pt)
-
+				Visitor (self.ostream, scope = f'{self.scope}{name}').visit (pt)
+			except: self.write ('throw new __PyModuleNotFoundError__ (`No module named \'' + str (name) + '\'`);\n')
 
 
 	def visit_alias (self, node):
@@ -576,7 +577,7 @@ get (target, key, recv) {
 	return target[key];
 }
 });
-let __scope__ = __global__;
+let __scope__ = Object.assign ({}, __global__);
 '''
 	Visitor (f, init = init).visit (pt);
 
