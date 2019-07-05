@@ -1,0 +1,32 @@
+{
+	"getUS" : [
+		"new __PyFunction__ ('getUS',[], [] , function () {",
+			"let __scope___ = __scope__;",
+			"return (new __PyInt__ (12));",
+		"});"
+	],
+
+	"getIR" : [
+		"new __PyFunction__ ('getIR',[], [] , function () {",
+				"return __PyTrue__;",
+		"});"
+	],
+
+	"setV" : [
+		"new __PyFunction__ ('setV',['linearSpeed', ], [] , function (linearSpeed, ) {",
+			"let __scope___ = __scope__;",
+			"__scope___.linearSpeed = linearSpeed;",
+			"__call__((__scope___.print))((__add__((new __PyStr__ ('setting V=')),__call__((__scope___.str))((__scope___.linearSpeed), ))), );",
+		"return __PyNone__;",
+		"});"
+	],
+
+	"setW" : [
+		"new __PyFunction__ ('setW',['angularSpeed', ], [] , function (angularSpeed, ) {",
+			"let __scope___ = __scope__;",
+			"__scope___.angularSpeed = angularSpeed;",
+			"__call__((__scope___.print))((__add__((new __PyStr__ ('setting W=')),__call__((__scope___.str))((__scope___.angularSpeed), ))), );",
+		"return __PyNone__;",
+		"});"
+	]
+}

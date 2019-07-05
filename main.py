@@ -3,6 +3,7 @@ import sys
 import io
 import os
 import argparse
+import json
 
 class FuncVisitor (ast.NodeVisitor):
 	def __init__ (self, node):
@@ -36,7 +37,7 @@ class FuncVisitor (ast.NodeVisitor):
 			self.visit (stmt)
 
 class Visitor (ast.NodeVisitor):
-	def __init__ (self, ostream, scope = '__scope__', init = ''):
+	def __init__ (self, ostream, scope = '__scope__', init = '', subfile = None):
 		self.ostream = ostream
 		self.aug = False
 		self.in_exp = False
@@ -45,7 +46,15 @@ class Visitor (ast.NodeVisitor):
 		self.indent_level = 0;
 		self.exp = 0
 		self.write (init)
-
+		if (subfile is not None):
+			try :
+				f = open (subfile)
+				self.substitute = json.load (f)
+			except Exception as e:
+				print (e)
+				raise Exception ('Subfile doesnt exist')
+		else:
+			self.substitute = None
 	# Literals
 	def visit_Num (self, node):
 		if (isinstance (node.n, int)):
@@ -406,9 +415,17 @@ class Visitor (ast.NodeVisitor):
 	def visit_FunctionDef (self, node):
 		name, args, body = node.name, node.args, node.body
 
+		self.write (f'{self.scope}.{name}')
+
+		if (self.substitute is not None):
+			self.ostream.write (' = ')
+			self.ostream.write (''.join (self.substitute[name]))
+			self.ostream.write (';\n')
+			return
+
 		visitor = FuncVisitor (node)
 		global_vars, local_vars = visitor.get_gl_vars ()
-		self.write (f'{self.scope}.{name}')
+
 		self.ostream.write (f' = new __PyFunction__ (\'{name}\',')
 		self.visit_params (args)
 		self.ostream.write (' , function (')
@@ -443,7 +460,7 @@ class Visitor (ast.NodeVisitor):
 		},
 		set (target, key, value, recv) {
 			if (key in __globalvars__) {
-				__global__[key] = value;
+				__scope__[key] = value;
 			} else {
 				target[key] = value;
 			}
@@ -524,16 +541,22 @@ class Visitor (ast.NodeVisitor):
 
 		for alias in names:
 			name, asname = alias.name, alias.asname
-			if (asname != None) : name = asname
 			try:
-				file = open (f'{name}.py')
+				file = open (f'modules/{name}.py')
+				if (name == 'HAL'): subfile = 'shim.json'
+				else: subfile = None
+
+				if (asname != None) : name = asname
 				self.write (f'let {self.scope}{name} = Object.assign (' + '{}' + ', __global__);' + '\n')
 				self.write (f'{self.scope}.{name} = new __PyModule__ (\'{name}\', {self.scope}{name});\n')
 				# self.write (f'{self.scope} = ')
 				pt = ast.parse (file.read ())
 
-				Visitor (self.ostream, scope = f'{self.scope}{name}').visit (pt)
-			except: self.write ('throw new __PyModuleNotFoundError__ (`No module named \'' + str (name) + '\'`);\n')
+				Visitor (self.ostream, scope = f'{self.scope}{name}', subfile=subfile).visit (pt)
+			except Exception as e:
+				print (e)
+				# Not an inbuilt module. Try searching in the local dir instead.
+				self.write ('throw new __PyModuleNotFoundError__ (`No module named \'' + str (name) + '\'`);\n')
 
 
 	def visit_alias (self, node):
