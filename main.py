@@ -543,20 +543,23 @@ class Visitor (ast.NodeVisitor):
 			name, asname = alias.name, alias.asname
 			try:
 				file = open (f'modules/{name}.py')
-				if (name == 'HAL'): subfile = 'shim.json'
-				else: subfile = None
-
-				if (asname != None) : name = asname
-				self.write (f'let {self.scope}{name} = Object.assign (' + '{}' + ', __global__);' + '\n')
-				self.write (f'{self.scope}.{name} = new __PyModule__ (\'{name}\', {self.scope}{name});\n')
-				# self.write (f'{self.scope} = ')
-				pt = ast.parse (file.read ())
-
-				Visitor (self.ostream, scope = f'{self.scope}{name}', subfile=subfile).visit (pt)
 			except Exception as e:
-				print (e)
-				# Not an inbuilt module. Try searching in the local dir instead.
-				self.write ('throw new __PyModuleNotFoundError__ (`No module named \'' + str (name) + '\'`);\n')
+				file = open (f'{name}.py')
+
+			if (name == 'HAL'): subfile = 'shim.json'
+			else: subfile = None
+
+			if (asname != None) : name = asname
+			self.write (f'let {self.scope}{name} = Object.assign (' + '{}' + ', __global__);' + '\n')
+			self.write (f'{self.scope}.{name} = new __PyModule__ (\'{name}\', {self.scope}{name});\n')
+			# self.write (f'{self.scope} = ')
+			pt = ast.parse (file.read ())
+
+			Visitor (self.ostream, scope = f'{self.scope}{name}', subfile=subfile).visit (pt)
+			# except Exception as e:
+			# 	print (e)
+			# 	# Not an inbuilt module. Try searching in the local dir instead.
+			# 	self.write ('throw new __PyModuleNotFoundError__ (`No module named \'' + str (name) + '\'`);\n')
 
 
 	def visit_alias (self, node):

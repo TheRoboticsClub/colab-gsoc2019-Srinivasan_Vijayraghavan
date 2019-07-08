@@ -31,10 +31,10 @@ __PyTuple__.prototype.__add__ = function (other) {
 __PyTuple__.prototype.__str__ = function () {
 	let ret = '('
 	for (let x = 0; x < this.t.length-1; x++) {
-		ret += x.__str__().toString ();
+		ret += this.t[x].__str__().toString ();
 		ret += ', ';
 	}
-	ret += this.t[this.t.length -1].toString ();
+	ret += this.t[this.t.length -1].__str__ ().toString ();
 	ret += ')'
 
 	return (new __PyStr__ (ret));

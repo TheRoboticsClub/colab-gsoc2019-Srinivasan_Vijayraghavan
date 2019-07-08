@@ -9,3 +9,9 @@ def setV (linearSpeed):
 
 def setW (angularSpeed):
 	pass
+
+def getLaser ():
+	pass
+
+def getEncoders ():
+	pass

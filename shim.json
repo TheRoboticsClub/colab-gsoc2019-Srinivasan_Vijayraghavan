@@ -28,5 +28,17 @@
 			"__call__((__scope___.print))((__add__((new __PyStr__ ('setting W=')),__call__((__scope___.str))((__scope___.angularSpeed), ))), );",
 		"return __PyNone__;",
 		"});"
+	],
+
+	"getEncoders" : [
+		"new __PyFunction__ ('getEncoders',[], [] , function () {",
+				"return new __PyTuple__ ([(new __PyInt__ (1)), (new __PyInt__ (2)), ]);",
+		"});"
+	],
+
+	"getLaser" : [
+		"new __PyFunction__ ('getLaser',[], [] , function () {",
+					"return __PyFalse__;",
+		"});"
 	]
 }
