@@ -72,7 +72,8 @@ class Visitor (ast.NodeVisitor):
 
 	def visit_List (self, node):
 		# To indicate that an expression in expected inside the parameters of pylist,
-		# in_exp is set to True. It is later reseted to it's original value.
+		# in_exp is set to True. It is later reseted to it's original value. This is
+		# needed only to make sure that calls aren't terminated by a ';' inside an expression.
 		prev = self.in_exp
 		self.in_exp = True
 
@@ -82,7 +83,7 @@ class Visitor (ast.NodeVisitor):
 			self.visit (elt)
 			self.ostream.write (', ')
 		self.ostream.write ('])')
-		self.in_exp = False
+		self.in_exp = prev
 
 	def visit_Tuple (self, node):
 		prev = self.in_exp
@@ -123,8 +124,8 @@ class Visitor (ast.NodeVisitor):
 		self.visit (left)
 		self.ostream.write (',')
 		self.visit (right)
-		self.ostream.write (')')
-		self.ostream.write (')')
+		self.ostream.write ('))')
+
 		self.in_exp = prev
 
 	def visit_Attribute (self, node):
@@ -156,22 +157,27 @@ class Visitor (ast.NodeVisitor):
 		if (not self.in_exp):
 			self.write ("")
 
+		# __call__ primitive in 'utils.js' returns the __call__ method from the object.
+		# If such a method doesn't exist, it throws a TypeError: object not callable.
 		self.ostream.write ('__call__(')
 		self.visit (func)
 		self.ostream.write (')')
 		self.ostream.write ('(')
-		# self.ostream.write (', ');
 
 		prev_in_exp = self.in_exp
 		self.in_exp = True
+
 		for arg in args:
 			self.visit (arg)
 			self.ostream.write (', ')
-		self.in_exp = prev_in_exp
+
+		# if (len (args) > 0) : self.visit (args[-1])
 
 		self.ostream.write (')')
+		self.in_exp = prev_in_exp
 		if (not self.in_exp):
 			self.write_endline ()
+
 
 	def visit_Compare (self, node):
 		self.in_exp = True;

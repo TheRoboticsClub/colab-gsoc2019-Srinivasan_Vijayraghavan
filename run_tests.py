@@ -84,6 +84,8 @@ ValueError: not enough values to unpack
 setting W=10
 US = 12
 IR = True
+False
+(1, 2)
 '''
 		self.assertEqual (output, expected)
 
