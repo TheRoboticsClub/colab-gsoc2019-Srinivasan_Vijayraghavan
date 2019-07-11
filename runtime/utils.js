@@ -152,3 +152,7 @@ function __iter__ (o) {
 	}
 	throw new __PyTypeError__ (`'${o.__class__.__name__}' object is not iterable`);
 }
+function __raise__ (o) {
+	if (o instanceof __PyBaseException__) {throw o;}
+	throw new __PyTypeError__ (`exceptions must derive from BaseException`);
+}

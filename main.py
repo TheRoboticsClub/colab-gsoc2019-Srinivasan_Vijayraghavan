@@ -568,6 +568,38 @@ class Visitor (ast.NodeVisitor):
 			# 	self.write ('throw new __PyModuleNotFoundError__ (`No module named \'' + str (name) + '\'`);\n')
 
 
+	# Exception Handling
+	def visit_Raise (self, node):
+		exc = node.exc
+		prev_in_exp = self.in_exp
+		self.in_exp = True
+		self.write ('__raise__ (')
+		self.visit (exc)
+		self.ostream.write (');\n')
+		self.in_exp = prev_in_exp
+
+	def visit_Try (self, node):
+		body, handlers = node.body, node.handlers
+
+		self.write ('try {')
+		self.indent ()
+		for stmt in body: self.visit (stmt)
+		self.unindent ()
+		self.write ('}')
+
+		self.write ('catch (e) {')
+		self.indent ()
+		for handler in handlers : self.visit (handler)
+		self.unindent ()
+		self.write ('};\n')
+
+	def visit_ExceptHandler (self, node):
+		type, name, body = node.type, node.name, node.body
+		if (type is not None and name is not None):
+			print ('Complex exceptions are not supported yet.')
+			exit ()
+		for stmt in body: self.visit (stmt)
+
 	def visit_alias (self, node):
 		pass
 
@@ -601,7 +633,17 @@ if __name__ == '__main__':
 	pt = ast.parse (f.read ());
 	f = io.StringIO();
 	init = '''let __global__ = new Proxy (
-	{int : __PyInt__, float : __PyFloat__, bool : __PyBool__, str : __PyStr__, len : len, print : print, type : type, range : __PyRange__}, {
+	{int : __PyInt__, float : __PyFloat__, bool : __PyBool__, str : __PyStr__, len : len,
+	print : print, type : type, range : __PyRange__,
+
+	BaseException : __PyBaseException__, Exception : __PyException__,
+	TypeError : __PyTypeError__, NameError: __PyNameError__,
+	UnboundLocalError : __PyUnboundLocalError__, IndexError : __PyIndexError__,
+	ValueError : __PyValueError__, ZeroDivisionError : __PyZeroDivisionError__,
+	AttributeError : __PyAttributeError__, ModuleNotFoundError : __PyModuleNotFoundError__,
+
+
+	}, {
 get (target, key, recv) {
 	if (! (key in target)) {
 		throw new __PyNameError__ (`name '${key}' is not defined`);

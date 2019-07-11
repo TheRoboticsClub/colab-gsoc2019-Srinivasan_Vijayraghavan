@@ -1,11 +1,23 @@
-var __PyException__ = function (msg) {
-	this.__class__ = __PyException__;
-	this.msg = new __PyStr__ (msg);
+var __PyBaseException__ = function (msg) {
+	this.__class__  = __PyBaseException__;
+	this.msg = msg;
 }
-__PyException__.prototype.__str__ = function () {return this.msg;}
+__PyBaseException__.prototype.__str__ = function () {return `${this.__class__.__name__}: ${this.msg}`;}
+__PyBaseException__.__str__ = function () {return (new __PyStr__ (`<class 'BaseException'>`));}
+__PyBaseException__.__name__ = new __PyStr__ ('BaseException');
+__PyBaseException__.__call__ = function (msg) {return new __PyBaseException__ (msg);}
+
+var __PyException__ = function (msg) {
+	__PyBaseException__.call (this, msg);
+	this.__class__ = __PyException__;
+}
+__PyException__.prototype = Object.create (__PyBaseException__.prototype);
+__PyException__.__str__ = function () {return (new __PyStr__ (`<class 'Exception'>`));}
+__PyException__.__name__ = new __PyStr__ ('Exception');
+__PyException__.__call__ = function (msg) {return new __PyException__ (msg);}
 
 var __PyTypeError__ = function (msg) {
-	__PyException__.call (this, `TypeError: ${msg}`);
+	__PyException__.call (this, msg);
 	this.__class__ = __PyTypeError__;
 }
 __PyTypeError__.prototype = Object.create (__PyException__.prototype);
@@ -21,17 +33,17 @@ function __unsupportedbinaryop__ (op, a, b) {
 
 
 var __PyNameError__ = function (msg) {
-	__PyException__.call (this, `NameError: ${msg}`)
+	__PyException__.call (this, msg);
 	this.__class__ = __PyNameError__;
 }
 __PyNameError__.prototype = Object.create (__PyException__.prototype);
 __PyNameError__.__str__ = function () {return (new __PyStr__ (`<class 'NameError'>`));}
-__PyNameError__.__name__ = new __PyStr__ ('TypeError');
+__PyNameError__.__name__ = new __PyStr__ ('NameError');
 __PyNameError__.__call__ = function (msg) {return new __PyNameError__ (msg);}
 
 
 var __PyUnboundLocalError__ = function (msg) {
-	__PyException__.call (this, `UnboundLocalError: ${msg}`)
+	__PyException__.call (this, msg);
 	this.__class__ = __PyUnboundLocalError__;
 }
 __PyUnboundLocalError__.prototype = Object.create (__PyException__.prototype);
@@ -41,7 +53,7 @@ __PyUnboundLocalError__.__call__ = function (msg) {return new __PyUnboundLocalEr
 
 
 var __PyIndexError__ = function (msg) {
-	__PyException__.call (this, `IndexError: ${msg}`);
+	__PyException__.call (this, msg);
 	this.__class__ = __PyIndexError__;
 }
 __PyIndexError__.prototype = Object.create (__PyException__.prototype);
@@ -51,7 +63,7 @@ __PyIndexError__.__call__ = function (msg) {return new __PyIndexError__ (msg);}
 
 
 var __PyValueError__ = function (msg) {
-	__PyException__.call (this, `ValueError: ${msg}`);
+	__PyException__.call (this, msg);
 	this.__class__ = __PyValueError__;
 }
 __PyValueError__.prototype = Object.create (__PyException__.prototype);
@@ -61,7 +73,7 @@ __PyValueError__.__call__ = function (msg) {return new __PyValueError__ (msg);}
 
 
 var __PyZeroDivisionError__ = function (msg) {
-	__PyException__.call (this, `ZeroDivisionError: ${msg}`);
+	__PyException__.call (this, msg);
 	this.__class__ = __PyZeroDivisionError__;
 }
 __PyZeroDivisionError__.prototype = Object.create (__PyException__.prototype);
@@ -71,7 +83,7 @@ __PyZeroDivisionError__.__call__ = function (msg) {return new __PyZeroDivisionEr
 
 
 var __PyAttributeError__ = function (msg) {
-	__PyException__.call (this, `AttributeError: ${msg}`);
+	__PyException__.call (this, msg);
 	this.__class__ = __PyAttributeError__;
 }
 __PyAttributeError__.prototype = Object.create (__PyException__.prototype);
@@ -81,7 +93,7 @@ __PyAttributeError__.__call__ = function (msg) {return new __PyAttributeError__ 
 
 
 var __PyModuleNotFoundError__ = function (msg) {
-	__PyException__.call (this, `ModuleNotFoundError: ${msg}`);
+	__PyException__.call (this, msg);
 	this.__class__ = __PyModuleNotFoundError__;
 }
 __PyModuleNotFoundError__.prototype = Object.create (__PyException__.prototype);
