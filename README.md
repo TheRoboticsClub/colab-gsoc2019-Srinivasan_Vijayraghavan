@@ -28,3 +28,18 @@ This generates the file *out.js* which contains the generated code.
 js out.js
 ~~~
 Alternatively, it can be included in a webpage.
+
+### Interaction with WebSim
+To program your bot in websim using python3, you can use this tool. The file 'modules/Hal.py' contains the API that is supported.
+
+~~~python
+import HAL
+
+HAL.setV (12)
+HAL.setW (10)
+print ('US = ' + str (HAL.getUS ()))
+print ('IR = ' + str (HAL.getIR ()))
+
+print (HAL.getLaser ())
+print (HAL.getEncoders ())
+~~~
