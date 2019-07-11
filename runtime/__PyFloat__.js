@@ -34,8 +34,6 @@ __PyFloat__.prototype.__add__ = function (other) {
 		return new __PyFloat__ (this.x + other.x);
 	} else if (other instanceof __PyInt__) {
 		return new __PyFloat__ (this.x + other.x);
-	} else if (other instanceof __PyBool__) {
-		return (new __PyFloat__ (this.x + ((other === __PyTrue__) ? 1 : 0)));
 	}
 	return __PyNotImplemented__;
 }
@@ -44,8 +42,6 @@ __PyFloat__.prototype.__sub__ = function (other) {
 		return new __PyFloat__ (this.x - other.x);
 	} else if (other instanceof __PyInt__) {
 		return new __PyFloat__ (this.x - other.x);
-	} else if (other instanceof __PyBool__) {
-		return (new __PyFloat__ (this.x - ((other === __PyTrue__) ? 1 : 0)));
 	}
 	return __PyNotImplemented__;
 }
@@ -54,8 +50,6 @@ __PyFloat__.prototype.__div__ = function (other) {
 		return new __PyFloat__ (this.x / other.x);
 	} else if (other instanceof __PyInt__) {
 		return new __PyFloat__ (this.x / other.x);
-	} else if (other instanceof __PyBool__) {
-		return (new __PyFloat__ (this.x / ((other === __PyTrue__) ? 1 : 0)));
 	}
 	return __PyNotImplemented__;
 }
@@ -64,8 +58,6 @@ __PyFloat__.prototype.__mul__ = function (other) {
 		return new __PyFloat__ (this.x * other.x);
 	} else if (other instanceof __PyInt__) {
 		return new __PyFloat__ (this.x * other.x);
-	} else if (other instanceof __PyBool__) {
-		return (new __PyFloat__ (this.x * ((other === __PyTrue__) ? 1 : 0)));
 	}
 	return __PyNotImplemented__;
 }
@@ -80,18 +72,12 @@ __PyFloat__.prototype.__le__ = function (other) {
 	||	other instanceof __PyInt__) {
 		return (this.x <= other.x ? __PyTrue__ : __PyFalse__);
 	}
-	else if (other instanceof __PyBool__) {
-		return ((this.x <= ((other === __PyTrue__) ? 1 : 0)) ? __PyTrue__ : __PyFalse__);
-	}
 	return __PyNotImplemented__;
 }
 __PyFloat__.prototype.__lt__ = function (other) {
 	if (other instanceof __PyFloat__
 	||	other instanceof __PyInt__) {
 		return (this.x < other.x ? __PyTrue__ : __PyFalse__);
-	}
-	else if (other instanceof __PyBool__) {
-		return ((this.x < ((other === __PyTrue__) ? 1 : 0)) ? __PyTrue__ : __PyFalse__);
 	}
 	return __PyNotImplemented__;
 }
@@ -100,9 +86,6 @@ __PyFloat__.prototype.__ge__ = function (other) {
 	||	other instanceof __PyInt__) {
 		return (this.x >= other.x ? __PyTrue__ : __PyFalse__);
 	}
-	else if (other instanceof __PyBool__) {
-		return ((this.x >= ((other === __PyTrue__) ? 1 : 0)) ? __PyTrue__ : __PyFalse__);
-	}
 	return __PyNotImplemented__;
 }
 __PyFloat__.prototype.__gt__ = function (other) {
@@ -110,18 +93,12 @@ __PyFloat__.prototype.__gt__ = function (other) {
 	||	other instanceof __PyInt__) {
 		return (this.x > other.x ? __PyTrue__ : __PyFalse__);
 	}
-	else if (other instanceof __PyBool__) {
-		return ((this.x > ((other === __PyTrue__) ? 1 : 0)) ? __PyTrue__ : __PyFalse__);
-	}
 	return __PyNotImplemented__;
 }
 __PyFloat__.prototype.__eq__ = function (other) {
 	if (other instanceof __PyFloat__
 	||	other instanceof __PyInt__) {
 		return (this.x == other.x ? __PyTrue__ : __PyFalse__);
-	}
-	else if (other instanceof __PyBool__) {
-		return ((this.x == ((other === __PyTrue__) ? 1 : 0)) ? __PyTrue__ : __PyFalse__);
 	}
 	return __PyNotImplemented__;
 }
