@@ -2,6 +2,7 @@ var __PyList__ = function (l) {
 	this.l = l;
 	this.__class__ = __PyList__;
 }
+__PyList__.prototype = Object.assign (__PyList__.prototype, __PyObject__.prototype);
 __PyList__.__class__ = __PyType__;
 __PyList__.__name__ = new __PyStr__ ('list');
 __PyList__.__str__ = function () {return (new __PyStr__ (`<class 'list'>`));}

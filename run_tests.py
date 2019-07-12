@@ -89,6 +89,12 @@ False
 '''
 		self.assertEqual (output, expected)
 
+	def test_exception (self):
+		output = self.get_transpiler_output ('tests/test_exception.py')
+		expected = '''NameError: name 'a' is not defined
+'''
+		self.assertEqual (output, expected)
+
 if __name__ == '__main__':
 	try:
 		runtime_txt = open ('runtime.js', 'r').read ()

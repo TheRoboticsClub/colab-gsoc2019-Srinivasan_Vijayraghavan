@@ -3,7 +3,6 @@ var __PyInt__ = function (x) {
 	this.x = parseInt (x);
 	this.__class__ = __PyInt__;
 }
-
 __PyInt__.prototype = Object.create (__PyObject__.prototype);
 
 __PyInt__.__call__ = function (x) {

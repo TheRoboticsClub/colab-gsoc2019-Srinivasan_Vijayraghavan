@@ -590,9 +590,7 @@ class Visitor (ast.NodeVisitor):
 		self.write ('catch (e) {\n')
 		self.indent ()
 		if handlers is not None :
-			for handler in handlers :
-				print (handler)
-				self.visit (handler)
+			for handler in handlers: self.visit (handler)
 		self.write ('else {\n')
 		self.indent ()
 		self.write ('throw e;\n')
@@ -607,6 +605,9 @@ class Visitor (ast.NodeVisitor):
 		if (type is None and name is None):
 			for stmt in body: self.visit (stmt)
 			return
+		self.write ('if (__isexception__ (e)) {\n')
+
+		self.indent ()
 		self.write ('if (e instanceof ')
 		self.visit (type)
 		self.ostream.write (') {\n')
@@ -615,6 +616,9 @@ class Visitor (ast.NodeVisitor):
 		for stmt in body : self.visit (stmt)
 		self.unindent ()
 		self.write ('}\n')
+		self.unindent ();
+		self.write ('}\n')
+
 	def visit_alias (self, node):
 		pass
 
@@ -647,7 +651,16 @@ if __name__ == '__main__':
 		exit ()
 	pt = ast.parse (f.read ());
 	f = io.StringIO();
-	init = '''let __global__ = new Proxy (
+	init = '''
+	let handler = {
+		get (target, key, recv) {
+			if (! (key in target)) {
+				throw new __PyNameError__ (`name '${key}' is not defined`);
+			}
+			return target[key];
+		}
+	};
+	let __global__ = new Proxy (
 	{int : __PyInt__, float : __PyFloat__, bool : __PyBool__, str : __PyStr__, len : len,
 	print : print, type : type, range : __PyRange__,
 
@@ -658,15 +671,9 @@ if __name__ == '__main__':
 	AttributeError : __PyAttributeError__, ModuleNotFoundError : __PyModuleNotFoundError__,
 
 
-	}, {
-get (target, key, recv) {
-	if (! (key in target)) {
-		throw new __PyNameError__ (`name '${key}' is not defined`);
-	}
-	return target[key];
-}
-});
+	}, handler);
 let __scope__ = Object.assign ({}, __global__);
+__scope__ = new Proxy (__scope__, handler);
 '''
 	Visitor (f, init = init).visit (pt);
 

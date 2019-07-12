@@ -162,3 +162,18 @@ function __isinstance__ (v, t) {
 	}
 	return __getbool__ (v instanceof t);
 }
+function __isexception__ (e) {
+		if (e instanceof __PyBaseException__) {return true;}
+		throw new __PyTypeError__ (`catching classes that do not inherit from BaseException is not allowed`);
+}
+// function __catch__ (e, c) {
+// 	try {
+// 		if (e instanceof c) {
+// 			return true;
+// 		}
+// 		return false;
+// 	}
+// 	catch (e) {
+// 		throw new __PyTypeError__
+// 	}
+// }

@@ -2,7 +2,7 @@ var __PyBool__ = function (x) {
 	__PyInt__.call (this, x);
 	this.__class__ = __PyBool__;
 }
-// __PyBool__.prototype = Object.create (__PyInt__.prototype);
+__PyBool__.prototype = Object.create (__PyInt__.prototype);
 __PyBool__.__class__ = __PyType__;
 __PyBool__.__call__ = function (x) {
 	if ('__bool__' in x) {

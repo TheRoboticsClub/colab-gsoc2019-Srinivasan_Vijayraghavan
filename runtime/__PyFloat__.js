@@ -3,6 +3,7 @@ var __PyFloat__ = function (x) {
 	this.x = parseFloat (x);
 	this.__class__ = __PyFloat__;
 }
+__PyFloat__.prototype = Object.assign (__PyFloat__.prototype, __PyObject__.prototype);
 __PyFloat__.__class__ = __PyType__;
 __PyFloat__.__name__ = new __PyStr__ ('float');
 __PyFloat__.__str__ = function () {return (new __PyStr__ (`<class 'float'>`));}
