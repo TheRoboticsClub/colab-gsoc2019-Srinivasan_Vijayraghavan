@@ -587,19 +587,34 @@ class Visitor (ast.NodeVisitor):
 		self.unindent ()
 		self.write ('}')
 
-		self.write ('catch (e) {')
+		self.write ('catch (e) {\n')
 		self.indent ()
-		for handler in handlers : self.visit (handler)
+		if handlers is not None :
+			for handler in handlers :
+				print (handler)
+				self.visit (handler)
+		self.write ('else {\n')
+		self.indent ()
+		self.write ('throw e;\n')
+		self.unindent ()
+		self.write ('}')
+
 		self.unindent ()
 		self.write ('};\n')
 
 	def visit_ExceptHandler (self, node):
 		type, name, body = node.type, node.name, node.body
-		if (type is not None and name is not None):
-			print ('Complex exceptions are not supported yet.')
-			exit ()
-		for stmt in body: self.visit (stmt)
-
+		if (type is None and name is None):
+			for stmt in body: self.visit (stmt)
+			return
+		self.write ('if (e instanceof ')
+		self.visit (type)
+		self.ostream.write (') {\n')
+		self.indent ()
+		self.write (f'{self.scope}.{name} = e;\n')
+		for stmt in body : self.visit (stmt)
+		self.unindent ()
+		self.write ('}\n')
 	def visit_alias (self, node):
 		pass
 
