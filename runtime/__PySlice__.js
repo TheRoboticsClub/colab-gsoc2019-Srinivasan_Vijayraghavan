@@ -5,6 +5,7 @@ var __PySlice__ = function (lower, upper, step) {
 
 	this.__class__ = __PySlice__;
 }
+__PySlice__.__class__ = __PyType__;
 __PySlice__.__name__ = new __PyStr__ ('slice');
 __PySlice__.__str__ = function () {return (new __PyStr__ (`<class 'slice'>`));}
 

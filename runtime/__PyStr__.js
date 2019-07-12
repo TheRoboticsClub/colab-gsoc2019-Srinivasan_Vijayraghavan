@@ -2,6 +2,7 @@ var __PyStr__ = function (x) {
 	this.x = String (x);
 	this.__class__ = __PyStr__;
 }
+__PyStr__.__class__ = __PyType__;
 __PyStr__.__name__ = new __PyStr__ ('str');
 __PyStr__.__call__ = function (x) {
 	if (x instanceof __PyStr__) {

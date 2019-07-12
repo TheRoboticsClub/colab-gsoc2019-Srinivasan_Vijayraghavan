@@ -1,6 +1,7 @@
 var __PyNoneType__ = function () {
 	this.__class__ = __PyNoneType__;
 }
+__PyNoneType__.__class__ = __PyType__;
 __PyNoneType__.__name__ = new __PyStr__ ('NoneType');
 __PyNoneType__.prototype.__str__ = function () {
 	return (new __PyStr__ ('None'))

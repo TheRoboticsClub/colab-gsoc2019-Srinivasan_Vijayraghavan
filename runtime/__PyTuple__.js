@@ -3,7 +3,7 @@ var __PyTuple__ = function (t) {
 	this.__size__ = new __PyInt__ (t.length);
 	this.__class__ = __PyTuple__;
 }
-
+__PyTuple__.__class__ = __PyType__;
 __PyTuple__.__name__ = new __PyStr__ ('tuple');
 __PyTuple__.__str__ = function () {return (new __PyStr__ (`<class 'tuple'>`));}
 __PyTuple__.__call__ = function (t) {return new __PyTuple__ (t);}

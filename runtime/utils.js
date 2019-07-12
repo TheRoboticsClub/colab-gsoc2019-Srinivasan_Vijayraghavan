@@ -156,3 +156,9 @@ function __raise__ (o) {
 	if (o instanceof __PyBaseException__) {throw o;}
 	throw new __PyTypeError__ (`exceptions must derive from BaseException`);
 }
+function __isinstance__ (v, t) {
+	if (t.__class__ !== __PyType__) {
+		throw new __PyTypeError__ (`isinstance() arg 2 must be a type`);
+	}
+	return __getbool__ (v instanceof t);
+}

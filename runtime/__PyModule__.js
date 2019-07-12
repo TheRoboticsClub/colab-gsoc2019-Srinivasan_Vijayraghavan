@@ -3,6 +3,7 @@ var __PyModule__ = function (name, dict) {
 	this.__name__ = name;
 	this.__dict__ = dict;
 }
+__PyModule__.__class__ = __PyType__;
 __PyModule__.__name__ = new __PyStr__ ('module');
 __PyModule__.__str__ = function () {return (new __PyStr__ (`<class 'module'>`));}
 

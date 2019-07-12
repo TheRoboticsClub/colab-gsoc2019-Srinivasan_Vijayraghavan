@@ -23,6 +23,7 @@ __PyInt__.__call__ = function (x) {
 		}
 	}
 }
+__PyInt__.__class__ = __PyType__;
 __PyInt__.__name__ = new __PyStr__ ('int');
 __PyInt__.__str__ = function () {return (new __PyStr__ (`<class 'int'>`));}
 __PyInt__.prototype.__int__ = function () {return this;}

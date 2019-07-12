@@ -22,3 +22,6 @@ function make_array (init = []) {
 		}
 	});
 }
+
+function __PyType__ () {}
+__PyType__.__class__ = __PyType__;
