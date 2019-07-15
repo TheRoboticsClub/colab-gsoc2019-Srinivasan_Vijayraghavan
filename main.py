@@ -663,7 +663,8 @@ if __name__ == '__main__':
 	};
 	let __global__ = new Proxy (
 	{int : __PyInt__, float : __PyFloat__, bool : __PyBool__, str : __PyStr__, len : len,
-	print : print, type : type, range : __PyRange__,
+	print : print, type : type, range : __PyRange__, object : __PyObject__, type : __PyType__,
+	slice : __PySlice__,
 
 	BaseException : __PyBaseException__, Exception : __PyException__,
 	TypeError : __PyTypeError__, NameError: __PyNameError__,

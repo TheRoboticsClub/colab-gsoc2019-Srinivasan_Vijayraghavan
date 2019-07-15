@@ -1,10 +1,12 @@
 var __PyFunction__ = function (name, posargs, defaults, f) {
+	__PyObject__.call (this);
 	this.fvalue = f;
 	this.__name__ = new __PyStr__ (name);
 	this.__class__ = __PyFunction__;
 	this.__defaults__ = defaults;
 	this.__posargs__ = posargs;
 }
+__PyFunction__.prototype = Object.assign (__PyFunction__.prototype, __PyObject__.prototype);
 __PyFunction__.__call__ = function (name, f) {return new __PyFunction__ (f);}
 __PyFunction__.__str__ = function () {return (new __PyStr__ (`<class 'function'>`));}
 

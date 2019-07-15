@@ -1,4 +1,5 @@
 var __PyList__ = function (l) {
+	__PyObject__.call (this);
 	this.l = l;
 	this.__class__ = __PyList__;
 }

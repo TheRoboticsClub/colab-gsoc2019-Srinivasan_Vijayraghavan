@@ -1,4 +1,5 @@
 var __PyTuple__ = function (t) {
+	__PyObject__.call (this);
 	this.t = t;
 	this.__size__ = new __PyInt__ (t.length);
 	this.__class__ = __PyTuple__;

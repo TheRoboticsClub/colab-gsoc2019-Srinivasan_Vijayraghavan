@@ -1,7 +1,9 @@
 var __PyStr__ = function (x) {
+	__PyObject__.call (this);
 	this.x = String (x);
 	this.__class__ = __PyStr__;
 }
+__PyStr__.prototype = Object.create (__PyObject__.prototype);
 __PyStr__.__class__ = __PyType__;
 __PyStr__.__name__ = new __PyStr__ ('str');
 __PyStr__.__call__ = function (x) {
@@ -45,3 +47,11 @@ __PyStr__.prototype.__iter__ = function * () {
 		yield (new __PyStr__ (x));
 	}
 }
+
+
+// Add __str__ method for object, type.
+__PyObject__.__name__ = new __PyStr__ ('object');
+__PyObject__.__str__ = function () {return (new __PyStr__ (`<class 'object'>`));}
+
+__PyType__.__name__ = new __PyStr__ ('type');
+__PyType__.__str__ = function () {return (new __PyStr__ (`<class 'type'>`));}

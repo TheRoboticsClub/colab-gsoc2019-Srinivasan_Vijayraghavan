@@ -1,9 +1,11 @@
 var __PyRange__ = function (start, stop, step = 1) {
+	__PyObject__.call (this);
 	this.start = start;
 	this.stop = stop;
 	this.step = step;
 	this.__class__ = __PyRange__;
 }
+__PyRange__.prototype = Object.create (__PyRange__.prototype);
 __PyRange__.__class__ = __PyType__;
 __PyRange__.__name__ = new __PyStr__ ('range');
 __PyRange__.__call__ = function () {

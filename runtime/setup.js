@@ -23,5 +23,7 @@ function make_array (init = []) {
 	});
 }
 
-function __PyType__ () {}
+function __PyType__ () {
+	__PyObject__.call (this);
+}
 __PyType__.__class__ = __PyType__;

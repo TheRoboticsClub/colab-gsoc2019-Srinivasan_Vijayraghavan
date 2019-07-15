@@ -1,10 +1,12 @@
 var __PySlice__ = function (lower, upper, step) {
+	__PyObject__.call (this);
 	this.lower = lower;
 	this.upper = upper;
 	this.step = step;
 
 	this.__class__ = __PySlice__;
 }
+__PySlice__.prototype = Object.create (__PyObject__.prototype);
 __PySlice__.__class__ = __PyType__;
 __PySlice__.__name__ = new __PyStr__ ('slice');
 __PySlice__.__str__ = function () {return (new __PyStr__ (`<class 'slice'>`));}
