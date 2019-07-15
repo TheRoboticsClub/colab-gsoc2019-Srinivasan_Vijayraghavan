@@ -117,12 +117,48 @@ function __mod__ (a, b) {
 		return a.__mod__ (b);
 	}
 }
-function __gt__ (a, b) {return a.__gt__ (b);}
-function __ge__ (a, b) {return a.__ge__ (b);}
-function __lt__ (a, b) {return a.__lt__ (b);}
-function __le__ (a, b) {return a.__le__ (b);}
-function __eq__ (a, b) {return a.__eq__ (b);}
-function __neq__ (a, b) {return a.__eq__ (b) === __PyTrue__ ? __PyFalse__ : __PyTrue__;}
+function __gt__ (a, b) {
+	let ret = a.__gt__ (b);
+	if (ret === __PyNotImplemented__) {
+		throw new __PyTypeError__ (`'>' not supported between instances of '${a.__class__.__name__}' and '${b.__class__.__name__}'`);
+	}
+	return ret;
+}
+function __ge__ (a, b) {
+	let ret = a.__ge__ (b);
+	if (ret === __PyNotImplemented__) {
+		throw new __PyTypeError__ (`'>=' not supported between instances of '${a.__class__.__name__}' and '${b.__class__.__name__}'`);
+	}
+	return ret;
+}
+function __lt__ (a, b) {
+	let ret = a.__lt__ (b);
+	if (ret === __PyNotImplemented__) {
+		throw new __PyTypeError__ (`'<' not supported between instances of '${a.__class__.__name__}' and '${b.__class__.__name__}'`);
+	}
+	return ret;
+}
+function __le__ (a, b) {
+	let ret = a.__le__ (b);
+	if (ret === __PyNotImplemented__) {
+		throw new __PyTypeError__ (`'<=' not supported between instances of '${a.__class__.__name__}' and '${b.__class__.__name__}'`);
+	}
+	return ret;
+}
+function __eq__ (a, b) {
+	let ret = a.__eq__ (b);
+	if (ret === __PyNotImplemented__) {
+		throw new __PyTypeError__ (`'==' not supported between instances of '${a.__class__.__name__}' and '${b.__class__.__name__}'`);
+	}
+	return ret;
+}
+function __neq__ (a, b) {
+	let ret = a.__neq__ (b);
+	if (ret === __PyNotImplemented__) {
+		throw new __PyTypeError__ (`'==' not supported between instances of '${a.__class__.__name__}' and '${b.__class__.__name__}'`);
+	}
+	return ret;
+}
 function __is__ (a, b) {return __getbool__ (a === b);}
 function __isnot__ (a, b) {return __getbool__ (a !== b);}
 
@@ -177,3 +213,25 @@ function __isexception__ (e) {
 // 		throw new __PyTypeError__
 // 	}
 // }
+
+function __getfuncscope__ (parscope, __globalvars__, __localvars__) {
+	return new Proxy ({__parscope__ : parscope}, {
+		get (target, key, recv) {
+			if (key in __localvars__) {
+				if (key in target) {
+					return target[key];
+				}
+				throw new __PyUnboundLocalError__ (`name '${key}' referenced before assginment`);
+			} else if (! (key in target)) {
+				return target['__parscope__'][key];
+			}
+			return target[key];
+		},
+		set (target, key, value, recv) {
+			if (key in __globalvars__) {
+				target['__parscope__'][key] = value;
+			} else {
+				target[key] = value;
+			}
+	}});
+}

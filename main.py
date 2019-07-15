@@ -451,28 +451,29 @@ class Visitor (ast.NodeVisitor):
 		for lv in local_vars:
 			self.ostream.write (f"'{lv}' : true, ")
 		self.ostream.write ('};\n')
-		self.ostream.write ('''
-	let ''' +  (self.scope + '_') + ''' = new Proxy ({__parscope__ : ''' + self.scope + '''}, {
-		get (target, key, recv) {
-			if (key in __localvars__) {
-				if (key in target) {
-					return target[key];
-				}
-				throw new __PyUnboundLocalError__ (`name '${key}' referenced before assginment`);
-			} else if (! (key in target)) {
-				return target['__parscope__'][key];
-			}
-			return target[key];
-		},
-		set (target, key, value, recv) {
-			if (key in __globalvars__) {
-				__scope__[key] = value;
-			} else {
-				target[key] = value;
-			}
-	}});
-		''')
+	# 	self.ostream.write ('''
+	# let ''' +  (self.scope + '_') + ''' = new Proxy ({__parscope__ : ''' + self.scope + '''}, {
+	# 	get (target, key, recv) {
+	# 		if (key in __localvars__) {
+	# 			if (key in target) {
+	# 				return target[key];
+	# 			}
+	# 			throw new __PyUnboundLocalError__ (`name '${key}' referenced before assginment`);
+	# 		} else if (! (key in target)) {
+	# 			return target['__parscope__'][key];
+	# 		}
+	# 		return target[key];
+	# 	},
+	# 	set (target, key, value, recv) {
+	# 		if (key in __globalvars__) {
+	# 			__scope__[key] = value;
+	# 		} else {
+	# 			target[key] = value;
+	# 		}
+	# }});
+	# 	''')
 
+		self.write (f'let {self.scope}_ = __getfuncscope__ ({self.scope}, __globalvars__, __localvars__);\n')
 		prev = self.global_vars.copy()
 
 		current_scope = self.scope
