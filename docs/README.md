@@ -39,9 +39,22 @@ WebSim is a web-based robot simulator. It is used as a tool for learning robot p
 
 ## Weekly Documentation
 
+### Week-7
+#### Status/Delivarables
+- [x] Minor enhancements, tweaks
+- [x] Exception handling
+
+Minor enhancements includes inheriting from the Object type. This is important since every object in python3 has methods such as \_\_gt\_\_, \_\_ge\_\_, \_\_lt\_\_, etc.
+And when such operations are performed, appropriate action must be taken. In the implementation however, I had forgotten to inherit from the Object type and hence, it resulted in a few bugs.
+Other enhancements includes adding the type of each class, etc.
+
+Exception handling is actually a challenging construct, since if it has to be done properly, we need access to the callstack. We cannot use JS's builtin exceptions since the actual functions that are executed will be different in the generated JS code and will only confuse the programmer as to what is causing the exception in the first place.
+The exception handling that is currently supported is very primitive, in that it does not indicate the line number as to where the exception was thrown, and does not indicate the traceback of calls of the exception.
+I'm still discussing with my mentor as to how this might be handled (either with a fake callstack or something else).
+
 ### Week-6
 #### Status/Deliverables
-- [ ] Import Statements
+- [x] Import Statements
 
 Handling import statements in python3 is similar to what we have in JS. However, since this code will be run on a browser, module imports are not handled well. Therefore, imports must be implemented from scratch.
 When a module is imported such as,
