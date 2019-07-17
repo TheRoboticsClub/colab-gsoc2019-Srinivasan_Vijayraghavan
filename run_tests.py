@@ -95,6 +95,21 @@ False
 '''
 		self.assertEqual (output, expected)
 
+	def test_dict (self):
+		output = self.get_transpiler_output ('tests/test_dict.py')
+		expected = '''20365011074
+(2, 2)
+(3, 3)
+(4, 5)
+(5, 8)
+(6, 13)
+(7, 21)
+(8, 34)
+(9, 55)
+(10, 89)
+(11, 144)
+'''
+		self.assertEqual (output, expected)
 if __name__ == '__main__':
 	try:
 		runtime_txt = open ('runtime.js', 'r').read ()
