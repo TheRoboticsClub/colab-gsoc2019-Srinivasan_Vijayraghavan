@@ -96,3 +96,11 @@ __PyList__.prototype.__iter__ = function * () {
 		yield x;
 	}
 }
+__PyList__.prototype.__contains__ = function (x) {
+	for (let el of l) {
+		if (__getjsbool__ (__eq__ (x, el))) {
+			return __PyTrue__;
+		}
+	}
+	return __PyFalse__;
+}

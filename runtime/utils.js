@@ -148,14 +148,14 @@ function __le__ (a, b) {
 function __eq__ (a, b) {
 	let ret = a.__eq__ (b);
 	if (ret === __PyNotImplemented__) {
-		throw new __PyTypeError__ (`'==' not supported between instances of '${a.__class__.__name__}' and '${b.__class__.__name__}'`);
+		return __PyFalse__;
 	}
 	return ret;
 }
 function __neq__ (a, b) {
 	let ret = a.__neq__ (b);
 	if (ret === __PyNotImplemented__) {
-		throw new __PyTypeError__ (`'==' not supported between instances of '${a.__class__.__name__}' and '${b.__class__.__name__}'`);
+		return __PyFalse__;
 	}
 	return ret;
 }
@@ -234,4 +234,22 @@ function __getfuncscope__ (parscope, __globalvars__, __localvars__) {
 				target[key] = value;
 			}
 	}});
+}
+
+function __in__ (v, c) {
+	if ('__contains__' in c) {
+		return c.__contains__ (v);
+	}
+	throw new __PyTypeError__ (`argument of type '${this.__class__.__name__}' is not iterable`);
+}
+function __not__ (x) {
+	return __getbool__ (x.__bool__ () !== __PyTrue__);
+}
+function __notin__ (v, c) {
+	if ('__contains__' in c) {
+		if (c.__contains__ (v)) {
+			return __PyFalse__;
+		}
+	}
+	return __PyTrue__;
 }

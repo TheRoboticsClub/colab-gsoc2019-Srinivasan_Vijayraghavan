@@ -35,6 +35,6 @@ __PyBool__.prototype.__or__ = function (other) {
 }
 
 function __getbool__ (x) {return (x == true) ? __PyTrue__ : __PyFalse__;}
-
+function __getjsbool__ (x) {return x.__bool__ () === __PyTrue__;}
 const __PyTrue__ = new __PyBool__ (1);
 const __PyFalse__ = new __PyBool__ (0);

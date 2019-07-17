@@ -98,6 +98,22 @@ class Visitor (ast.NodeVisitor):
 
 		self.in_exp = prev
 
+	def visit_Dict (self, node):
+		keys, values = node.keys, node.values
+		self.ostream.write ('new __PyDict__ ([')
+		prev_in_exp = self.in_exp
+		self.in_exp = True
+		for k, v in zip (keys, values):
+			self.ostream.write ('[')
+			self.visit (k)
+			self.ostream.write (',')
+			self.visit (v)
+			self.ostream.write (']')
+
+			self.ostream.write (', ')
+
+		self.ostream.write ('])')
+		self.in_exp = prev_in_exp
 	# Exprs
 	def visit_UnaryOp (self, node):
 		prev = self.in_exp
@@ -297,6 +313,10 @@ class Visitor (ast.NodeVisitor):
 		self.ostream.write ('__mod__')
 	def visit_And (self, _):
 		self.ostream.write ('__and__')
+	def visit_In (self, _):
+		self.ostream.write ('__in__')
+	def visit_NotIn (self, _):
+		self.ostream.write ('__notin__')
 
 	def visit_Or (self, _):
 		self.ostream.write ('__or__')

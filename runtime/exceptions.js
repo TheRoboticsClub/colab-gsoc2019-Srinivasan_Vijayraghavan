@@ -102,3 +102,13 @@ __PyModuleNotFoundError__.prototype = Object.create (__PyException__.prototype);
 __PyModuleNotFoundError__.__str__ = function () {return (new __PyStr__ (`<class 'ModuleNotFoundError'>`));}
 __PyModuleNotFoundError__.__name__ = new __PyStr__ ('ModuleNotFoundError');
 __PyModuleNotFoundError__.__call__ = function (msg) {return new __PyModuleNotFoundError__ (msg);}
+
+
+var __PyKeyError__ = function (msg) {
+	__PyException__.call (this, msg);
+	this.__class__ = __PyNameError__;
+}
+__PyKeyError__.prototype = Object.create (__PyException__.prototype);
+__PyKeyError__.__str__ = function () {return (new __PyStr__ (`<class 'KeyError'>`));}
+__PyKeyError__.__name__ = new __PyStr__ ('KeyError');
+__PyKeyError__.__call__ = function (msg) {return new __PyNameError__ (msg);}
