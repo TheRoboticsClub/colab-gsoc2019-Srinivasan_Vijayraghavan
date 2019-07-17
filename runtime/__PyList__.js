@@ -46,7 +46,9 @@ __PyList__.prototype.__str__ = function () {
 		ret += this.l[i].__str__ ().toString ();
 		ret += ', '
 	}
-	ret += this.l[this.l.length - 1].__str__ ().toString ();
+	if (this.l.length > 0) {
+		ret += this.l[this.l.length - 1].__str__ ().toString ();
+	}
 	ret += ']'
 	return (new __PyStr__ (ret));
 }
