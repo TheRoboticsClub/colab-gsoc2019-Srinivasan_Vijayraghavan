@@ -100,19 +100,25 @@ class Visitor (ast.NodeVisitor):
 
 	def visit_Dict (self, node):
 		keys, values = node.keys, node.values
-		self.ostream.write ('new __PyDict__ ([')
+		self.ostream.write ('new __PyDict__ (')
 		prev_in_exp = self.in_exp
 		self.in_exp = True
-		for k, v in zip (keys, values):
-			self.ostream.write ('[')
+
+		self.ostream.write ('[')
+		for k in keys:
 			self.visit (k)
-			self.ostream.write (',')
-			self.visit (v)
-			self.ostream.write (']')
-
 			self.ostream.write (', ')
+		self.ostream.write (']')
 
-		self.ostream.write ('])')
+		self.ostream.write (', ')
+
+		self.ostream.write ('[')
+		for v in values:
+			self.visit (v)
+			self.ostream.write (', ')
+		self.ostream.write (']')
+
+		self.ostream.write (')')
 		self.in_exp = prev_in_exp
 	# Exprs
 	def visit_UnaryOp (self, node):
@@ -683,7 +689,7 @@ if __name__ == '__main__':
 	};
 	let __global__ = new Proxy (
 	{int : __PyInt__, float : __PyFloat__, bool : __PyBool__, str : __PyStr__, len : len,
-	print : print, type : type, range : __PyRange__, object : __PyObject__, type : __PyType__,
+	print : print, range : __PyRange__, object : __PyObject__, type : __PyType__,
 	slice : __PySlice__,
 
 	BaseException : __PyBaseException__, Exception : __PyException__,

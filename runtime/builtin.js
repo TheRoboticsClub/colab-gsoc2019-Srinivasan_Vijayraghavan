@@ -12,10 +12,6 @@ var range = new __PyFunction__ (new __PyStr__ ('range'), function (start, end, s
 	return (new __PyRange__ (start, end, step));
 });
 
-var type = new __PyFunction__ (new __PyStr__ ('type'), function (x) {
-	return (x.__class__);
-});
-
 var len = new __PyFunction__ (new __PyStr__ ('len'), [], [], function (x) {
 	if ('__len__' in x) {
 		return x.__len__ ();

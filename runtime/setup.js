@@ -1,5 +1,3 @@
-Function.prototype.__eq__ = function (other) {return __getbool__ (this == other);}
-
 function make_array (init = []) {
 	return new Proxy (init, {
 		get (target, key, recv) {
@@ -27,3 +25,6 @@ function __PyType__ () {
 	__PyObject__.call (this);
 }
 __PyType__.__class__ = __PyType__;
+__PyType__.__call__ = function (x) {
+	return x.__class__;
+}
