@@ -20,7 +20,9 @@ class FuncVisitor (ast.NodeVisitor):
 	def visit_Assign (self, node):
 		targets = node.targets
 		for target in targets:
-			if (not isinstance (target, ast.Tuple)):
+			if (isinstance (target, ast.Subscript)):
+				self.visit (target.value)
+			elif (not isinstance (target, ast.Tuple)):
 				if (target.id not in self.global_vars):
 					self.local_vars.append (target.id)
 	def visit_Global (self, node):
@@ -379,18 +381,19 @@ class Visitor (ast.NodeVisitor):
 		self.indent_level -= 1
 		self.write ('}\n')
 
-		for elseif in orelse[:-1]:
-			self.write ('else {\n')
+		self.write ('else {\n')
+		for elseif in orelse:
 			self.indent_level += 1
 			self.visit (elseif)
 			self.indent_level -= 1
+		self.ostream.write ('}\n')
 
-		if (len (orelse) > 0):
-			self.write ('else {\n')
-			self.indent_level += 1
-			self.visit (orelse[-1])
-			self.indent_level -= 1
-			self.write ('}\n')
+		# if (len (orelse) > 0):
+		# 	self.write ('else {\n')
+		# 	self.indent_level += 1
+		# 	self.visit (orelse[-1])
+		# 	self.indent_level -= 1
+		# 	self.write ('}\n')
 
 	def visit_While (self, node):
 		test, body = node.test, node.body
@@ -690,7 +693,7 @@ if __name__ == '__main__':
 	let __global__ = new Proxy (
 	{int : __PyInt__, float : __PyFloat__, bool : __PyBool__, str : __PyStr__, len : len,
 	print : print, range : __PyRange__, object : __PyObject__, type : __PyType__,
-	slice : __PySlice__,
+	slice : __PySlice__, dict : __PyDict__,
 
 	BaseException : __PyBaseException__, Exception : __PyException__,
 	TypeError : __PyTypeError__, NameError: __PyNameError__,

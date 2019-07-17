@@ -3,7 +3,14 @@ var __PyDict__ = function (keys, values) {
 	this.keys = keys;
 	this.values = values;
 	this.__class__ = __PyDict__;
-	this.__dict__ = {'items' : __PyDict__.prototype.items.bind (this)};
+	this.__dict__ = {
+		'items' : __PyDict__.prototype.items.bind (this),
+		'keys' : __PyDict__.prototype.keys.bind (this),
+		'values' : __PyDict__.prototype.values.bind (this),
+		'clear' : __PyDict__.prototype.clear.bind (this),
+		'items' : __PyDict__.prototype.items.bind (this),
+		'pop' : __PyDict__.prototype.pop.bind (this),
+	};
 }
 
 __PyDict__.__class__ = __PyType__;
@@ -64,10 +71,35 @@ __PyDict__.prototype.__iter__ = function * () {
 		yield x;
 	}
 }
+
+// API
+__PyDict__.prototype.keys = function () {
+	return new __PyList__ (this.keys);
+}
+__PyDict__.prototype.values = function () {
+	return new __PyList__ (this.values);
+}
+__PyDict__.prototype.clear = function () {
+	this.keys = [];
+	this.values = [];
+	return __PyNone__;
+}
 __PyDict__.prototype.items = function () {
 	let n = this.keys.length, l = [];
 	for (let i = 0; i < n; i++) {
 		l.push (new __PyTuple__ ([this.keys[i], this.values[i]]));
 	}
 	return new __PyList__ (l);
+}
+__PyDict__.prototype.pop = function (k) {
+	for (let i = 0; i < n; i++) {
+		if (__getjsbool__ (__eq__ (this.keys[i], k))) {
+			let ret = this.values[i];
+			this.keys.splice (i, 1);
+			this.values.splice (i, 1);
+
+			return ret;
+		}
+	}
+	throw new __PyKeyError__ (`${k.__class__.__name__}`);
 }
