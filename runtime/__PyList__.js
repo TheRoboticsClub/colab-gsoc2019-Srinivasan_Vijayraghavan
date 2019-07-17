@@ -2,6 +2,13 @@ var __PyList__ = function (l) {
 	__PyObject__.call (this);
 	this.l = l;
 	this.__class__ = __PyList__;
+	this.__dict__ = {'append' : __PyList__.prototype.append.bind (this),
+		'append' : __PyList__.prototype.append.bind (this),
+		'pop' : __PyList__.prototype.pop.bind (this),
+		'clear' : __PyList__.prototype.clear.bind (this),
+		'reverse' : __PyList__.prototype.reverse.bind (this),
+		'copy' : __PyList__.prototype.copy.bind (this),
+	}
 }
 __PyList__.prototype = Object.assign (__PyList__.prototype, __PyObject__.prototype);
 __PyList__.__class__ = __PyType__;
@@ -106,3 +113,10 @@ __PyList__.prototype.__contains__ = function (x) {
 	}
 	return __PyFalse__;
 }
+
+// API
+__PyList__.prototype.append = function (x) {this.l.push (x); return __PyNone__;}
+__PyList__.prototype.pop = function (x) {return this.l.pop();}
+__PyList__.prototype.clear = function (x) {this.l = []; return __PyNone__;}
+__PyList__.prototype.reverse = function (x) {this.l.reverse (); return __PyNone__;}
+__PyList__.prototype.copy = function (x) {return new __PyList__ (this.l.slice ());}
