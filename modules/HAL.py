@@ -15,3 +15,6 @@ def getLaser ():
 
 def getEncoders ():
 	pass
+
+def getV (): pass
+def getW (): pass

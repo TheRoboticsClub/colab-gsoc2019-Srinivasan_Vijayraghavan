@@ -14,19 +14,21 @@
 
 	"setV" : [
 		"new __PyFunction__ ('setV',['linearSpeed', ], [] , function (linearSpeed, ) {",
-			"let __scope___ = __scope__;",
-			"__scope___.linearSpeed = linearSpeed;",
-			"__call__((__scope___.print))((__add__((new __PyStr__ ('setting V=')),__call__((__scope___.str))((__scope___.linearSpeed), ))), );",
-		"return __PyNone__;",
+			"if (linearSpeed.__class__ !== __PyInt__ && linearSpeed.__class__ !== __PyFloat__) {",
+				"throw new __PyTypeError__ ('linear speed argument must be of type int or float');",
+			"}",
+			"myRobot.setV (linearSpeed.x);",
+			"return __PyNone__;",
 		"});"
 	],
 
 	"setW" : [
 		"new __PyFunction__ ('setW',['angularSpeed', ], [] , function (angularSpeed, ) {",
-			"let __scope___ = __scope__;",
-			"__scope___.angularSpeed = angularSpeed;",
-			"__call__((__scope___.print))((__add__((new __PyStr__ ('setting W=')),__call__((__scope___.str))((__scope___.angularSpeed), ))), );",
-		"return __PyNone__;",
+			"if (angularSpeed.__class__ !== __PyInt__ && angularSpeed.__class__ !== __PyFloat__) {",
+				"throw new __PyTypeError__ ('angular speed argument must be of type int or float');",
+			"}",
+			"myRobot.setV (angularSpeed.x);",
+			"return __PyNone__;",
 		"});"
 	],
 
@@ -39,6 +41,17 @@
 	"getLaser" : [
 		"new __PyFunction__ ('getLaser',[], [] , function () {",
 					"return __PyFalse__;",
+		"});"
+	],
+	"getV" : [
+		"new __PyFunction__ ('getV',[], [] , function () {",
+			"return new __PyFloat__ (myRobot.getV ());",
+		"});"
+	],
+
+	"getW" : [
+		"new __PyFunction__ ('getW',[], [] , function () {",
+			"return new __PyFloat__ (myRobot.getW ());",
 		"});"
 	]
 }

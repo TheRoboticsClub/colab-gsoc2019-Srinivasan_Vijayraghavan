@@ -47,6 +47,7 @@ class Visitor (ast.NodeVisitor):
 		self.scope = scope
 		self.indent_level = 0;
 		self.exp = 0
+		self.currnode = None
 		self.write (init)
 		if (subfile is not None):
 			try :
@@ -220,6 +221,7 @@ class Visitor (ast.NodeVisitor):
 		self.in_exp = False;
 
 	def visit_Assign (self, node):
+		self.currnode = node
 		targets, value = node.targets, node.value
 		for target in targets:
 			if (isinstance (target, ast.Tuple)):
@@ -654,6 +656,7 @@ class Visitor (ast.NodeVisitor):
 
 	# utility functions
 	def write (self, stmt):
+		if (self.currnode is not None): self.write (f'/* {self.currnode.lineno} */')
 		self.write_indent()
 		self.ostream.write (stmt)
 	def write_indent (self):
@@ -715,7 +718,7 @@ __scope__ = new Proxy (__scope__, handler);
 		os.system ('python3 build_runtime.py')
 		fr = open ('runtime.js', 'r')
 
-	fp.write (fr.read())
+	# fp.write (fr.read())
 	fp.write ('\n//Translated code below\ntry {')
 	fp.write (f.getvalue())
 	fp.write ('} catch (e) {\nif (e instanceof Error) {\nconsole.log (e);\n} else {\nprint.__call__ (e);\n}}')
