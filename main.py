@@ -47,7 +47,7 @@ class Visitor (ast.NodeVisitor):
 		self.scope = scope
 		self.indent_level = 0;
 		self.exp = 0
-		self.currnode = None
+		self.curr_lineno = 0
 		self.write (init)
 		if (subfile is not None):
 			try :
@@ -180,6 +180,7 @@ class Visitor (ast.NodeVisitor):
 	def visit_Call (self, node):
 		func, args = node.func, node.args
 		if (not self.in_exp):
+			self.curr_lineno = node.lineno
 			self.write ("")
 
 		# __call__ primitive in 'utils.js' returns the __call__ method from the object.
@@ -221,7 +222,11 @@ class Visitor (ast.NodeVisitor):
 		self.in_exp = False;
 
 	def visit_Assign (self, node):
-		self.currnode = node
+
+		self.curr_lineno = node.lineno
+		self.write_lineno ()
+		self.write_indent ()
+
 		targets, value = node.targets, node.value
 		for target in targets:
 			if (isinstance (target, ast.Tuple)):
@@ -368,6 +373,7 @@ class Visitor (ast.NodeVisitor):
 	# Control Flow
 
 	def visit_If (self, node):
+		self.curr_lineno = node.lineno
 		test, body, orelse = node.test, node.body, node.orelse
 		self.write ('if ( (')
 
@@ -451,7 +457,7 @@ class Visitor (ast.NodeVisitor):
 	# FunctionDef
 	def visit_FunctionDef (self, node):
 		name, args, body = node.name, node.args, node.body
-
+		self.curr_lineno = node.lineno
 		self.write (f'{self.scope}.{name}')
 
 		if (self.substitute is not None):
@@ -563,6 +569,8 @@ class Visitor (ast.NodeVisitor):
 			self.global_vars.append (name)
 
 	def visit_Return (self, node):
+		self.curr_lineno = node.lineno
+
 		value = node.value
 		prev = self.in_exp
 		self.in_exp = True
@@ -612,7 +620,7 @@ class Visitor (ast.NodeVisitor):
 
 	def visit_Try (self, node):
 		body, handlers = node.body, node.handlers
-
+		self.curr_lineno = node.lineno
 		self.write ('try {')
 		self.indent ()
 		for stmt in body: self.visit (stmt)
@@ -655,8 +663,10 @@ class Visitor (ast.NodeVisitor):
 		pass
 
 	# utility functions
+	def write_lineno (self):
+		self.ostream.write (f'/* {self.curr_lineno} */')
 	def write (self, stmt):
-		if (self.currnode is not None): self.write (f'/* {self.currnode.lineno} */')
+		self.write_lineno ()
 		self.write_indent()
 		self.ostream.write (stmt)
 	def write_indent (self):
@@ -718,8 +728,8 @@ __scope__ = new Proxy (__scope__, handler);
 		os.system ('python3 build_runtime.py')
 		fr = open ('runtime.js', 'r')
 
-	# fp.write (fr.read())
-	fp.write ('\n//Translated code below\ntry {')
+	fp.write (fr.read())
+	fp.write ('\n//Translated code below\ntry {\n')
 	fp.write (f.getvalue())
 	fp.write ('} catch (e) {\nif (e instanceof Error) {\nconsole.log (e);\n} else {\nprint.__call__ (e);\n}}')
 	# print (f.getvalue ());
