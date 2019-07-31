@@ -17,7 +17,7 @@ __PyFunction__.prototype.__call__ = function () {
 	if (arguments.length < this.__posargs__.length - this.__defaults__.length
 		|| arguments.length > this.__posargs__.length
 	) {
-		throw new __PyTypeError__ (
+		__callstack__ = new Error ().stack; throw new __PyTypeError__ (
 			`${this.__name__}() takes ${this.__posargs__.length} positional arguments`
 		);
 	}

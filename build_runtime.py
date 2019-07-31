@@ -2,7 +2,7 @@ import shutil
 import glob
 
 if __name__ == '__main__':
-	reserved = ['setup.js', 'runtime/__PyStr__.js', 'runtime/builtin.js', 'runtime/__PyObject__.js']
+	reserved = ['runtime/setup.js', 'runtime/__PyStr__.js', 'runtime/builtin.js', 'runtime/__PyObject__.js']
 
 	with open('runtime.js', 'wb') as outfile:
 		with open ('runtime/setup.js', 'rb') as readfile:

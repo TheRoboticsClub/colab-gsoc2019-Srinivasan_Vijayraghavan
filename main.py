@@ -48,6 +48,8 @@ class Visitor (ast.NodeVisitor):
 		self.indent_level = 0;
 		self.exp = 0
 		self.curr_lineno = 0
+		self.jslineno = 1284
+		self.linemap = {}
 		self.write (init)
 		if (subfile is not None):
 			try :
@@ -177,6 +179,22 @@ class Visitor (ast.NodeVisitor):
 		id = node.id
 		self.ostream.write (f'({self.scope}.{id})')
 
+	def visit_Compare (self, node):
+		self.in_exp = True;
+		left, ops, comparators = node.left, node.ops, node.comparators
+		self.ostream.write ('(')
+		for op in ops:
+			self.visit (op)
+			self.ostream.write ('(')
+			self.visit (left)
+			self.ostream.write (', ')
+			self.visit (comparators[0])
+			left = comparators[0]
+			comparators = comparators[1:]
+			self.ostream.write (')')
+			self.ostream.write (')')
+			self.in_exp = False
+
 	def visit_Call (self, node):
 		func, args = node.func, node.args
 		if (not self.in_exp):
@@ -205,22 +223,7 @@ class Visitor (ast.NodeVisitor):
 			self.write_endline ()
 
 
-	def visit_Compare (self, node):
-		self.in_exp = True;
-		left, ops, comparators = node.left, node.ops, node.comparators
-		self.ostream.write ('(')
-		for op in ops:
-			self.visit (op)
-			self.ostream.write ('(')
-			self.visit (left)
-			self.ostream.write (', ')
-			self.visit (comparators[0])
-			left = comparators[0]
-			comparators = comparators[1:]
-			self.ostream.write (')')
-		self.ostream.write (')')
-		self.in_exp = False;
-
+	# Statements
 	def visit_Assign (self, node):
 
 		self.curr_lineno = node.lineno
@@ -411,7 +414,8 @@ class Visitor (ast.NodeVisitor):
 		self.visit (test)
 		self.in_exp = False
 
-		self.ostream.write (').__bool__ () === __PyTrue__) {')
+		self.ostream.write (').__bool__ () === __PyTrue__) {\n')
+		self.jslineno += 1
 
 		self.indent ()
 		for stmt in body:
@@ -419,7 +423,7 @@ class Visitor (ast.NodeVisitor):
 		self.unindent ()
 
 		self.write ('}\n')
-
+		self.jslineno += 1
 
 	def visit_For (self, node):
 		target, iter, body = node.target, node.iter, node.body
@@ -435,6 +439,7 @@ class Visitor (ast.NodeVisitor):
 		self.in_exp = prev
 
 		self.ostream.write (')) {\n')
+		self.inc_jslineno ()
 
 		self.indent_level += 1
 		for stmt in body:
@@ -442,12 +447,16 @@ class Visitor (ast.NodeVisitor):
 		self.indent_level -= 1
 
 		self.write ('}\n')
+		self.inc_jslineno ()
 
 	def indent (self): self.indent_level += 1
 	def unindent (self):
 		self.indent_level -= 1
 		if (self.indent_level < 0): raise Exception ('unindent () called unnecessarily')
 
+	def inc_jslineno (self):
+		self.jslineno += 1
+		self.linemap [self.jslineno] = self.curr_lineno
 	def visit_Break (self, node):
 		self.write ('break')
 		self.write_endline ()
@@ -458,12 +467,14 @@ class Visitor (ast.NodeVisitor):
 	def visit_FunctionDef (self, node):
 		name, args, body = node.name, node.args, node.body
 		self.curr_lineno = node.lineno
+		start_lineno = self.jslineno
 		self.write (f'{self.scope}.{name}')
 
 		if (self.substitute is not None):
 			self.ostream.write (' = ')
 			self.ostream.write (''.join (self.substitute[name]))
 			self.ostream.write (';\n')
+			self.inc_jslineno ()
 			return
 
 		visitor = FuncVisitor (node)
@@ -476,41 +487,23 @@ class Visitor (ast.NodeVisitor):
 
 		# self.scope += ''
 		self.ostream.write (') {\n')
-
+		self.inc_jslineno ()
 
 		self.indent_level += 1
 		self.write ('let __globalvars__ = {')
 		for lv in global_vars:
 			self.ostream.write (f"'{lv}' : true, ")
 		self.ostream.write ('};\n')
+		self.inc_jslineno ()
 
 		self.write ('let __localvars__ = {')
 		for lv in local_vars:
 			self.ostream.write (f"'{lv}' : true, ")
 		self.ostream.write ('};\n')
-	# 	self.ostream.write ('''
-	# let ''' +  (self.scope + '_') + ''' = new Proxy ({__parscope__ : ''' + self.scope + '''}, {
-	# 	get (target, key, recv) {
-	# 		if (key in __localvars__) {
-	# 			if (key in target) {
-	# 				return target[key];
-	# 			}
-	# 			throw new __PyUnboundLocalError__ (`name '${key}' referenced before assginment`);
-	# 		} else if (! (key in target)) {
-	# 			return target['__parscope__'][key];
-	# 		}
-	# 		return target[key];
-	# 	},
-	# 	set (target, key, value, recv) {
-	# 		if (key in __globalvars__) {
-	# 			__scope__[key] = value;
-	# 		} else {
-	# 			target[key] = value;
-	# 		}
-	# }});
-	# 	''')
+		self.inc_jslineno ()
 
 		self.write (f'let {self.scope}_ = __getfuncscope__ ({self.scope}, __globalvars__, __localvars__);\n')
+		self.inc_jslineno ()
 		prev = self.global_vars.copy()
 
 		current_scope = self.scope
@@ -520,7 +513,12 @@ class Visitor (ast.NodeVisitor):
 			self.visit (stmt)
 		self.scope = current_scope
 		self.ostream.write ('return __PyNone__;\n')
+		self.inc_jslineno ()
 		self.ostream.write ('});\n')
+
+		self.write (f'__symbolmap__.{name} = [{start_lineno}, {self.jslineno}]\n')
+		self.inc_jslineno ()
+		self.inc_jslineno ()
 
 		self.global_vars = prev
 		self.indent_level -= 1
@@ -616,6 +614,7 @@ class Visitor (ast.NodeVisitor):
 		self.write ('__raise__ (')
 		self.visit (exc)
 		self.ostream.write (');\n')
+		self.inc_jslineno ()
 		self.in_exp = prev_in_exp
 
 	def visit_Try (self, node):
@@ -628,17 +627,21 @@ class Visitor (ast.NodeVisitor):
 		self.write ('}')
 
 		self.write ('catch (e) {\n')
+		self.inc_jslineno ()
 		self.indent ()
 		if handlers is not None :
 			for handler in handlers: self.visit (handler)
 		self.write ('else {\n')
+		self.inc_jslineno ()
 		self.indent ()
 		self.write ('throw e;\n')
+		self.inc_jslineno ()
 		self.unindent ()
 		self.write ('}')
 
 		self.unindent ()
 		self.write ('};\n')
+		self.inc_jslineno ()
 
 	def visit_ExceptHandler (self, node):
 		type, name, body = node.type, node.name, node.body
@@ -646,21 +649,25 @@ class Visitor (ast.NodeVisitor):
 			for stmt in body: self.visit (stmt)
 			return
 		self.write ('if (__isexception__ (e)) {\n')
+		self.inc_jslineno ()
 
 		self.indent ()
 		self.write ('if (e instanceof ')
 		self.visit (type)
 		self.ostream.write (') {\n')
+		self.inc_jslineno ()
 		self.indent ()
 		self.write (f'{self.scope}.{name} = e;\n')
+		self.inc_jslineno ()
 		for stmt in body : self.visit (stmt)
 		self.unindent ()
 		self.write ('}\n')
+		self.inc_jslineno ()
 		self.unindent ();
 		self.write ('}\n')
+		self.inc_jslineno ()
 
-	def visit_alias (self, node):
-		pass
+	def visit_alias (self, node): pass
 
 	# utility functions
 	def write_lineno (self):
@@ -677,7 +684,8 @@ class Visitor (ast.NodeVisitor):
 			self.write (f'{self.scope}.{arg.arg} = {arg.arg}')
 			self.write_endline ()
 	def write_endline (self):
-		self.ostream.write (';\n')
+		self.inc_jslineno ()
+		self.ostream.write (f'; // {self.jslineno}\n')
 	def write_statement (self, statement):
 		self.write_indent ()
 		self.ostream.write (statement + '\n')
@@ -719,8 +727,9 @@ if __name__ == '__main__':
 let __scope__ = Object.assign ({}, __global__);
 __scope__ = new Proxy (__scope__, handler);
 '''
-	Visitor (f, init = init).visit (pt);
-
+	v = Visitor (f, init = init)
+	v.visit (pt);
+	# print (v.linemap)
 	fp = open (args.outfile, 'w')
 	try:
 		fr = open ('runtime.js', 'r')
@@ -730,6 +739,7 @@ __scope__ = new Proxy (__scope__, handler);
 
 	fp.write (fr.read())
 	fp.write ('\n//Translated code below\ntry {\n')
+	fp.write (f'__linemap__ = {str (v.linemap)}\n') # linemap
 	fp.write (f.getvalue())
 	fp.write ('} catch (e) {\nif (e instanceof Error) {\nconsole.log (e);\n} else {\nprint.__call__ (e);\n}}')
 	# print (f.getvalue ());

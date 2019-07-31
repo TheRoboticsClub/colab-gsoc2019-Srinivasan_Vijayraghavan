@@ -28,7 +28,7 @@ __PyDict__.prototype.__getitem__ = function (x) {
 			return this.values[i];
 		}
 	}
-	throw new __PyKeyError__ (`${x.__str__ ()}`);
+	__callstack__ = new Error ().stack; throw new __PyKeyError__ (`${x.__str__ ()}`);
 }
 __PyDict__.prototype.__setitem__ = function (x, v) {
 	let n = this.keys.length;
@@ -101,5 +101,5 @@ __PyDict__.prototype.pop = function (k) {
 			return ret;
 		}
 	}
-	throw new __PyKeyError__ (`${k.__class__.__name__}`);
+	__callstack__ = new Error ().stack; throw new __PyKeyError__ (`${k.__class__.__name__}`);
 }

@@ -17,7 +17,7 @@ __PyList__.__str__ = function () {return (new __PyStr__ (`<class 'list'>`));}
 __PyList__.__call__ = function (l) {return new __PyList__ (l);}
 __PyList__.prototype.__getitem__ = function (i) {
 	if (!((i instanceof __PyInt__) || (i instanceof __PySlice__))) {
-		throw new TypeError (`list indices must be integers or slices, not ${i.__class__.__name__}`);
+		__callstack__ = new Error ().stack; throw new TypeError (`list indices must be integers or slices, not ${i.__class__.__name__}`);
 	}
 	if (i instanceof __PySlice__) {
 		let m = Math.min (i.upper, this.l.length);
@@ -32,18 +32,18 @@ __PyList__.prototype.__getitem__ = function (i) {
 	if (n >= 0 && n < this.l.length) {
 		return this.l[n];
 	}
-	throw new IndexError (`list index out of range`);
+	__callstack__ = new Error ().stack; throw new IndexError (`list index out of range`);
 }
 __PyList__.prototype.__setitem__ = function (i, val) {
 	if (!(i instanceof __PyInt__)) {
-		throw new TypeError (`list indices must be integers, not ${i.__class__.__name__}`);
+		__callstack__ = new Error ().stack; throw new TypeError (`list indices must be integers, not ${i.__class__.__name__}`);
 	}
 	var n = i.x;
 	if (n < 0) {n += this.l.length;}
 	if (n >= 0 && n < this.l.length) {
 		this.l[n] = val;
 	} else {
-		throw new IndexError (`list index out of range`);
+		__callstack__ = new Error ().stack; throw new IndexError (`list index out of range`);
 	}
 }
 __PyList__.prototype.__len__ = function () {return new __PyInt__ (this.l.length);}
@@ -73,7 +73,7 @@ __PyList__.prototype.__mul__ = function (other) {
 		}
 		return new __PyList__ (ret);
 	}
-	throw new __PyTypeError__ (
+	__callstack__ = new Error ().stack; throw new __PyTypeError__ (
 		`cant't muliply list by non-int of type '${other.__class__.__name__}'`
 	);
 }
@@ -83,7 +83,7 @@ __PyList__.prototype.__iadd__ = function (l) {
 		this.l = this.l.concat (l.l);
 		return this;
 	}
-	throw new __PyTypeError__ (`'${l.__class__.__name__}' object is not iterable`);
+	__callstack__ = new Error ().stack; throw new __PyTypeError__ (`'${l.__class__.__name__}' object is not iterable`);
 }
 __PyList__.prototype.__imul__ = function (other) {
 	if (other instanceof __PyInt__) {
@@ -92,7 +92,7 @@ __PyList__.prototype.__imul__ = function (other) {
 		}
 		return this;
 	}
-	throw new __PyTypeError__ (
+	__callstack__ = new Error ().stack; throw new __PyTypeError__ (
 		`cant't muliply list by non-int of type '${other.__class__.__name__}'`
 	);
 }

@@ -11,14 +11,14 @@ __PyInt__.__call__ = function (x) {
 	} else if (x instanceof __PyStr__) {
 		let n = Number (x.x);
 		if (isNaN (n)) {
-			throw new __PyValueError__ (`invalid literal for int(): '${x.x}'`);
+			__callstack__ = new Error ().stack; throw new __PyValueError__ (`invalid literal for int(): '${x.x}'`);
 		}
 		return (new __PyInt__ (n));
 	} else {
 		try {
 			return __int__ (x);
 		} catch (e) {
-			throw new __PyTypeError__ (`int() argument must be a string, a bytes-like object or a number, not '${x.__class__.__name__}'`);
+			__callstack__ = new Error ().stack; throw new __PyTypeError__ (`int() argument must be a string, a bytes-like object or a number, not '${x.__class__.__name__}'`);
 		}
 	}
 }
@@ -36,7 +36,7 @@ __PyInt__.prototype.__mod__ = function (other) {
 	if (other instanceof __PyInt__) {
 		let ret = this.x % other.x;
 		if (isNaN (ret)) {
-			throw new __PyZeroDivisionError__ (`integer division or modulo by zero`)
+			__callstack__ = new Error ().stack; throw new __PyZeroDivisionError__ (`integer division or modulo by zero`)
 		}
 		return new __PyInt__ (ret);
 	}
@@ -57,7 +57,7 @@ __PyInt__.prototype.__sub__ = function (other) {
 __PyInt__.prototype.__div__ = function (other) {
 	if (other instanceof __PyInt__ || other instanceof __PyFloat__) {
 		if (other.x == 0) {
-			throw Error ('ZeroDivisionError: float division by zero');
+			__callstack__ = new Error ().stack; throw new __PyZeroDivisionError__ ('float division by zero');
 		}
 		return new __PyFloat__ (this.x / other.x);
 	}

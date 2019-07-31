@@ -2,13 +2,13 @@ function __uadd__ (a) {
 	if ('__pos__' in a) {
 		return a.__pos__ ();
 	}
-	throw new __PyTypeError__ (`bad operand type for unary +: '${a.__class__.__name__}'`);
+	__callstack__ = new Error ().stack; throw new __PyTypeError__ (`bad operand type for unary +: '${a.__class__.__name__}'`);
 }
 function __usub__ (a) {
 	if ('__neg__' in a) {
 		return a.__neg__ ();
 	}
-	throw new __PyTypeError__ (`bad operand type for unary -: '${a.__class__.__name__}'`);
+	__callstack__ = new Error ().stack; throw new __PyTypeError__ (`bad operand type for unary -: '${a.__class__.__name__}'`);
 }
 function __add__ (a, b) {
 	if ('__add__' in a) {
@@ -24,7 +24,7 @@ function __add__ (a, b) {
 			return ret;
 		}
 	}
-	throw __unsupportedbinaryop__ ('+', a, b);
+	__callstack__ = new Error ().stack; throw __unsupportedbinaryop__ ('+', a, b);
 }
 function __sub__ (a, b) {
 	if ('__sub__' in a) {
@@ -40,7 +40,7 @@ function __sub__ (a, b) {
 			return ret;
 		}
 	}
-	throw __unsupportedbinaryop__ ('-', a, b);
+	__callstack__ = new Error ().stack; throw __unsupportedbinaryop__ ('-', a, b);
 }
 function __mul__ (a, b) {
 	if ('__mul__' in a) {
@@ -56,7 +56,7 @@ function __mul__ (a, b) {
 			return ret;
 		}
 	}
-	throw __unsupportedbinaryop__ ('*', a, b);
+	__callstack__ = new Error ().stack; throw __unsupportedbinaryop__ ('*', a, b);
 }
 function __div__ (a, b) {
 	if ('__div__' in a) {
@@ -72,7 +72,7 @@ function __div__ (a, b) {
 			return ret;
 		}
 	}
-	throw __unsupportedbinaryop__ ('/', a, b);
+	__callstack__ = new Error ().stack; throw __unsupportedbinaryop__ ('/', a, b);
 }
 function __iadd__ (a, b) {
 	if ('__iadd__' in a) {
@@ -102,15 +102,15 @@ function __index__ (i) {
 	if ('__index__' in i) {
 		return i.__index__ ();
 	}
-	throw Error (`AttributeError: '${i.__class__.__name__}' object has no attribute '__index__'`)
+	__callstack__ = new Error ().stack; throw new __PyAttributeError__ (`'${i.__class__.__name__}' object has no attribute '__index__'`)
 }
 function __int__ (i) {
 	if ('__int__' in i) {return i.__int__ ();}
-	throw Error (`AttributeError: '${i.__class__.__name__}' object has no attribute '__float__'`)
+		__callstack__ = new Error ().stack; throw new __PyAttributeError__ (`'${i.__class__.__name__}' object has no attribute '__float__'`)
 }
 function __float__ (i) {
 	if ('__float__' in i) {return i.__float__ ();}
-	throw Error (`AttributeError: '${i.__class__.__name__}' object has no attribute '__float__'`)
+	__callstack__ = new Error ().stack; throw new __PyAttributeError__ (`'${i.__class__.__name__}' object has no attribute '__float__'`)
 }
 function __mod__ (a, b) {
 	if ('__mod__' in a) {
@@ -120,28 +120,28 @@ function __mod__ (a, b) {
 function __gt__ (a, b) {
 	let ret = a.__gt__ (b);
 	if (ret === __PyNotImplemented__) {
-		throw new __PyTypeError__ (`'>' not supported between instances of '${a.__class__.__name__}' and '${b.__class__.__name__}'`);
+		__callstack__ = new Error ().stack; throw new __PyTypeError__ (`'>' not supported between instances of '${a.__class__.__name__}' and '${b.__class__.__name__}'`);
 	}
 	return ret;
 }
 function __ge__ (a, b) {
 	let ret = a.__ge__ (b);
 	if (ret === __PyNotImplemented__) {
-		throw new __PyTypeError__ (`'>=' not supported between instances of '${a.__class__.__name__}' and '${b.__class__.__name__}'`);
+		__callstack__ = new Error ().stack; throw new __PyTypeError__ (`'>=' not supported between instances of '${a.__class__.__name__}' and '${b.__class__.__name__}'`);
 	}
 	return ret;
 }
 function __lt__ (a, b) {
 	let ret = a.__lt__ (b);
 	if (ret === __PyNotImplemented__) {
-		throw new __PyTypeError__ (`'<' not supported between instances of '${a.__class__.__name__}' and '${b.__class__.__name__}'`);
+		__callstack__ = new Error ().stack; throw new __PyTypeError__ (`'<' not supported between instances of '${a.__class__.__name__}' and '${b.__class__.__name__}'`);
 	}
 	return ret;
 }
 function __le__ (a, b) {
 	let ret = a.__le__ (b);
 	if (ret === __PyNotImplemented__) {
-		throw new __PyTypeError__ (`'<=' not supported between instances of '${a.__class__.__name__}' and '${b.__class__.__name__}'`);
+		__callstack__ = new Error ().stack; throw new __PyTypeError__ (`'<=' not supported between instances of '${a.__class__.__name__}' and '${b.__class__.__name__}'`);
 	}
 	return ret;
 }
@@ -166,13 +166,13 @@ function __getitem__ (l, i) {
 	if ('__getitem__' in l) {
 		return l.__getitem__ (i);
 	}
-	throw new __PyTypeError__ (`'${l.__class__.__name__}' object is not subscriptable`)
+	__callstack__ = new Error ().stack; throw new __PyTypeError__ (`'${l.__class__.__name__}' object is not subscriptable`)
 }
 function __setitem__ (l, i, v) {
 	if ('__setitem__' in l) {
 		return l.__setitem__ (i, v);
 	}
-	throw new __PyTypeError__ (`'${l.__class__.__name__}' object does not support item assignment`)
+	__callstack__ = new Error ().stack; throw new __PyTypeError__ (`'${l.__class__.__name__}' object does not support item assignment`)
 }
 function __call__ (f) {
     if ('__call__' in f) {
@@ -180,27 +180,27 @@ function __call__ (f) {
 		ret.bind (f);
 		return f.__call__.bind (f);
     }
-    throw new __PyTypeError__ (`'${f.__class__.__name__}' object is not callable`)
+    __callstack__ = new Error ().stack; throw new __PyTypeError__ (`'${f.__class__.__name__}' object is not callable`)
 }
 function __iter__ (o) {
 	if ('__iter__' in o) {
 		return o.__iter__ ();
 	}
-	throw new __PyTypeError__ (`'${o.__class__.__name__}' object is not iterable`);
+	__callstack__ = new Error ().stack; throw new __PyTypeError__ (`'${o.__class__.__name__}' object is not iterable`);
 }
 function __raise__ (o) {
-	if (o instanceof __PyBaseException__) {throw o;}
-	throw new __PyTypeError__ (`exceptions must derive from BaseException`);
+	if (o instanceof __PyBaseException__) {__callstack__ = new Error ().stack; throw o;}
+	__callstack__ = new Error ().stack; throw new __PyTypeError__ (`exceptions must derive from BaseException`);
 }
 function __isinstance__ (v, t) {
 	if (t.__class__ !== __PyType__) {
-		throw new __PyTypeError__ (`isinstance() arg 2 must be a type`);
+		__callstack__ = new Error ().stack; throw new __PyTypeError__ (`isinstance() arg 2 must be a type`);
 	}
 	return __getbool__ (v instanceof t);
 }
 function __isexception__ (e) {
 		if (e instanceof __PyBaseException__) {return true;}
-		throw new __PyTypeError__ (`catching classes that do not inherit from BaseException is not allowed`);
+		__callstack__ = new Error ().stack; throw new __PyTypeError__ (`catching classes that do not inherit from BaseException is not allowed`);
 }
 // function __catch__ (e, c) {
 // 	try {
@@ -210,7 +210,7 @@ function __isexception__ (e) {
 // 		return false;
 // 	}
 // 	catch (e) {
-// 		throw new __PyTypeError__
+// 		__callstack__ = new Error ().stack; throw new __PyTypeError__
 // 	}
 // }
 
@@ -221,7 +221,7 @@ function __getfuncscope__ (parscope, __globalvars__, __localvars__) {
 				if (key in target) {
 					return target[key];
 				}
-				throw new __PyUnboundLocalError__ (`name '${key}' referenced before assginment`);
+				__callstack__ = new Error ().stack; throw new __PyUnboundLocalError__ (`name '${key}' referenced before assginment`);
 			} else if (! (key in target)) {
 				return target['__parscope__'][key];
 			}
@@ -240,7 +240,7 @@ function __in__ (v, c) {
 	if ('__contains__' in c) {
 		return c.__contains__ (v);
 	}
-	throw new __PyTypeError__ (`argument of type '${this.__class__.__name__}' is not iterable`);
+	__callstack__ = new Error ().stack; throw new __PyTypeError__ (`argument of type '${this.__class__.__name__}' is not iterable`);
 }
 function __not__ (x) {
 	return __getbool__ (x.__bool__ () !== __PyTrue__);

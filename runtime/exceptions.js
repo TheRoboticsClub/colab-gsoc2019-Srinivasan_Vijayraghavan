@@ -1,8 +1,13 @@
 var __PyBaseException__ = function (msg) {
 	__PyObject__.call (this);
+	var err = Error.call (this);
+	Object.defineProperty(this, 'stack', {
+        get: function () {return err.stack;}
+    });
 	this.__class__  = __PyBaseException__;
 	this.msg = msg;
 }
+__PyBaseException__.prototype = Object.assign (__PyBaseException__.prototype, Error.prototype);
 __PyBaseException__.prototype = Object.assign (__PyBaseException__.prototype, __PyObject__.prototype);
 __PyBaseException__.prototype.__str__ = function () {return `${this.__class__.__name__}: ${this.msg}`;}
 __PyBaseException__.__str__ = function () {return (new __PyStr__ (`<class 'BaseException'>`));}

@@ -16,7 +16,7 @@ __PySlice__.__call__ = function (lower, upper, step) {
 	if (! ((lower instanceof __PyNoneType__) || (lower instanceof __PyInt__))
 	|| ! ((upper instanceof __PyNoneType__) || (upper instanceof __PyInt__))
 	|| ! ((step instanceof __PyNoneType__) || (step instanceof __PyInt__)) ) {
-		throw new __PyTypeError__ (`slice indices must be integers or None`);
+		__callstack__ = new Error ().stack; throw new __PyTypeError__ (`slice indices must be integers or None`);
 	}
 	if (lower === __PyNone__) {l = 0;}
 	else {l = lower.x;}
@@ -26,7 +26,7 @@ __PySlice__.__call__ = function (lower, upper, step) {
 	else {
 		s = step.x;
 		if (s == 0) {
-			throw new __PyValueError__ (`slice step cannot be zero`);
+			__callstack__ = new Error ().stack; throw new __PyValueError__ (`slice step cannot be zero`);
 		}
 	}
 

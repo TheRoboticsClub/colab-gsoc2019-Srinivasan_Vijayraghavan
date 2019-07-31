@@ -16,18 +16,18 @@ var len = new __PyFunction__ (new __PyStr__ ('len'), [], [], function (x) {
 	if ('__len__' in x) {
 		return x.__len__ ();
 	}
-	throw new __PyTypeError__ (`TypeError: object of type '${x.__class__.__name__}' has no len()`)
+	__callstack__ = new Error ().stack; throw new __PyTypeError__ (`TypeError: object of type '${x.__class__.__name__}' has no len()`)
 });
 len.__call__ = function (x) {
 	if (arguments.length != 1) {
-		throw (new __PyTypeError__ (`
+		__callstack__ = new Error ().stack; throw (new __PyTypeError__ (`
 			len() takes exactly one argument (${arguments.length} given)
 			`))
 	}
 	if ('__len__' in x) {
 		return x.__len__ ();
 	}
-	throw new __PyTypeError__ (`TypeError: object of type '${x.__class__.__name__}' has no len()`)
+	__callstack__ = new Error ().stack; throw new __PyTypeError__ (`TypeError: object of type '${x.__class__.__name__}' has no len()`)
 }
 var __PyNotImplementedType__ = function () {
 	this.__class__ = __PyNotImplementedType__;

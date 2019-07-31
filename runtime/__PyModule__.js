@@ -10,7 +10,7 @@ __PyModule__.__str__ = function () {return (new __PyStr__ (`<class 'module'>`));
 __PyModule__.prototype = Object.create (__PyObject__.prototype);
 __PyModule__.prototype.__getattr__ = function (x) {
 	if (! (x in this.__dict__)) {
-		throw new __PyAttributeError__ (`${x} not in module`);
+		__callstack__ = new Error ().stack; throw new __PyAttributeError__ (`${x} not in module`);
 	}
 	return this.__dict__[x];
 }

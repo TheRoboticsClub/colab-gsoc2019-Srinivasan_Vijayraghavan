@@ -10,14 +10,14 @@ __PyObject__.prototype.__setattr__ = function (x, y) {
 	if (x in this.__dict__) {
 		this.__dict__.x = y;
 	} else {
-		throw new __PyAttributeError__ (
+		__callstack__ = new Error ().stack; throw new __PyAttributeError__ (
 			`'${this.__class__}' object has no attribute '${x}'`
 		);
 	}
 }
 __PyObject__.prototype.__getattr__ = function (x) {
 	if (x in this.__dict__) {return this.__dict__[x];}
-	throw new __PyAttributeError__ (
+	__callstack__ = new Error ().stack; throw new __PyAttributeError__ (
 		`'${this.__class__}' object has no attribute '${x}'`
 	);
 }

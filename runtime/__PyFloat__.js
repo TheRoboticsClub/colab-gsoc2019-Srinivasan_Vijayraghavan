@@ -13,14 +13,14 @@ __PyFloat__.__call__ = function (x) {
 	} else if (x instanceof __PyStr__) {
 		let n = Number (x.x);
 		if (isNaN (n)) {
-			throw new __PyValueError__ (`could not convert string to float: '${x.x}'`);
+			__callstack__ = new Error ().stack; throw new __PyValueError__ (`could not convert string to float: '${x.x}'`);
 		}
 		return (new __PyFloat__ (n));
 	} else {
 		try {
 			return __float__ (x);
 		} catch (e) {
-			throw new __PyTypeError__ (`float() argument must be a string, a bytes-like object or a number, not '${x.__class__.__name__}'`);
+			__callstack__ = new Error ().stack; throw new __PyTypeError__ (`float() argument must be a string, a bytes-like object or a number, not '${x.__class__.__name__}'`);
 		}
 	}
 }
