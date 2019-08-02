@@ -33,33 +33,25 @@ __PyFloat__.prototype.__neg__ = function () {
 	return (new __PyFloat__ (-this.x));
 };
 __PyFloat__.prototype.__add__ = function (other) {
-	if (other instanceof __PyFloat__) {
-		return new __PyFloat__ (this.x + other.x);
-	} else if (other instanceof __PyInt__) {
+	if (other instanceof __PyFloat__ || other instanceof __PyInt__) {
 		return new __PyFloat__ (this.x + other.x);
 	}
 	return __PyNotImplemented__;
 }
 __PyFloat__.prototype.__sub__ = function (other) {
-	if (other instanceof __PyFloat__) {
-		return new __PyFloat__ (this.x - other.x);
-	} else if (other instanceof __PyInt__) {
+	if (other instanceof __PyFloat__ || other instanceof __PyInt__) {
 		return new __PyFloat__ (this.x - other.x);
 	}
 	return __PyNotImplemented__;
 }
 __PyFloat__.prototype.__div__ = function (other) {
-	if (other instanceof __PyFloat__) {
-		return new __PyFloat__ (this.x / other.x);
-	} else if (other instanceof __PyInt__) {
+	if (other instanceof __PyFloat__ || other instanceof __PyInt__) {
 		return new __PyFloat__ (this.x / other.x);
 	}
 	return __PyNotImplemented__;
 }
 __PyFloat__.prototype.__mul__ = function (other) {
-	if (other instanceof __PyFloat__) {
-		return new __PyFloat__ (this.x * other.x);
-	} else if (other instanceof __PyInt__) {
+	if (other instanceof __PyFloat__ || other instanceof __PyInt__) {
 		return new __PyFloat__ (this.x * other.x);
 	}
 	return __PyNotImplemented__;
