@@ -1,7 +1,10 @@
 var __PyObject__ = function () {
 	this.__class__ = __PyObject__;
+	this.__uniqueid__ = __PyObject__.__uniqueid__;
+	__PyObject__.__uniqueid__++;
 	this.__dict__ = {}
 }
+__PyObject__.__uniqueid__ = 0;
 __PyObject__.__class__ = __PyType__;
 __PyObject__.__call__ = function () {
 	return new __PyObject__ ();

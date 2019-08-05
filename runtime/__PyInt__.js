@@ -101,6 +101,6 @@ __PyInt__.prototype.__eq__ = function (other) {
 	return __PyNotImplemented__;
 }
 __PyInt__.prototype.__str__ = function () {return (new __PyStr__ (this.x));}
-
+__PyInt__.prototype.__hash__ = function () {return 'int' + String (this.x);}
 let __zero__ = new __PyInt__ (0);
 let __one__ = new __PyInt__ (1);

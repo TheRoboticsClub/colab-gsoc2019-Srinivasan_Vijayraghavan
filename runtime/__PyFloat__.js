@@ -97,3 +97,4 @@ __PyFloat__.prototype.__eq__ = function (other) {
 	}
 	return __PyNotImplemented__;
 }
+__PyFloat__.prototype.__hash__ = function () {return 'float' + String (this.x);}

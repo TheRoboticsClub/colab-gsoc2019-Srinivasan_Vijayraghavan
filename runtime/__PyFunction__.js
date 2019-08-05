@@ -23,3 +23,4 @@ __PyFunction__.prototype.__call__ = function () {
 	}
 	return this.fvalue.apply (null, arguments);
 }
+__PyFunction__.prototype.__hash__ = function () {return 'function' + String (this.__uniqueid__);}

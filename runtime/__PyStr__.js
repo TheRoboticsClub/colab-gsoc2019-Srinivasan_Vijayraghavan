@@ -47,7 +47,7 @@ __PyStr__.prototype.__iter__ = function * () {
 		yield (new __PyStr__ (x));
 	}
 }
-
+__PyStr__.prototype.__hash__ = function () {return 'str' + this.x;}
 
 // Add __str__ method for object, type.
 __PyObject__.__name__ = new __PyStr__ ('object');

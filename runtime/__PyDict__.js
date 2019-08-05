@@ -11,6 +11,7 @@ var __PyDict__ = function (keys, values) {
 		'items' : __PyDict__.prototype.items.bind (this),
 		'pop' : __PyDict__.prototype.pop.bind (this),
 	};
+	this.dict = {};
 }
 
 __PyDict__.__class__ = __PyType__;
@@ -22,25 +23,21 @@ __PyDict__.__call__ = function (x) {
 __PyDict__.prototype = Object.create (__PyObject__.prototype);
 
 __PyDict__.prototype.__getitem__ = function (x) {
-	let n = this.keys.length;
-	for (let i = 0; i < n; i++) {
-		if (__getjsbool__ (__eq__ (x, this.keys[i]))) {
-			return this.values[i];
-		}
+	if (!('__hash__' in x)) {
+		__callstack__ = new Error ().stack; throw new __PyTypeError__ (`unhashable type: ${x.__class__.__name__}`);
+	}
+	if (x.__hash__ () in this.dict) {
+		return this.dict[x.__hash__ ()];
 	}
 	__callstack__ = new Error ().stack; throw new __PyKeyError__ (`${x.__str__ ()}`);
 }
 __PyDict__.prototype.__setitem__ = function (x, v) {
-	let n = this.keys.length;
-	for (let i = 0; i < n; i++) {
-		if (__getjsbool__ (__eq__ (x, this.keys[i]))) {
-			this.values[i] = v;
-			return __PyNone__;
-		}
+	if (!('__hash__' in x)) {
+		__callstack__ = new Error ().stack; throw new __PyTypeError__ (`unhashable type: ${x.__class__.__name__}`);
 	}
 	this.keys.push (x);
 	this.values.push (v);
-
+	this.dict[x.__hash__ ()] = v;
 	return __PyNone__;
 }
 __PyDict__.prototype.__str__ = function () {
@@ -58,13 +55,10 @@ __PyDict__.prototype.__len__ = function () {
 	return new __PyInt__ (this.keys.length);
 }
 __PyDict__.prototype.__contains__ = function (x) {
-	let n = this.keys.length;
-	for (let i = 0; i < n; i++) {
-		if (__getjsbool__ (__eq__ (x, this.keys[i]))) {
-			return __PyTrue__;
-		}
+	if (! ('__hash__' in x)) {
+		__callstack__ = new Error ().stack; throw new __PyType__ (`unhashable type: ${x.__class__.__name__}`);
 	}
-	return __PyFalse__;
+	return __getbool__ (x.__hash__ () in this.dict);
 }
 __PyDict__.prototype.__iter__ = function * () {
 	for (let x of this.keys) {
@@ -82,6 +76,7 @@ __PyDict__.prototype.values = function () {
 __PyDict__.prototype.clear = function () {
 	this.keys = [];
 	this.values = [];
+	this.dict = {}
 	return __PyNone__;
 }
 __PyDict__.prototype.items = function () {
