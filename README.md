@@ -2,9 +2,10 @@
 
 ## Usage
 ~~~bash
-python3 main.py <inputfile> <outputfile>
+python3 main.py <inputfile> --outfile=<outputfile>
 js <outfile>
 ~~~
+If \<outputfile\> is not mentioned, the output file name defaults to \_\_gen\_\_.js
 ### Compatible versions
 - python3 : 3.6.7
 - node    : 8.10.0
@@ -20,7 +21,7 @@ print ('Hello World!')
 
 Next, run the following command to generate the javascript file.
 ~~~bash
-python3 main.py helloWorld.py out.js
+python3 main.py helloWorld.py --outfile=out.js
 ~~~
 This generates the file *out.js* which contains the generated code.
 *out.js* can be executed in the command line in the following manner
