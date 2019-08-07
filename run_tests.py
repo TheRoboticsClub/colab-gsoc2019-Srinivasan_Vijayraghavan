@@ -74,7 +74,9 @@ ValueError: not enough values to unpack
 
 	def test_scope (self):
 		output = self.get_transpiler_output ('tests/test_scope.py')
-		expected = '''UnboundLocalError: name 'x' referenced before assginment
+		expected = '''function f at 4
+
+UnboundLocalError: name 'x' referenced before assginment
 '''
 		self.assertEqual (output, expected)
 

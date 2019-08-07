@@ -48,7 +48,7 @@ class Visitor (ast.NodeVisitor):
 		self.indent_level = 0;
 		self.exp = 0
 		self.curr_lineno = 0
-		self.jslineno = 1284
+		self.jslineno = 1284 + 8 - 1
 		self.linemap = {}
 		self.write (init)
 		if (subfile is not None):
@@ -250,7 +250,7 @@ class Visitor (ast.NodeVisitor):
 				self.indent_level += 1
 				self.write ('if (pos >= vars.length) {\n')
 				self.indent_level += 1
-				self.write ('throw new __PyValueError__ (`too many values to unpack (expected ${vars.length})`)\n')
+				self.write ('__callstack__ = new Error ().stack; throw new __PyValueError__ (`too many values to unpack (expected ${vars.length})`)\n')
 				self.indent_level -= 1
 				self.write ('}\n')
 				self.write (f'{self.scope}[vars[pos]] = x;\n')
@@ -259,7 +259,7 @@ class Visitor (ast.NodeVisitor):
 				self.indent_level -= 1
 				self.write ('if (pos != vars.length) {\n')
 				self.indent_level += 1
-				self.write ('throw new __PyValueError__ (`not enough values to unpack`)\n')
+				self.write ('__callstack__ = new Error ().stack; throw new __PyValueError__ (`not enough values to unpack`)\n')
 				self.indent_level -= 1
 				self.write ('}\n')
 
@@ -741,5 +741,5 @@ __scope__ = new Proxy (__scope__, handler);
 	fp.write ('\n//Translated code below\ntry {\n')
 	fp.write (f'__linemap__ = {str (v.linemap)}\n') # linemap
 	fp.write (f.getvalue())
-	fp.write ('} catch (e) {\nif (e instanceof Error) {\nconsole.log (e);\n} else {\nprint.__call__ (e);\n}}')
+	fp.write ('} catch (e) {\nif (e instanceof Error) {\nconsole.log (e);\n} else {\ndecodecallstack (__callstack__);\nprint.__call__ (e);\n}}')
 	# print (f.getvalue ());
