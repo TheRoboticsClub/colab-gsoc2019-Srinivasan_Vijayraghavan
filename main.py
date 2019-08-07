@@ -48,7 +48,7 @@ class Visitor (ast.NodeVisitor):
 		self.indent_level = 0;
 		self.exp = 0
 		self.curr_lineno = 0
-		self.jslineno = 1284 + 8 - 1
+		self.jslineno = 1284 + 8 - 1 - 15
 		self.linemap = {}
 		self.write (init)
 		if (subfile is not None):
