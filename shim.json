@@ -53,5 +53,17 @@
 		"new __PyFunction__ ('getW',[], [] , function () {",
 			"return new __PyFloat__ (myRobot.getW ());",
 		"});"
+	],
+
+	"getInfrared" : [
+		"new __PyFunction__ ('getW',[], [] , function () {",
+			"var d = new __PyDict__ ([], []);",
+			"var o = myRobot.getInfrared ();",
+			"var left = o.Left, right = o.Right, front = o.Front;",
+			"__setitem__ (d, (new __PyStr__ ('Front')), new __PyList__ ([(new __PyInt__ (front[0])), (new __PyInt__ (front[1])), (new __PyInt__ (front[2])), ]));",
+			"__setitem__ (d, (new __PyStr__ ('Left')), new __PyList__ ([(new __PyInt__ (left[0])), (new __PyInt__ (left[1])), (new __PyInt__ (left[2])), ]));",
+			"__setitem__ (d, (new __PyStr__ ('Right')), new __PyList__ ([(new __PyInt__ (right[0])), (new __PyInt__ (right[1])), (new __PyInt__ (right[2])), ]));",
+			"return d;",
+		"});"
 	]
 }

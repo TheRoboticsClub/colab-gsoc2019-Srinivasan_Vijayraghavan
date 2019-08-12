@@ -18,3 +18,4 @@ def getEncoders ():
 
 def getV (): pass
 def getW (): pass
+def getInfrared () : pass
