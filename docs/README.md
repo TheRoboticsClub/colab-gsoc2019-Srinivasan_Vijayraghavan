@@ -15,7 +15,7 @@ WebSim is a web-based robot simulator. It is used as a tool for learning robot p
 <a name = "People_Involved"/>
 
 ## People Involved
-- Gorka Guarduiola (paurea [at] gmail [dot] com) [GSoC Mentor]
+- Gorka Guardiola (paurea [at] gmail [dot] com) [GSoC Mentor]
 - Luis Roberto Morales (lr [dot] morales [dot] iglesias [at] gmail [dot] com) [GSoC Mentor]
 - Srinivasan Vijayraghavan (srinivasan [dot] vijayraghavan [at] iiitb [dot] org) [GSoC Student]
 
@@ -32,12 +32,23 @@ WebSim is a web-based robot simulator. It is used as a tool for learning robot p
 |  3   | Conditional Statements  | Done |
 |  4   | While and For loops     | Done |
 |  5   | Functions               | Done |
-|  6   | Test Suite              | In Progress |
+|  6   | Test Suite              | Done |
 
 
 <a name = "Weekly_Documentation"/>
 
 ## Weekly Documentation
+
+### Weeks 11 & 12
+This week mostly involved fixing minor bugs and integration with the WebSim2D simulator. Some of it included incorrect runtime file generation which arose due to incorrect file dependecy graph (DAG) of the runtime files. The fix was to hardcode the file dependencies correctly and then generate the runtime program. Another fix was related to line number mapping between the generated file and the original file.
+
+### Week 10
+When dictionary was implemented in the beginning, it was inefficient. It had a runtime complexity of O(n<sup>2</sup>). We had to change this to O(1). This could be achieved by having each object give out a unique key when the \_\_hash\_\_ method is called. Right now, the unique key is a simple string which is a concatenation of its (the object's) typename and the value. In future, this can be improved by implementing what python3 offers. In python3, only those objects with the \_\_hash\_\_ method can be put into a dictionary as a key. The similar design is implemented here.
+
+### Weeks 8 & 9
+
+Theses two weeks mainly involved improving exception handling. Finally we had decided to use JavaScript's inbuilt callstack for performance reason. The idea is that we have a variable called callstack which is set before an exception occurs. JS code is more or less guaranteed to not throw any since appropriate checks are in place to prevent it from doing so. The callstack is set with the Error object (since it contains the stack member). When any exception is thrown, it is caught by the main program (The generated code is placed is a try-catch block) and appropriate action is taken.
+This again is tricky because we can't use the callstack right away, since it has line numbers from the generated JS program. So, the translation of line numbers from JS to python3 file is required which is achieved with the help of a table which does the translation. The table is filled during the translation process.
 
 ### Week-7
 #### Status/Delivarables
