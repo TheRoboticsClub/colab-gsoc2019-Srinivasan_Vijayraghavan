@@ -27,7 +27,7 @@
 			"if (angularSpeed.__class__ !== __PyInt__ && angularSpeed.__class__ !== __PyFloat__) {",
 				"throw new __PyTypeError__ ('angular speed argument must be of type int or float');",
 			"}",
-			"myRobot.setV (angularSpeed.x);",
+			"myRobot.setW (angularSpeed.x);",
 			"return __PyNone__;",
 		"});"
 	],
