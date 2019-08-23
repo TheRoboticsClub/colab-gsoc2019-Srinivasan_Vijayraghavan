@@ -12,6 +12,10 @@
 ## Introduction
 WebSim is a web-based robot simulator. It is used as a tool for learning robot programming. WebSim is currently programmable through JavaScript. This project aims to support programming the simulator in python3 by building a transpiler that targets JavaScript.
 
+You can find the demo of how this tool is used with WebSim2D [here] (https://www.youtube.com/watch?v=P-XVfV88BJo).
+
+The code is available [here] (https://github.com/JdeRobot/PyOnBrowser).
+
 <a name = "People_Involved"/>
 
 ## People Involved
