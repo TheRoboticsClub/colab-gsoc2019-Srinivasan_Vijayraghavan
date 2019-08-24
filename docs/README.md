@@ -12,7 +12,7 @@
 ## Introduction
 WebSim is a web-based robot simulator. It is used as a tool for learning robot programming. WebSim is currently programmable through JavaScript. This project aims to support programming the simulator in python3 by building a transpiler that targets JavaScript.
 
-You can find the demo of how this tool is used with WebSim2D [here] (https://www.youtube.com/watch?v=P-XVfV88BJo).
+You can find the demo of how this tool is used with WebSim2D [here] (https://www.youtube.com/watch?v=UFBIpc7HS6w).
 
 The code is available [here] (https://github.com/JdeRobot/PyOnBrowser).
 
@@ -38,10 +38,27 @@ The code is available [here] (https://github.com/JdeRobot/PyOnBrowser).
 |  5   | Functions               | Done |
 |  6   | Test Suite              | Done |
 
+### Phase-2
+
+| S.No | Construct               | Status |
+| ---- | ----------------------- | ----- |
+|  1   | Modules  				 | Done |
+|  2   | Exception Handling   	 | Done |
+|  3   | Test Suite			   	 | Done |
+
+### Phase-3
+
+| S.No | Construct                 | Status |
+| ---- | ------------------------- | ----- |
+|  1   | Integration with WebSim2D | Done |
+|  2   | Improving Dictionary	   | Done |
 
 <a name = "Weekly_Documentation"/>
 
 ## Weekly Documentation
+
+### Week-13
+This week involved fixing minor bugs. There was a correction in the shim.json file in the name of the underlying JavaScript function getting called.
 
 ### Weeks 11 & 12
 This week mostly involved fixing minor bugs and integration with the WebSim2D simulator. Some of it included incorrect runtime file generation which arose due to incorrect file dependecy graph (DAG) of the runtime files. The fix was to hardcode the file dependencies correctly and then generate the runtime program. Another fix was related to line number mapping between the generated file and the original file.
